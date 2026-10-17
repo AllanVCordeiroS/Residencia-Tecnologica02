@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/logo-bevox.png" alt="BEVOX - Distribuição de bebidas, plataforma de gestão B2B" width="420" />
+  <img src="Squad05-Bevox-dashboard/Residencia-Tecnologica02-main/public/logo-bevox.png" alt="BEVOX - Distribuição de bebidas, plataforma de gestão B2B" width="420" />
 </p>
 
 # BEVOX
