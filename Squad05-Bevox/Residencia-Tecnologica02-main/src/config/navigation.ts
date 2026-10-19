@@ -73,7 +73,6 @@ export const modulosPendentes: Record<string, { titulo: string; descricao: strin
 /** Rótulo do último item do breadcrumb para cada rota. */
 export function tituloDaRota(pathname: string): string {
   if (pathname === "/dashboard") return "Visão Geral";
-  if (pathname === "/sobre") return "Sobre o BEVOX";
   const slug = pathname.replace(/^\//, "").split("/")[0];
   return modulosPendentes[slug]?.titulo ?? "Página";
 }
@@ -89,5 +88,4 @@ export const ROTAS = {
   relatorios: "/relatorios",
   usuarios: "/usuarios",
   configuracoes: "/configuracoes",
-  sobre: "/sobre",
 } as const;

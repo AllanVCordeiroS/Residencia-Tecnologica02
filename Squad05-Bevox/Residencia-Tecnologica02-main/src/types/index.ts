@@ -97,3 +97,15 @@ export interface DashboardData {
   alertas: Alerta[];
   ultimaSincronizacao: string | null;
 }
+
+/** Dados demonstrativos da tela Gestão de Unidades. */
+export type SituacaoUnidade = "Regular" | "Atenção" | "Crítica";
+export interface UnidadeOperacional {
+  id: string; nome: string; subtipo: string; cnpj: string; cidade: string;
+  tipo: "Matriz" | "Filial"; responsavel: string; funcionarios: number;
+  documentosPendentes: number; tarefasAtrasadas: number; licencasVencendo: number;
+  situacao: SituacaoUnidade;
+}
+export interface HistoricoUnidadesStatus {
+  mes: string; ativas: number; pendencias: number; inativas: number; novas: number;
+}

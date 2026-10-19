@@ -84,3 +84,25 @@ export const alertasDemo: Alerta[] = [
   { id: "a4", tipo: "aprovado", titulo: "Documento aprovado", descricao: "Certificado sanitário • Unidade Matriz.", ocorridoEm: "2026-04-16T11:20:00-03:00" },
   { id: "a5", tipo: "reuniao", titulo: "Reunião agendada", descricao: "Alinhamento de indicadores • 18/04 às 10:00.", ocorridoEm: "2026-04-16T10:12:00-03:00" },
 ];
+
+import type { HistoricoUnidadesStatus, UnidadeOperacional } from "@/types";
+
+export const unidadesOperacionaisDemo: UnidadeOperacional[] = [
+  { id: "uo1", nome: "Matriz – Recife", subtipo: "Unidade principal", cnpj: "00.000.000/0001-00", cidade: "Recife/PE", tipo: "Matriz", responsavel: "Carlos Eduardo", funcionarios: 42, documentosPendentes: 2, tarefasAtrasadas: 0, licencasVencendo: 0, situacao: "Regular" },
+  { id: "uo2", nome: "Unidade Paulista", subtipo: "Filial", cnpj: "00.000.000/0002-00", cidade: "Paulista/PE", tipo: "Filial", responsavel: "Ana Souza", funcionarios: 18, documentosPendentes: 0, tarefasAtrasadas: 1, licencasVencendo: 1, situacao: "Atenção" },
+  { id: "uo3", nome: "Unidade Jaboatão", subtipo: "Filial", cnpj: "00.000.000/0003-00", cidade: "Jaboatão/PE", tipo: "Filial", responsavel: "Pedro Lima", funcionarios: 16, documentosPendentes: 2, tarefasAtrasadas: 2, licencasVencendo: 0, situacao: "Crítica" },
+  { id: "uo4", nome: "Unidade Olinda", subtipo: "Filial", cnpj: "00.000.000/0004-00", cidade: "Olinda/PE", tipo: "Filial", responsavel: "Mariana Costa", funcionarios: 12, documentosPendentes: 0, tarefasAtrasadas: 0, licencasVencendo: 1, situacao: "Regular" },
+  { id: "uo5", nome: "Unidade Cabo", subtipo: "Filial", cnpj: "00.000.000/0005-00", cidade: "Cabo de Santo Agostinho/PE", tipo: "Filial", responsavel: "Ricardo Alves", funcionarios: 9, documentosPendentes: 1, tarefasAtrasadas: 0, licencasVencendo: 0, situacao: "Atenção" },
+  { id: "uo6", nome: "Unidade Vitória", subtipo: "Filial", cnpj: "00.000.000/0006-00", cidade: "Vitória de Santo Antão/PE", tipo: "Filial", responsavel: "Juliana Martins", funcionarios: 8, documentosPendentes: 0, tarefasAtrasadas: 1, licencasVencendo: 0, situacao: "Regular" },
+  { id: "uo7", nome: "Unidade Caruaru", subtipo: "Filial", cnpj: "00.000.000/0007-00", cidade: "Caruaru/PE", tipo: "Filial", responsavel: "Felipe Rocha", funcionarios: 10, documentosPendentes: 1, tarefasAtrasadas: 0, licencasVencendo: 0, situacao: "Atenção" },
+  { id: "uo8", nome: "Unidade Garanhuns", subtipo: "Filial", cnpj: "00.000.000/0008-00", cidade: "Garanhuns/PE", tipo: "Filial", responsavel: "Larissa Almeida", funcionarios: 7, documentosPendentes: 0, tarefasAtrasadas: 0, licencasVencendo: 0, situacao: "Regular" },
+];
+
+export const historicoUnidadesDemo: HistoricoUnidadesStatus[] = [
+  { mes: "Nov/2025", ativas: 7, pendencias: 3.8, inativas: 0.6, novas: 0.2 },
+  { mes: "Dez/2025", ativas: 7.3, pendencias: 4.1, inativas: 0.9, novas: 0.2 },
+  { mes: "Jan/2026", ativas: 7.9, pendencias: 4.5, inativas: 1.5, novas: 0.5 },
+  { mes: "Fev/2026", ativas: 7.3, pendencias: 4.3, inativas: 1.2, novas: 0.4 },
+  { mes: "Mar/2026", ativas: 7.9, pendencias: 5.3, inativas: 1.7, novas: 0.7 },
+  { mes: "Abr/2026", ativas: 8.2, pendencias: 5.8, inativas: 2.0, novas: 0.9 },
+];
