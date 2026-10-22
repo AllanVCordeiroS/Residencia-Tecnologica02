@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Trash2 } from "lucide-react";
-import FileDropzone from "@/components/documents/import/FileDropzone";
+import FileDropzone from "@/components/documentos/import/FileDropzone";
 
 type Item = {
   id: number;

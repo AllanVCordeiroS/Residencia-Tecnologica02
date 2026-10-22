@@ -13,8 +13,8 @@ import DocumentCharts from "@/components/documentos/DocumentCharts";
 import DocumentsTable from "@/components/documentos/DocumentsTable";
 import { totalDocuments } from "@/data/mockDocuments";
 
-const NEW_DOCUMENT_ROUTE = "/documents/new";
-const IMPORT_DOCUMENTS_ROUTE = "/documents/import";
+const NEW_DOCUMENT_ROUTE = "/documentos/new";
+const IMPORT_DOCUMENTS_ROUTE = "/documentos/import";
 
 const CARD =
   "rounded-[12px] border border-[rgba(226,232,240,0.9)] bg-white drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.04)]";
