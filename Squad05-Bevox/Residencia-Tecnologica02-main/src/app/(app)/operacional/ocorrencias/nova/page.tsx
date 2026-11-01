@@ -1,8 +1,9 @@
 import { Check, RefreshCw } from "lucide-react";
-import { Card } from "@/components/ui/Card";
+import ResumoOcorrencia from "@/components/ocorrencias/ResumoOcorrencia";
 import SecaoDetalhesEvidencias from "@/components/ocorrencias/SecaoDetalhesEvidencias";
 import SecaoInformacoesPrincipais from "@/components/ocorrencias/SecaoInformacoesPrincipais";
 import SecaoResponsaveisPrazos from "@/components/ocorrencias/SecaoResponsaveisPrazos";
+import SecaoRevisao from "@/components/ocorrencias/SecaoRevisao";
 
 export const metadata = { title: "BEVOX | Registrar Ocorrência" };
 
@@ -28,14 +29,12 @@ export default function RegistrarOcorrenciaPage() {
         </div>
 
         <aside className="lg:sticky lg:top-24">
-          <Card className="p-6 text-sm text-slate-400">
-            Resumo da ocorrência (etapa 5)
-          </Card>
+          <ResumoOcorrencia />
         </aside>
       </div>
 
       {/* Revisão ocupa a largura inteira */}
-      <Card className="p-6 text-sm text-slate-400">4. Revisão (etapa 5)</Card>
+      <SecaoRevisao />
 
       {/* Ações */}
       <div className="flex flex-wrap items-center justify-between gap-3">
