@@ -22,7 +22,7 @@ export default function SelectComIcone({
       />
       <select
         defaultValue=""
-        className={`${campoBase} cursor-pointer appearance-none py-2.5 pl-10 pr-10 invalid:text-slate-400 [&>option]:text-slate-900`}
+        className={`${campoBase} cursor-pointer appearance-none py-2.5 pl-10 pr-10 has-[option[value='']:checked]:text-slate-400 [&>option]:text-slate-900`}
         {...selectProps}
       >
         <option value="">{placeholder}</option>

@@ -19,3 +19,19 @@ export const CATEGORIAS = [
 export const UNIDADES = ["Matriz Recife", "CDD Olinda", "CDD Jaboatão"];
 
 export const GRAVIDADES = ["Baixa", "Média", "Alta", "Crítica"];
+
+export const RESPONSAVEIS = [
+  "Ricardo Silveira",
+  "Mariana Costa",
+  "João Pereira",
+  "Fernanda Lima",
+];
+
+export const EQUIPES = [
+  "Logística",
+  "Qualidade",
+  "Operações de Campo",
+  "Segurança do Trabalho",
+];
+
+export const PRIORIDADES = ["Baixa", "Média", "Alta", "Urgente"];
