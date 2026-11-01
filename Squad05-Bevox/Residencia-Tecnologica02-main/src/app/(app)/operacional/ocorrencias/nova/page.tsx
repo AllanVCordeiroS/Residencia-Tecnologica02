@@ -1,5 +1,6 @@
 import { Check, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import SecaoDetalhesEvidencias from "@/components/ocorrencias/SecaoDetalhesEvidencias";
 import SecaoInformacoesPrincipais from "@/components/ocorrencias/SecaoInformacoesPrincipais";
 
 export const metadata = { title: "BEVOX | Registrar Ocorrência" };
@@ -21,10 +22,8 @@ export default function RegistrarOcorrenciaPage() {
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-6">
           <SecaoInformacoesPrincipais />
+          <SecaoDetalhesEvidencias />
 
-          <Card className="p-6 text-sm text-slate-400">
-            2. Detalhes e evidências (etapa 3)
-          </Card>
           <Card className="p-6 text-sm text-slate-400">
             3. Responsáveis e prazos (etapa 4)
           </Card>
