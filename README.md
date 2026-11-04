@@ -124,20 +124,22 @@ Desenvolver uma plataforma web que consolide a situação regulatória de múlti
 
 ```bash
 .
-├── public/                     # Arquivos estáticos
-├── src/
-│   ├── app/                    # Rotas, layout raiz e estilos globais
-│   │   ├── login/
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── components/
-│   │   ├── dashboard/          # Componentes do painel (ex.: TabelaDocs)
-│   │   ├── layout/             # Componentes estruturais (ex.: Header)
-│   │   └── login/              # Componentes de autenticação
-│   ├── data/                   # Dados simulados
-│   └── types/                  # Tipagens compartilhadas
-├── package.json
+├── Squad05-Bevox/
+│   └── Residencia-Tecnologica02-main/  # Aplicação Next.js
+│       ├── public/                     # Arquivos estáticos
+│       ├── src/
+│       │   ├── app/                    # Rotas e layout (App Router)
+│       │   │   ├── (app)/configuracoes/
+│       │   │   ├── globals.css
+│       │   │   └── layout.tsx
+│       │   ├── components/
+│       │   │   ├── configuracoes/      # Preferências do sistema
+│       │   │   ├── dashboard/
+│       │   │   ├── layout/
+│       │   │   └── login/
+│       │   ├── data/                   # Dados simulados
+│       │   └── types/                  # Tipagens compartilhadas
+│       └── package.json
 └── README.md
 ```
 
@@ -147,7 +149,7 @@ Desenvolver uma plataforma web que consolide a situação regulatória de múlti
 
 ```bash
 git clone https://github.com/AllanVCordeiroS/Residencia-Tecnologica02.git
-cd Residencia-Tecnologica02
+cd Residencia-Tecnologica02/Squad05-Bevox/Residencia-Tecnologica02-main
 npm install
 npm run dev
 ```

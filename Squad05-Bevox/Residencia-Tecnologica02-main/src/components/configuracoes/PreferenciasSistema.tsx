@@ -14,7 +14,6 @@ import {
   Sun,
   UserRound,
 } from "lucide-react";
-import "./SettingsPage.css";
 
 type PreferenceFieldProps = {
   label: string;
@@ -119,9 +118,9 @@ function ThemeOption({ label, selected, icon }: ThemeOptionProps) {
  * Os controles são somente visuais nesta entrega. Nenhuma preferência é
  * persistida e os botões não executam ações de negócio.
  */
-export default function SettingsPage() {
+export default function PreferenciasSistema() {
   return (
-    <main className="bevox-settings-page">
+    <div className="bevox-settings-page">
       <div className="bevox-settings-content">
         <div className="bevox-settings-page-heading">
           <span className="bevox-settings-heading-icon" aria-hidden="true">
@@ -226,6 +225,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
