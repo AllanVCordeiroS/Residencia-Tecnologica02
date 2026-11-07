@@ -1,25 +1,36 @@
-const PERIODOS = ["Hoje", "7 dias", "30 dias"];
+import type { PeriodoId } from "@/types/operacional";
 
-// TODO (grupo): trocar o período quando houver dados de 7 e 30 dias.
-export default function SeletorPeriodo() {
+const ABAS: { valor: PeriodoId; rotulo: string }[] = [
+  { valor: "hoje", rotulo: "Hoje" },
+  { valor: "7dias", rotulo: "7 dias" },
+  { valor: "30dias", rotulo: "30 dias" },
+];
+
+type SeletorPeriodoProps = {
+  valor: PeriodoId;
+  onChange: (valor: PeriodoId) => void;
+};
+
+export default function SeletorPeriodo({ valor, onChange }: SeletorPeriodoProps) {
   return (
     <div
       role="group"
       aria-label="Período"
       className="inline-flex rounded-lg bg-slate-100 p-1"
     >
-      {PERIODOS.map((periodo, indice) => (
+      {ABAS.map((aba) => (
         <button
-          key={periodo}
+          key={aba.valor}
           type="button"
-          aria-pressed={indice === 0}
+          aria-pressed={valor === aba.valor}
+          onClick={() => onChange(aba.valor)}
           className={`rounded-md px-3 py-1.5 text-[12px] font-semibold transition ${
-            indice === 0
+            valor === aba.valor
               ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:text-slate-900"
           }`}
         >
-          {periodo}
+          {aba.rotulo}
         </button>
       ))}
     </div>

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowUp, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, type LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 
 const TONS = {
@@ -9,14 +9,52 @@ const TONS = {
   ambar: "bg-amber-50 text-amber-500",
 } as const;
 
+type VariacaoProps = {
+  valor: number | null;
+  comparacao: string;
+  boaQuandoSobe: boolean;
+};
+
+function Variacao({ valor, comparacao, boaQuandoSobe }: VariacaoProps) {
+  if (valor === null) {
+    return (
+      <p className="mt-1.5 text-[12px] text-slate-400">Sem base de comparação</p>
+    );
+  }
+  if (valor === 0) {
+    return (
+      <p className="mt-1.5 text-[12px] font-medium text-slate-500">
+        Estável {comparacao}
+      </p>
+    );
+  }
+
+  const subiu = valor > 0;
+  const bom = subiu === boaQuandoSobe;
+  const Seta = subiu ? ArrowUp : ArrowDown;
+
+  return (
+    <p
+      className={`mt-1.5 inline-flex items-center gap-1 text-[12px] font-medium ${
+        bom ? "text-emerald-600" : "text-red-500"
+      }`}
+    >
+      <Seta className="h-3 w-3" aria-hidden="true" />
+      {subiu ? "+" : "-"}
+      {Math.abs(valor)}% {comparacao}
+    </p>
+  );
+}
+
 type CartaoIndicadorProps = {
   icon: LucideIcon;
   tom: keyof typeof TONS;
   rotulo: string;
   valor: number;
   descricao: string;
-  variacao: string;
-  variacaoBoa: boolean;
+  variacao: number | null;
+  comparacao: string;
+  boaQuandoSobe: boolean;
   acao?: ReactNode;
 };
 
@@ -27,7 +65,8 @@ export default function CartaoIndicador({
   valor,
   descricao,
   variacao,
-  variacaoBoa,
+  comparacao,
+  boaQuandoSobe,
   acao,
 }: CartaoIndicadorProps) {
   return (
@@ -49,14 +88,11 @@ export default function CartaoIndicador({
         </p>
         <p className="mt-1.5 text-[12px] text-slate-500">{descricao}</p>
 
-        <p
-          className={`mt-1.5 inline-flex items-center gap-1 text-[12px] font-medium ${
-            variacaoBoa ? "text-emerald-600" : "text-red-500"
-          }`}
-        >
-          <ArrowUp className="h-3 w-3" aria-hidden="true" />
-          {variacao}
-        </p>
+        <Variacao
+          valor={variacao}
+          comparacao={comparacao}
+          boaQuandoSobe={boaQuandoSobe}
+        />
       </div>
     </Card>
   );

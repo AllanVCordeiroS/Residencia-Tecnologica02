@@ -5,52 +5,62 @@ import {
   Clock,
   TriangleAlert,
 } from "lucide-react";
+import type { ResumoPainel } from "@/lib/painelOperacional";
 import CartaoIndicador from "./CartaoIndicador";
-import { PERCENTUAL_CONCLUIDAS, RESUMO } from "./dadosMock";
 
-export default function IndicadoresOperacionais() {
+export default function IndicadoresOperacionais({
+  painel,
+}: {
+  painel: ResumoPainel;
+}) {
+  const { totais, variacao, rotuloComparacao } = painel;
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <CartaoIndicador
         icon={ClipboardCheck}
         tom="azul"
         rotulo="Rotinas previstas"
-        valor={RESUMO.previstas}
+        valor={totais.previstas}
         descricao="No período selecionado"
-        variacao="+12% este mês"
-        variacaoBoa
+        variacao={variacao.previstas}
+        comparacao={rotuloComparacao}
+        boaQuandoSobe
       />
 
       <CartaoIndicador
         icon={CircleCheck}
         tom="verde"
         rotulo="Concluídas"
-        valor={RESUMO.concluidas}
-        descricao={`${PERCENTUAL_CONCLUIDAS}% das rotinas previstas`}
-        variacao="+8% este mês"
-        variacaoBoa
+        valor={totais.concluidas}
+        descricao={`${painel.percentualConcluidas}% das rotinas previstas`}
+        variacao={variacao.concluidas}
+        comparacao={rotuloComparacao}
+        boaQuandoSobe
       />
 
       <CartaoIndicador
         icon={TriangleAlert}
         tom="vermelho"
         rotulo="Ocorrências abertas"
-        valor={RESUMO.ocorrenciasAbertas}
+        valor={painel.ocorrenciasAbertas}
         descricao="Precisam de acompanhamento"
-        variacao="+3% este mês"
-        variacaoBoa={false}
+        variacao={variacao.ocorrencias}
+        comparacao={rotuloComparacao}
+        boaQuandoSobe={false}
       />
 
       <CartaoIndicador
         icon={Clock}
         tom="ambar"
         rotulo="Rotinas atrasadas"
-        valor={RESUMO.atrasadas}
+        valor={totais.atrasadas}
         descricao="Fora do prazo planejado"
-        variacao="+2% este mês"
-        variacaoBoa={false}
+        variacao={variacao.atrasadas}
+        comparacao={rotuloComparacao}
+        boaQuandoSobe={false}
         acao={
-          // TODO (grupo): levar para a lista de rotinas atrasadas.
+          // TODO: na etapa 5, vai filtrar a tabela de rotinas atrasadas.
           <a
             href="#"
             className="inline-flex shrink-0 items-center gap-1 text-[12px] font-semibold text-blue-600 hover:underline"
