@@ -8,11 +8,15 @@ import {
 import type { ResumoPainel } from "@/lib/painelOperacional";
 import CartaoIndicador from "./CartaoIndicador";
 
+type IndicadoresOperacionaisProps = {
+  painel: ResumoPainel;
+  onVerAtrasadas: () => void;
+};
+
 export default function IndicadoresOperacionais({
   painel,
-}: {
-  painel: ResumoPainel;
-}) {
+  onVerAtrasadas,
+}: IndicadoresOperacionaisProps) {
   const { totais, variacao, rotuloComparacao } = painel;
 
   return (
@@ -60,14 +64,14 @@ export default function IndicadoresOperacionais({
         comparacao={rotuloComparacao}
         boaQuandoSobe={false}
         acao={
-          // TODO: na etapa 5, vai filtrar a tabela de rotinas atrasadas.
-          <a
-            href="#"
+          <button
+            type="button"
+            onClick={onVerAtrasadas}
             className="inline-flex shrink-0 items-center gap-1 text-[12px] font-semibold text-blue-600 hover:underline"
           >
             Ver todas
             <ArrowRight className="h-3 w-3" aria-hidden="true" />
-          </a>
+          </button>
         }
       />
     </div>

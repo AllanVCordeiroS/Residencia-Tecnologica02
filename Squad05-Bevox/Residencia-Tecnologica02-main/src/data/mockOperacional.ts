@@ -2,7 +2,9 @@ import { somarDias } from "@/lib/datasOperacional";
 import type {
   DadosOperacionais,
   Ocorrencia,
+  Renovacao,
   RotinasDoDia,
+  Tarefa,
   Unidade,
 } from "@/types/operacional";
 
@@ -75,9 +77,44 @@ const OCORRENCIAS: Ocorrencia[] = [
   { id: "oc-010", descricao: "Falha na balança da expedição", unidadeId: "caruaru", responsavel: "Larissa Almeida", status: "resolvida", prioridade: "media", criadaEm: "2026-03-15", prazo: "2026-04-06", resolvidaEm: "2026-04-05" },
 ];
 
+// Itens individuais. As 6 rotinas atrasadas e as 7 em andamento fecham com os
+// totais de ROTINAS_HOJE (por unidade). Há também 3 tarefas/manutenções
+// abertas e 2 manutenções concluídas.
+const TAREFAS: Tarefa[] = [
+  { id: "tf-001", tipo: "rotina", descricao: "Contagem de paletes", unidadeId: "paulista", responsavel: "Ana Souza", prazo: "2026-04-16", status: "atrasada", prioridade: "alta" },
+  { id: "tf-002", tipo: "rotina", descricao: "Inspeção de extintores", unidadeId: "jaboatao", responsavel: "Pedro Lima", prazo: "2026-04-15", status: "atrasada", prioridade: "media" },
+  { id: "tf-003", tipo: "rotina", descricao: "Limpeza da câmara fria", unidadeId: "jaboatao", responsavel: "Pedro Lima", prazo: "2026-04-16", status: "atrasada", prioridade: "alta" },
+  { id: "tf-004", tipo: "rotina", descricao: "Checklist de veículos", unidadeId: "caruaru", responsavel: "Larissa Almeida", prazo: "2026-04-16", status: "atrasada", prioridade: "media" },
+  { id: "tf-005", tipo: "rotina", descricao: "Conferência de vasilhames", unidadeId: "salvador", responsavel: "Felipe Rocha", prazo: "2026-04-15", status: "atrasada", prioridade: "alta" },
+  { id: "tf-006", tipo: "rotina", descricao: "Inventário rotativo", unidadeId: "salvador", responsavel: "Felipe Rocha", prazo: "2026-04-16", status: "atrasada", prioridade: "media" },
+  { id: "tf-007", tipo: "rotina", descricao: "Conferência de estoque", unidadeId: "paulista", responsavel: "Ana Souza", prazo: "2026-04-17", status: "em_andamento", prioridade: "alta" },
+  { id: "tf-008", tipo: "rotina", descricao: "Recebimento de mercadorias", unidadeId: "recife", responsavel: "Carlos Eduardo", prazo: "2026-04-17", status: "em_andamento", prioridade: "media" },
+  { id: "tf-009", tipo: "rotina", descricao: "Separação de pedidos", unidadeId: "jaboatao", responsavel: "Pedro Lima", prazo: "2026-04-17", status: "em_andamento", prioridade: "media" },
+  { id: "tf-010", tipo: "rotina", descricao: "Roteirização das entregas", unidadeId: "caruaru", responsavel: "Larissa Almeida", prazo: "2026-04-17", status: "em_andamento", prioridade: "media" },
+  { id: "tf-011", tipo: "rotina", descricao: "Carregamento de caminhões", unidadeId: "caruaru", responsavel: "Larissa Almeida", prazo: "2026-04-17", status: "em_andamento", prioridade: "alta" },
+  { id: "tf-012", tipo: "rotina", descricao: "Conferência de notas fiscais", unidadeId: "salvador", responsavel: "Felipe Rocha", prazo: "2026-04-17", status: "em_andamento", prioridade: "media" },
+  { id: "tf-013", tipo: "rotina", descricao: "Expedição da tarde", unidadeId: "salvador", responsavel: "Felipe Rocha", prazo: "2026-04-17", status: "em_andamento", prioridade: "baixa" },
+  { id: "tf-014", tipo: "tarefa", descricao: "Relatório operacional mensal", unidadeId: "caruaru", responsavel: "Larissa Almeida", prazo: "2026-04-20", status: "a_fazer", prioridade: "media" },
+  { id: "tf-015", tipo: "tarefa", descricao: "Inspeção de equipamentos", unidadeId: "jaboatao", responsavel: "Pedro Lima", prazo: "2026-04-18", status: "pendente", prioridade: "media" },
+  { id: "tf-016", tipo: "manutencao", descricao: "Revisão do compressor da câmara fria", unidadeId: "jaboatao", responsavel: "Equipe de manutenção", prazo: "2026-04-24", status: "pendente", prioridade: "alta" },
+  { id: "tf-017", tipo: "manutencao", descricao: "Troca de correias da esteira de expedição", unidadeId: "recife", responsavel: "Equipe de manutenção", prazo: "2026-04-12", status: "concluida", prioridade: "media" },
+  { id: "tf-018", tipo: "manutencao", descricao: "Calibração das balanças", unidadeId: "caruaru", responsavel: "Equipe de manutenção", prazo: "2026-04-14", status: "concluida", prioridade: "media" },
+];
+
+// 3 vencem nos próximos 30 dias (até 17/05); uma vence depois e uma já venceu.
+const RENOVACOES: Renovacao[] = [
+  { id: "rn-001", descricao: "Alvará sanitário", unidadeId: "recife", vencimento: "2026-04-28" },
+  { id: "rn-002", descricao: "Licença ambiental", unidadeId: "paulista", vencimento: "2026-05-06" },
+  { id: "rn-003", descricao: "Certificado do Corpo de Bombeiros", unidadeId: "caruaru", vencimento: "2026-05-12" },
+  { id: "rn-004", descricao: "Licença de funcionamento", unidadeId: "salvador", vencimento: "2026-07-20" },
+  { id: "rn-005", descricao: "Alvará municipal", unidadeId: "jaboatao", vencimento: "2026-04-10" },
+];
+
 export const DADOS_MOCK: DadosOperacionais = {
   dataReferencia: DATA_REFERENCIA,
   unidades: UNIDADES,
   rotinasPorDia: [...ROTINAS_HOJE, ...gerarHistorico()],
   ocorrencias: OCORRENCIAS,
+  tarefas: TAREFAS,
+  renovacoes: RENOVACOES,
 };

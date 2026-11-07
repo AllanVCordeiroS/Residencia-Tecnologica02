@@ -4,19 +4,25 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Building2, Calendar, Plus } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { calcularAlertas } from "@/lib/alertasOperacional";
 import {
   calcularPainel,
   opcoesPeriodo,
   opcoesUnidade,
 } from "@/lib/painelOperacional";
+import type { AbaTabela, FiltroTabela } from "@/lib/tabelasOperacional";
 import type {
   DadosOperacionais,
   FiltroUnidade,
   PeriodoId,
 } from "@/types/operacional";
+import AlertasPendencias from "./AlertasPendencias";
 import ExecucaoRotinas from "./ExecucaoRotinas";
 import IndicadoresOperacionais from "./IndicadoresOperacionais";
 import SelectFiltro from "./SelectFiltro";
+import TabelaRecentes from "./TabelaRecentes";
+
+const ID_TABELA = "tarefas-ocorrencias";
 
 export default function PainelOperacional({
   dados,
@@ -25,12 +31,33 @@ export default function PainelOperacional({
 }) {
   const [periodo, setPeriodo] = useState<PeriodoId>("hoje");
   const [unidade, setUnidade] = useState<FiltroUnidade>("todas");
+  const [aba, setAba] = useState<AbaTabela>("tarefas");
+  const [filtroTabela, setFiltroTabela] = useState<FiltroTabela>("todos");
 
   // Recalcula tudo sempre que um filtro (ou os dados) mudar.
   const painel = useMemo(
     () => calcularPainel(dados, { periodo, unidade }),
     [dados, periodo, unidade],
   );
+  const alertas = useMemo(
+    () => calcularAlertas(dados, unidade),
+    [dados, unidade],
+  );
+
+  // Alertas e botões "Ver todas" abrem a tabela já filtrada e rolam até ela.
+  function abrirTabela(novaAba: AbaTabela, filtro: FiltroTabela) {
+    setAba(novaAba);
+    setFiltroTabela(filtro);
+    document
+      .getElementById(ID_TABELA)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Trocar de aba manualmente limpa o filtro.
+  function trocarAba(novaAba: AbaTabela) {
+    setAba(novaAba);
+    setFiltroTabela("todos");
+  }
 
   return (
     <div className="space-y-6">
@@ -70,21 +97,30 @@ export default function PainelOperacional({
         </div>
       </header>
 
-      <IndicadoresOperacionais painel={painel} />
+      <IndicadoresOperacionais
+        painel={painel}
+        onVerAtrasadas={() => abrirTabela("tarefas", "atrasadas")}
+      />
 
-      {/* Marcadores provisórios: entram nas etapas 4 a 6 */}
+      {/* O marcador do resumo por unidade entra na etapa 6 */}
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <ExecucaoRotinas
           painel={painel}
           periodo={periodo}
           onPeriodoChange={setPeriodo}
         />
-        <Card className="p-6 text-sm text-slate-400">
-          Alertas e pendências (etapa 4)
-        </Card>
-        <Card className="p-6 text-sm text-slate-400">
-          Tarefas e ocorrências recentes (etapa 5)
-        </Card>
+        <AlertasPendencias alertas={alertas} onAbrirTabela={abrirTabela} />
+
+        <div id={ID_TABELA} className="min-w-0 scroll-mt-24">
+          <TabelaRecentes
+            dados={dados}
+            unidade={unidade}
+            aba={aba}
+            onAbaChange={trocarAba}
+            filtro={filtroTabela}
+            onLimparFiltro={() => setFiltroTabela("todos")}
+          />
+        </div>
         <Card className="p-6 text-sm text-slate-400">
           Resumo por unidade (etapa 6)
         </Card>

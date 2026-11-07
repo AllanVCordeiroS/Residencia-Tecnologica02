@@ -14,3 +14,9 @@ export function formatarDataLonga(data: string): string {
     timeZone: "UTC",
   }).format(new Date(`${data}T12:00:00Z`));
 }
+
+/** Ex.: "18/04/2026". */
+export function formatarDataCurta(data: string): string {
+  const [ano, mes, dia] = data.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
