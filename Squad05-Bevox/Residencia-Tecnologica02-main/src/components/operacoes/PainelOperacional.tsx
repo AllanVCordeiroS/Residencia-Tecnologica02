@@ -3,13 +3,13 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Building2, Calendar, Plus } from "lucide-react";
-import { Card } from "@/components/ui/Card";
 import { calcularAlertas } from "@/lib/alertasOperacional";
 import {
   calcularPainel,
   opcoesPeriodo,
   opcoesUnidade,
 } from "@/lib/painelOperacional";
+import { calcularResumoUnidades } from "@/lib/resumoUnidades";
 import type { AbaTabela, FiltroTabela } from "@/lib/tabelasOperacional";
 import type {
   DadosOperacionais,
@@ -19,6 +19,7 @@ import type {
 import AlertasPendencias from "./AlertasPendencias";
 import ExecucaoRotinas from "./ExecucaoRotinas";
 import IndicadoresOperacionais from "./IndicadoresOperacionais";
+import ResumoUnidades from "./ResumoUnidades";
 import SelectFiltro from "./SelectFiltro";
 import TabelaRecentes from "./TabelaRecentes";
 
@@ -42,6 +43,11 @@ export default function PainelOperacional({
   const alertas = useMemo(
     () => calcularAlertas(dados, unidade),
     [dados, unidade],
+  );
+  // O resumo mostra todas as unidades; só o período influencia.
+  const resumo = useMemo(
+    () => calcularResumoUnidades(dados, periodo),
+    [dados, periodo],
   );
 
   // Alertas e botões "Ver todas" abrem a tabela já filtrada e rolam até ela.
@@ -102,7 +108,6 @@ export default function PainelOperacional({
         onVerAtrasadas={() => abrirTabela("tarefas", "atrasadas")}
       />
 
-      {/* O marcador do resumo por unidade entra na etapa 6 */}
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <ExecucaoRotinas
           painel={painel}
@@ -121,9 +126,11 @@ export default function PainelOperacional({
             onLimparFiltro={() => setFiltroTabela("todos")}
           />
         </div>
-        <Card className="p-6 text-sm text-slate-400">
-          Resumo por unidade (etapa 6)
-        </Card>
+        <ResumoUnidades
+          linhas={resumo}
+          selecionada={unidade}
+          onSelecionar={setUnidade}
+        />
       </div>
     </div>
   );
