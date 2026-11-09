@@ -48,7 +48,11 @@ export const navGroups: NavGroup[] = [
     label: "Administração",
     items: [
       { label: "Usuários e Permissões", href: "/usuarios", icon: UserRoundCog },
-      { label: "Configurações", href: "/configuracoes", icon: Settings },
+      {
+        label: "Configurações",
+        href: "/configuracoes/parametros-financeiros",
+        icon: Settings,
+      },
     ],
   },
 ];
@@ -73,6 +77,9 @@ export const modulosPendentes: Record<string, { titulo: string; descricao: strin
 /** Rótulo do último item do breadcrumb para cada rota. */
 export function tituloDaRota(pathname: string): string {
   if (pathname === "/dashboard") return "Visão Geral";
+  if (pathname === "/configuracoes/parametros-financeiros") {
+    return "Parâmetros Financeiros";
+  }
   const slug = pathname.replace(/^\//, "").split("/")[0];
   return modulosPendentes[slug]?.titulo ?? "Página";
 }
