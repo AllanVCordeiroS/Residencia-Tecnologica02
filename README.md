@@ -108,46 +108,79 @@ Desenvolver uma plataforma web que consolide a situação regulatória de múlti
 
 ## 6. Arquitetura e tecnologias
 
-| Camada | Tecnologia | Justificativa |
+| Camada | Tecnologia | Situação no repositório |
 |---|---|---|
-| Framework | Next.js 16 (App Router) | Interface e rotas de API no mesmo projeto. |
-| Interface | React 19 | Componentização e renderização reativa. |
-| Linguagem | TypeScript 5 | Tipagem estática dos contratos de dados. |
-| Estilização | Tailwind CSS v4 | Tokens de design consistentes, configurados em `src/app/globals.css`. |
-| Ícones | Lucide React | Iconografia leve e uniforme. |
-| Visualização de dados | Recharts | Gráficos vetoriais temporais e responsivos. |
-| Qualidade de código | ESLint 9 | Padronização e análise estática. |
-| Persistência (front-end) | `localStorage` e dados simulados em TypeScript | Independência de infraestrutura nas demonstrações. |
-| Persistência (prevista) | Prisma ORM + SQLite | Estrutura declarativa para o banco de dados e rotas internas em `/api`. |
+| Framework | Next.js 16 (App Router) | Declarado no `package.json`; `npm run dev` executa `next dev` com Turbopack. |
+| Interface | React 19 | Dependência declarada. |
+| Linguagem | TypeScript 5 | Configurado no projeto. |
+| Estilização | Tailwind CSS v4 | Dependências e configuração presentes. |
+| Gerenciamento de estado e cache | TanStack Query (`@tanstack/react-query`) | Stack solicitada para requisições client-side; ainda não consta nas dependências. |
+| Validação de dados | Zod | Dependência declarada; schemas centralizados em `src/schemas/` são a convenção definida. |
+| Banco de dados e ORM | PostgreSQL + Prisma ORM | Stack solicitada; ainda não consta nas dependências nem na configuração atual. |
+| Visualização de dados | Recharts | Dependência declarada para gráficos. |
+| Ícones | Lucide React | Dependência declarada para iconografia. |
+| Qualidade de código | ESLint 9 | Configurado para análise estática. |
+
+O código atual ainda contém dados simulados e não configura as integrações com TanStack Query, PostgreSQL ou Prisma. Atualize esta tabela quando essas dependências e integrações forem adicionadas ao projeto.
 
 ## 7. Organização do código
 
-```bash
-.
-├── public/                     # Arquivos estáticos
+O projeto Next.js está em `Squad05-Bevox/Residencia-Tecnologica02-main/`. A árvore abaixo representa a organização existente e identifica a pasta de schemas como convenção a ser criada:
+
+```text
+Residencia-Tecnologica02-main/
+├── public/                         # Arquivos estáticos
 ├── src/
-│   ├── app/                    # Rotas, layout raiz e estilos globais
+│   ├── app/                        # App Router e layouts da aplicação
+│   │   ├── (app)/                  # Rotas dos módulos da aplicação
+│   │   │   ├── [modulo]/
+│   │   │   ├── configuracoes/
+│   │   │   ├── dashboard/
+│   │   │   ├── documentos/
+│   │   │   ├── financeiro/
+│   │   │   ├── licencas/
+│   │   │   ├── relatorios/
+│   │   │   ├── tarefas/
+│   │   │   ├── unidades/
+│   │   │   ├── users/
+│   │   │   └── usuarios/
 │   │   ├── login/
 │   │   ├── globals.css
 │   │   ├── layout.tsx
 │   │   └── page.tsx
-│   ├── components/
-│   │   ├── dashboard/          # Componentes do painel (ex.: TabelaDocs)
-│   │   ├── layout/             # Componentes estruturais (ex.: Header)
-│   │   └── login/              # Componentes de autenticação
-│   ├── data/                   # Dados simulados
-│   └── types/                  # Tipagens compartilhadas
+│   ├── components/                 # Componentes reutilizáveis organizados por módulo
+│   │   ├── configuracoes/
+│   │   ├── dashboard/
+│   │   ├── documentos/
+│   │   ├── layout/
+│   │   ├── login/
+│   │   ├── relatorios/
+│   │   ├── tarefas/
+│   │   ├── ui/
+│   │   ├── unidades/
+│   │   ├── users/
+│   │   └── usuarios/
+│   ├── config/                     # Configurações, como navegação
+│   ├── data/                       # Dados simulados
+│   ├── hooks/                      # Hooks compartilhados
+│   ├── lib/                        # Utilitários e lógica auxiliar
+│   ├── mocks/                      # Dados mockados
+│   ├── schemas/                    # Schemas Zod centralizados (pasta a criar)
+│   ├── services/                   # Serviços de acesso a dados
+│   └── types/                      # Interfaces e definições TypeScript globais
 ├── package.json
 └── README.md
 ```
 
+`src/types/` já existe e contém as definições compartilhadas. `src/schemas/` ainda não existe; ao criar schemas Zod, mantenha-os centralizados nessa pasta, em vez de declará-los em arquivos `page.tsx`.
+
 ## 8. Instalação e execução
 
-**Pré-requisito:** [Node.js](https://nodejs.org/) instalado.
+**Pré-requisitos:** Node.js 20.9 ou superior e npm. O Next.js 16 utilizado pelo projeto não oferece suporte a Node.js 18.
 
 ```bash
 git clone https://github.com/AllanVCordeiroS/Residencia-Tecnologica02.git
-cd Residencia-Tecnologica02
+cd Residencia-Tecnologica02/Squad05-Bevox/Residencia-Tecnologica02-main
 npm install
 npm run dev
 ```
@@ -158,9 +191,15 @@ Outros scripts disponíveis:
 
 | Comando | Descrição |
 |---|---|
-| `npm run build` | Gera a versão de produção. |
+| `npm run build` | Gera a versão de produção e valida a compilação. |
 | `npm run start` | Executa a versão de produção. |
 | `npm run lint` | Executa a análise estática com ESLint. |
+
+### Boas Práticas de Desenvolvimento e Contribuição
+
+1. Não declare schemas ou validações Zod dentro de arquivos `page.tsx`; centralize-os em `src/schemas/`.
+2. Mantenha tipos e interfaces compartilhados em `src/types/`.
+3. Execute `npm run build` localmente para validar a compilação antes de abrir um Pull Request para a `main`.
 
 ## 9. Equipe
 
