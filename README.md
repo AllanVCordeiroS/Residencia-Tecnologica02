@@ -181,6 +181,7 @@ Residencia-Tecnologica02-main/
 ```bash
 git clone https://github.com/AllanVCordeiroS/Residencia-Tecnologica02.git
 cd Residencia-Tecnologica02/Squad05-Bevox/Residencia-Tecnologica02-main
+cd Residencia-Tecnologica02/Squad05-Bevox/Residencia-Tecnologica02-main
 npm install
 npm run dev
 ```
@@ -208,7 +209,6 @@ Integrantes em ordem alfabética:
 - Allan Vinícius
 - Arthur Santiago
 - Breno Matheus
-- Bruno Falcão
 - Emanuelly Lapa
 - Matheus Felipe
 - Thays Fernanda
