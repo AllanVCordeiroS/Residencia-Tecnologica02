@@ -9,19 +9,13 @@ import {
   CloudUpload, FileText, Flag, ListChecks, Network, Paperclip, Plus, Tag, TextCursorInput, Trash2, X,
 } from "lucide-react";
 import { usuarioDemo } from "@/data/mockData";
+import type { CreateTaskInput } from "@/types/task";
 import {
   ATTACHMENT_ACCEPT, ATTACHMENT_EXTENSIONS, ATTACHMENT_MAX_BYTES, ATTACHMENT_MAX_FILES,
   TASK_CATEGORIES, TASK_OWNERS, TASK_PRIORITIES, TASK_UNITS, type NewTaskPriority,
 } from "./taskOptions";
 
-export type NewTaskData = {
-  title: string; description: string; unit: string; owner: string; initials: string; category: string;
-  priority: NewTaskPriority; startDate: string; dueDate: string; // datas em ISO (yyyy-mm-dd)
-  subtasks: { id: string; title: string; done: boolean }[];
-  checklist: { id: string; text: string; done: boolean }[];
-  attachments: { name: string; size: number; type: string }[];
-  createdBy: string; createdAt: string;
-};
+export type NewTaskData = CreateTaskInput;
 
 /* ---------- Validação ---------- */
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
