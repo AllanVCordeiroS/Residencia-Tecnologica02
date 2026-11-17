@@ -22,7 +22,7 @@ export default function WelcomeBanner({ data }: { data: DashboardData }) {
           <h1 id="boas-vindas" className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
             Olá, {usuario.primeiroNome}!
           </h1>
-          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-slate-200 sm:text-base">
+          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-slate-200 dark:text-foreground-muted sm:text-base">
             Aqui está um resumo operacional da sua empresa com base nos dados de{" "}
             <strong className="font-semibold text-white">{formatarDataExtensa(dataReferencia)}</strong>.{" "}
             {todasAtivas
@@ -49,7 +49,7 @@ export default function WelcomeBanner({ data }: { data: DashboardData }) {
                   {empresa.status === "Ativa" ? "Ativo" : "Inativo"}
                 </span>
               </p>
-              <p className="mt-1 text-[12px] italic leading-snug text-slate-300">“{empresa.slogan}”</p>
+              <p className="mt-1 text-[12px] italic leading-snug text-slate-300 dark:text-foreground-muted">“{empresa.slogan}”</p>
             </div>
           </div>
         </div>

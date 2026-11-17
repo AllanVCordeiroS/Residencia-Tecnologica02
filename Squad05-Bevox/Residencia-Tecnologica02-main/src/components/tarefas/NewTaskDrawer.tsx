@@ -67,7 +67,7 @@ const STEPS = [
 type StepId = (typeof STEPS)[number]["id"];
 
 const PRIORITY_COLOR: Record<string, string> = {
-  Urgente: "text-red-600", Alta: "text-red-500", Média: "text-amber-500", Normal: "text-blue-500", Baixa: "text-emerald-500",
+  Urgente: "text-red-600 dark:text-red-300", Alta: "text-red-500 dark:text-red-300", Média: "text-amber-500 dark:text-amber-300", Normal: "text-blue-500 dark:text-blue-300", Baixa: "text-emerald-500 dark:text-emerald-300",
 };
 const PICKER =
   "[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0";
@@ -90,14 +90,14 @@ function fileError(f: File, files: File[]) {
 
 /* ---------- Peças de UI ---------- */
 const field = (err?: boolean) =>
-  `w-full rounded-md border bg-white text-[13px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:ring-2 ${
-    err ? "border-red-400 focus:border-red-500 focus:ring-red-100" : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
+  `w-full rounded-md border bg-white dark:bg-surface-raised text-[13px] text-slate-800 dark:text-foreground outline-none transition placeholder:text-slate-400 dark:placeholder:text-foreground-muted focus:ring-2 ${
+    err ? "border-red-400 focus:border-red-500 focus:ring-red-100" : "border-slate-200 dark:border-line focus:border-blue-500 focus:ring-blue-100"
   }`;
-const iconBtn = "flex shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-red-50 hover:text-red-600";
+const iconBtn = "flex shrink-0 items-center justify-center rounded-md text-slate-400 dark:text-foreground-muted transition hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-300";
 
 function Err({ children, className = "" }: { children?: string; className?: string }) {
   return children ? (
-    <p role="alert" className={`mt-1 flex items-start gap-1 text-[11px] leading-snug text-red-600 ${className}`}>
+    <p role="alert" className={`mt-1 flex items-start gap-1 text-[11px] leading-snug text-red-600 dark:text-red-300 ${className}`}>
       <CircleAlert size={12} className="mt-px shrink-0" />
       {children}
     </p>
@@ -106,11 +106,11 @@ function Err({ children, className = "" }: { children?: string; className?: stri
 
 function Label({ icon: Icon, children, required, optional, htmlFor }: { icon: typeof Tag; children: ReactNode; required?: boolean; optional?: boolean; htmlFor?: string }) {
   return (
-    <label htmlFor={htmlFor} className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-800">
-      <Icon size={14} className="text-slate-500" />
+    <label htmlFor={htmlFor} className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-800 dark:text-foreground">
+      <Icon size={14} className="text-slate-500 dark:text-foreground-muted" />
       {children}
-      {required && <span className="text-red-500" aria-hidden="true">*</span>}
-      {optional && <span className="font-normal text-slate-500">(opcional)</span>}
+      {required && <span className="text-red-500 dark:text-red-300" aria-hidden="true">*</span>}
+      {optional && <span className="font-normal text-slate-500 dark:text-foreground-muted">(opcional)</span>}
     </label>
   );
 }
@@ -129,7 +129,7 @@ function Field({ label, icon, htmlFor, error, counter, children }: { label: stri
 }
 
 const Counter = ({ n, max }: { n: number; max: number }) => (
-  <span className={`text-[11px] tabular-nums ${n > max ? "font-semibold text-red-600" : "text-slate-400"}`}>{n}/{max}</span>
+  <span className={`text-[11px] tabular-nums ${n > max ? "font-semibold text-red-600 dark:text-red-300" : "text-slate-400 dark:text-foreground-muted"}`}>{n}/{max}</span>
 );
 
 /* ---------- Drawer ---------- */
@@ -226,24 +226,24 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
       <div aria-hidden="true" onClick={() => !dirty && onClose()} className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]" />
       <div
         ref={panel} role="dialog" aria-modal="true" aria-labelledby="new-task-title"
-        className="relative flex h-full w-full max-w-[564px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out starting:translate-x-full"
+        className="relative flex h-full w-full max-w-[564px] flex-col bg-white dark:bg-surface-raised shadow-2xl transition-transform duration-300 ease-out starting:translate-x-full"
       >
         <form noValidate onSubmit={handleSubmit(submit)} className="flex min-h-0 flex-1 flex-col">
           <header className="flex items-center justify-between px-6 pb-4 pt-5">
-            <h2 id="new-task-title" className="text-[20px] font-semibold tracking-tight text-slate-900">Nova Tarefa</h2>
-            <button type="button" onClick={onClose} aria-label="Fechar" className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100">
+            <h2 id="new-task-title" className="text-[20px] font-semibold tracking-tight text-slate-900 dark:text-foreground">Nova Tarefa</h2>
+            <button type="button" onClick={onClose} aria-label="Fechar" className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-foreground-muted hover:bg-slate-100 dark:hover:bg-surface-muted">
               <X size={20} />
             </button>
           </header>
 
-          <nav aria-label="Etapas" className="border-y border-slate-200 px-4 py-3 sm:px-6">
+          <nav aria-label="Etapas" className="border-y border-slate-200 dark:border-line px-4 py-3 sm:px-6">
             <ol className="flex items-center justify-center gap-2 sm:gap-3">
               {STEPS.map((s, i) => (
                 <li key={s.id} className="flex items-center gap-2 sm:gap-3">
-                  {i > 0 && <span aria-hidden="true" className="hidden h-px w-8 bg-slate-200 sm:block" />}
+                  {i > 0 && <span aria-hidden="true" className="hidden h-px w-8 bg-slate-200 dark:bg-surface-muted sm:block" />}
                   <button type="button" onClick={() => goTo(s.id)} aria-current={step === s.id ? "step" : undefined} className="flex items-center gap-2 px-1 py-0.5">
-                    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ${step === s.id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`}>{i + 1}</span>
-                    <span className={`text-[13px] ${step === s.id ? "font-semibold text-slate-900" : "hidden text-slate-500 sm:inline"}`}>{s.label}</span>
+                    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ${step === s.id ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-surface-muted text-slate-500 dark:text-foreground-muted"}`}>{i + 1}</span>
+                    <span className={`text-[13px] ${step === s.id ? "font-semibold text-slate-900 dark:text-foreground" : "hidden text-slate-500 dark:text-foreground-muted sm:inline"}`}>{s.label}</span>
                   </button>
                 </li>
               ))}
@@ -265,12 +265,12 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                   return (
                     <Field key={name} label={label} icon={icon} htmlFor={`nt-${name}`} error={errors[name]?.message}>
                       <div className="relative">
-                        {Lead && <Lead size={16} className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${name === "prioridade" ? PRIORITY_COLOR[priority] ?? "text-slate-400" : "text-slate-500"}`} />}
-                        <select id={`nt-${name}`} aria-invalid={!!errors[name]} {...register(name)} className={`${field(!!errors[name])} h-10 cursor-pointer appearance-none truncate pr-9 ${Lead ? "pl-9" : "pl-3"} ${v[name] ? "" : "text-slate-400"}`}>
+                        {Lead && <Lead size={16} className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${name === "prioridade" ? PRIORITY_COLOR[priority] ?? "text-slate-400 dark:text-foreground-muted" : "text-slate-500 dark:text-foreground-muted"}`} />}
+                        <select id={`nt-${name}`} aria-invalid={!!errors[name]} {...register(name)} className={`${field(!!errors[name])} h-10 cursor-pointer appearance-none truncate pr-9 ${Lead ? "pl-9" : "pl-3"} ${v[name] ? "" : "text-slate-400 dark:text-foreground-muted"}`}>
                           <option value="">{ph}</option>
-                          {opts.map((o) => <option key={o} className="text-slate-800">{o}</option>)}
+                          {opts.map((o) => <option key={o} className="text-slate-800 dark:text-foreground">{o}</option>)}
                         </select>
-                        <ChevronsDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                        <ChevronsDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-foreground-muted" />
                       </div>
                     </Field>
                   );
@@ -278,7 +278,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                 {DATES.map(({ name, label, icon }) => (
                   <Field key={name} label={label} icon={icon} htmlFor={`nt-${name}`} error={errors[name]?.message}>
                     <div className="relative">
-                      <CalendarDays size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <CalendarDays size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-foreground-muted" />
                       <input id={`nt-${name}`} type="date" min={name === "prazo" ? v.dataInicio || undefined : undefined} aria-invalid={!!errors[name]} {...register(name)} className={`${field(!!errors[name])} h-10 cursor-pointer pl-9 pr-3 ${PICKER}`} />
                     </div>
                   </Field>
@@ -291,7 +291,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                   {subs.fields.map((f, i) => (
                     <li key={f.id} className="mb-0">
                       <div className="flex items-center gap-2">
-                        <span className="w-4 text-center text-[11px] text-slate-400">{i + 1}.</span>
+                        <span className="w-4 text-center text-[11px] text-slate-400 dark:text-foreground-muted">{i + 1}.</span>
                         <input
                           autoComplete="off" placeholder="Título da subtarefa" aria-label={`Subtarefa ${i + 1}`} aria-invalid={!!errors.subtarefas?.[i]}
                           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), subs.append({ titulo: "" }))}
@@ -303,7 +303,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                     </li>
                   ))}
                 </ul>
-                <button type="button" onClick={() => subs.append({ titulo: "" })} className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 bg-slate-50/40 text-[12px] font-medium text-slate-700 hover:border-blue-400 hover:text-blue-700">
+                <button type="button" onClick={() => subs.append({ titulo: "" })} className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 dark:border-line bg-slate-50/40 dark:bg-surface-muted/40 text-[12px] font-medium text-slate-700 dark:text-foreground hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                   <CirclePlus size={15} /> Adicionar subtarefa
                 </button>
               </div>
@@ -315,12 +315,12 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                 {checks.fields.map((f, i) => (
                   <li key={f.id}>
                     <div className="group flex items-center gap-3">
-                      <input type="checkbox" aria-label={`Marcar item ${i + 1} como concluído`} {...register(`checklist.${i}.feito`)} className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600" />
+                      <input type="checkbox" aria-label={`Marcar item ${i + 1} como concluído`} {...register(`checklist.${i}.feito`)} className="h-4 w-4 cursor-pointer rounded border-slate-300 dark:border-line accent-blue-600" />
                       <input
                         autoComplete="off" placeholder="Descreva o item" aria-label={`Item ${i + 1} do checklist`}
                         onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), checks.append({ texto: "", feito: false }))}
                         {...register(`checklist.${i}.texto`)}
-                        className={`min-w-0 flex-1 rounded border border-transparent bg-transparent px-1 py-1 text-[13px] outline-none placeholder:text-slate-400 hover:border-slate-200 focus:border-blue-500 ${v.checklist?.[i]?.feito ? "text-slate-400 line-through" : "text-slate-800"}`}
+                        className={`min-w-0 flex-1 rounded border border-transparent bg-transparent px-1 py-1 text-[13px] outline-none placeholder:text-slate-400 dark:placeholder:text-foreground-muted hover:border-slate-200 dark:hover:border-line focus:border-blue-500 ${v.checklist?.[i]?.feito ? "text-slate-400 dark:text-foreground-muted line-through" : "text-slate-800 dark:text-foreground"}`}
                       />
                       <button type="button" onClick={() => checks.remove(i)} aria-label={`Remover item ${i + 1} do checklist`} className={`${iconBtn} h-7 w-7 sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100`}><Trash2 size={14} /></button>
                     </div>
@@ -328,7 +328,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                   </li>
                 ))}
               </ul>
-              <button type="button" onClick={() => checks.append({ texto: "", feito: false })} className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 hover:text-blue-800">
+              <button type="button" onClick={() => checks.append({ texto: "", feito: false })} className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-300">
                 <Plus size={14} /> Adicionar item
               </button>
             </section>
@@ -342,25 +342,25 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                 onDragOver={(e) => (e.preventDefault(), setDragging(true))}
                 onDragLeave={() => setDragging(false)}
                 onDrop={(e) => (e.preventDefault(), setDragging(false), addFiles(e.dataTransfer.files))}
-                className={`flex cursor-pointer flex-col items-center gap-2 rounded-md border border-dashed px-4 py-7 text-center outline-none focus-visible:ring-2 focus-visible:ring-blue-200 [&>*]:pointer-events-none ${dragging ? "border-blue-500 bg-blue-50" : "border-slate-300 bg-slate-50/40 hover:border-blue-400"}`}
+                className={`flex cursor-pointer flex-col items-center gap-2 rounded-md border border-dashed px-4 py-7 text-center outline-none focus-visible:ring-2 focus-visible:ring-blue-200 [&>*]:pointer-events-none ${dragging ? "border-blue-500 bg-blue-50 dark:bg-blue-950/40" : "border-slate-300 dark:border-line bg-slate-50/40 dark:bg-surface-muted/40 hover:border-blue-400"}`}
               >
-                <CloudUpload size={26} className="text-blue-600" />
-                <p className="text-[13px] text-slate-800">Arraste arquivos aqui ou <span className="font-medium text-blue-600">clique para selecionar</span></p>
-                <p className="text-[11px] text-slate-500">PDF, DOC, XLSX, PNG, JPG até 10MB</p>
+                <CloudUpload size={26} className="text-blue-600 dark:text-blue-300" />
+                <p className="text-[13px] text-slate-800 dark:text-foreground">Arraste arquivos aqui ou <span className="font-medium text-blue-600 dark:text-blue-300">clique para selecionar</span></p>
+                <p className="text-[11px] text-slate-500 dark:text-foreground-muted">PDF, DOC, XLSX, PNG, JPG até 10MB</p>
                 <input ref={picker} type="file" multiple accept={ATTACHMENT_ACCEPT} tabIndex={-1} className="sr-only" onChange={(e) => (addFiles(e.target.files), (e.target.value = ""))} />
               </div>
               {fileErrors.length > 0 && (
-                <ul role="alert" className="mt-2 space-y-1 rounded-md border border-red-200 bg-red-50 px-3 py-2">
-                  {fileErrors.map((m) => <li key={m} className="text-[11px] text-red-700">{m}</li>)}
+                <ul role="alert" className="mt-2 space-y-1 rounded-md border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40 px-3 py-2">
+                  {fileErrors.map((m) => <li key={m} className="text-[11px] text-red-700 dark:text-red-300">{m}</li>)}
                 </ul>
               )}
               <ul className="mt-3 space-y-2">
                 {files.map((f) => (
-                  <li key={fileKey(f)} className="flex items-center gap-3 rounded-md border border-slate-200 px-3 py-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-50 text-blue-600"><FileText size={16} /></span>
+                  <li key={fileKey(f)} className="flex items-center gap-3 rounded-md border border-slate-200 dark:border-line px-3 py-2">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300"><FileText size={16} /></span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[12px] font-medium text-slate-800">{f.name}</span>
-                      <span className="block text-[11px] text-slate-500">{size(f.size)}</span>
+                      <span className="block truncate text-[12px] font-medium text-slate-800 dark:text-foreground">{f.name}</span>
+                      <span className="block text-[11px] text-slate-500 dark:text-foreground-muted">{size(f.size)}</span>
                     </span>
                     <button type="button" onClick={() => (setFiles(files.filter((x) => x !== f)), setFileErrors([]))} aria-label={`Remover anexo ${f.name}`} className={`${iconBtn} h-7 w-7`}><X size={15} /></button>
                   </li>
@@ -369,24 +369,24 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
             </section>
           </div>
 
-          <footer className="border-t border-slate-200 px-6 pb-4 pt-3">
+          <footer className="border-t border-slate-200 dark:border-line px-6 pb-4 pt-3">
             <div className="flex items-end justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white">{usuarioDemo.iniciais}</span>
                 <div className="leading-tight">
-                  <p className="text-[10px] text-slate-500">Criado por</p>
-                  <p className="text-[12px] font-semibold text-slate-900">{usuarioDemo.nome}</p>
-                  <p className="text-[10px] text-slate-500">{iso(now).split("-").reverse().join("/")} às {pad(now.getHours())}:{pad(now.getMinutes())}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-foreground-muted">Criado por</p>
+                  <p className="text-[12px] font-semibold text-slate-900 dark:text-foreground">{usuarioDemo.nome}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-foreground-muted">{iso(now).split("-").reverse().join("/")} às {pad(now.getHours())}:{pad(now.getMinutes())}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-[10px] text-slate-500">Status inicial</p>
+                <p className="text-[10px] text-slate-500 dark:text-foreground-muted">Status inicial</p>
                 <span className="mt-1 inline-block rounded bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white">A fazer</span>
               </div>
             </div>
             {submitCount > 0 && Object.keys(errors).length > 0 && <Err className="mt-3 font-medium">Corrija os campos destacados para criar a tarefa.</Err>}
             <div className="mt-3 flex justify-end gap-3">
-              <button type="button" onClick={onClose} className="h-9 rounded-md border border-slate-200 px-5 text-[12px] font-medium text-slate-700 hover:bg-slate-50">Cancelar</button>
+              <button type="button" onClick={onClose} className="h-9 rounded-md border border-slate-200 dark:border-line px-5 text-[12px] font-medium text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted">Cancelar</button>
               <button type="submit" className="inline-flex h-9 items-center gap-2 rounded-md bg-blue-600 px-5 text-[12px] font-semibold text-white shadow-sm hover:bg-blue-700">
                 <Check size={15} /> Criar Tarefa
               </button>

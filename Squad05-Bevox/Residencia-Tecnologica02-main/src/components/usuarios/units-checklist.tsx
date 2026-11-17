@@ -15,30 +15,30 @@ export function UnitsChecklist({ selecionadas, onChange }: Props) {
   const toggleUma = (u: string) =>
     onChange(selecionadas.includes(u) ? selecionadas.filter((x) => x !== u) : [...selecionadas, u]);
 
-  const check = "h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500";
+  const check = "h-4 w-4 rounded border-slate-300 dark:border-line text-blue-600 dark:text-blue-300 focus:ring-blue-500";
 
   return (
-    <section className="rounded-xl border border-slate-200/70 bg-white p-6 shadow-sm">
+    <section className="rounded-xl border border-slate-200/70 dark:border-line/70 bg-white dark:bg-surface-raised p-6 shadow-sm">
       <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
           <Building2 className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[#0B1B3F]">Unidades autorizadas</h2>
-          <p className="text-sm text-slate-600">Selecione as unidades que o usuário poderá acessar.</p>
+          <h2 className="text-lg font-bold text-foreground">Unidades autorizadas</h2>
+          <p className="text-sm text-slate-600 dark:text-foreground-muted">Selecione as unidades que o usuário poderá acessar.</p>
         </div>
       </div>
 
       <ul className="mt-5 space-y-3.5">
         <li>
-          <label className="flex cursor-pointer items-center gap-3 text-sm font-bold text-[#0B1B3F]">
+          <label className="flex cursor-pointer items-center gap-3 text-sm font-bold text-foreground">
             <input type="checkbox" checked={todas} onChange={toggleTodas} className={check} />
             Todas as unidades
           </label>
         </li>
         {UNIDADES.map((u) => (
           <li key={u}>
-            <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-700">
+            <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 dark:text-foreground">
               <input type="checkbox" checked={selecionadas.includes(u)} onChange={() => toggleUma(u)} className={check} />
               {u}
             </label>

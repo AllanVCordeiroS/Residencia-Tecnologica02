@@ -16,7 +16,7 @@ interface ParametrosIntegracoesProps {
   onChange: (valor: ParametrosIntegracoesTipo) => void;
 }
 
-const CLASSE_TEXTO_INTERRUPTOR = 'text-sm font-semibold text-slate-900';
+const CLASSE_TEXTO_INTERRUPTOR = 'text-sm font-semibold text-slate-900 dark:text-foreground';
 
 export function ParametrosIntegracoes({
   valor,

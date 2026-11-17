@@ -71,7 +71,7 @@ function MenuAcoesMoeda({
         aria-expanded={aberto}
         aria-label={`Ações para ${codigo}`}
         onClick={() => setAberto((atual) => !atual)}
-        className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-200/70 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+        className="rounded-md p-1.5 text-slate-500 dark:text-foreground-muted transition-colors hover:bg-slate-200/70 dark:hover:bg-surface-muted/70 hover:text-slate-800 dark:hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
       >
         <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -79,7 +79,7 @@ function MenuAcoesMoeda({
       {aberto && (
         <div
           role="menu"
-          className="absolute right-0 z-10 mt-1 w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+          className="absolute right-0 z-10 mt-1 w-48 rounded-lg border border-slate-200 dark:border-line bg-white dark:bg-surface-raised py-1 shadow-lg"
         >
           <button
             type="button"
@@ -94,7 +94,7 @@ function MenuAcoesMoeda({
               setAberto(false);
               onEditar();
             }}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent"
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted disabled:cursor-not-allowed disabled:text-slate-400 dark:disabled:text-foreground-muted disabled:hover:bg-transparent"
           >
             <Pencil className="h-4 w-4" aria-hidden="true" />
             Editar conversão
@@ -106,7 +106,7 @@ function MenuAcoesMoeda({
               setAberto(false);
               onRemover();
             }}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40"
           >
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             Remover moeda
@@ -162,12 +162,12 @@ export function TabelaConversaoMoedas({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200">
+    <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-line">
       <table className="w-full text-left text-sm">
         <caption className="sr-only">
           Taxas de conversão das moedas alternativas
         </caption>
-        <thead className="bg-slate-100 text-xs font-medium text-slate-500">
+        <thead className="bg-slate-100 dark:bg-surface-muted text-xs font-medium text-slate-500 dark:text-foreground-muted">
           <tr>
             <th scope="col" className="px-3 py-3">Moeda</th>
             <th scope="col" className="px-3 py-3">Conversão (%)</th>
@@ -176,10 +176,10 @@ export function TabelaConversaoMoedas({
           </tr>
         </thead>
 
-        <tbody className="divide-y divide-slate-200 bg-slate-50">
+        <tbody className="divide-y divide-slate-200 dark:divide-line bg-slate-50 dark:bg-surface-muted">
           {moedas.length === 0 && (
             <tr>
-              <td colSpan={4} className="px-3 py-6 text-center text-slate-500">
+              <td colSpan={4} className="px-3 py-6 text-center text-slate-500 dark:text-foreground-muted">
                 Nenhuma moeda configurada.
               </td>
             </tr>
@@ -188,7 +188,7 @@ export function TabelaConversaoMoedas({
           {moedas.map((moeda) => (
             <tr key={moeda.id}>
               <td className="px-3 py-3">
-                <span className="flex items-center gap-2 font-semibold text-slate-900">
+                <span className="flex items-center gap-2 font-semibold text-slate-900 dark:text-foreground">
                   <span aria-hidden="true" className="text-base leading-none">
                     {moeda.bandeira}
                   </span>
@@ -196,7 +196,7 @@ export function TabelaConversaoMoedas({
                 </span>
               </td>
 
-              <td className="px-3 py-3 text-slate-700">
+              <td className="px-3 py-3 text-slate-700 dark:text-foreground">
                 {editandoId === moeda.id ? (
                   <input
                     autoFocus
@@ -223,14 +223,14 @@ export function TabelaConversaoMoedas({
                         setEditandoId(null);
                       }
                     }}
-                    className="h-8 w-20 rounded-md border border-blue-600 bg-white px-2 text-sm outline-none ring-2 ring-blue-600/20"
+                    className="h-8 w-20 rounded-md border border-blue-600 bg-white dark:bg-surface-raised px-2 text-sm outline-none ring-2 ring-blue-600/20"
                   />
                 ) : (
                   moeda.taxaConversao.toFixed(2)
                 )}
               </td>
 
-              <td className="px-3 py-3 text-slate-600">
+              <td className="px-3 py-3 text-slate-600 dark:text-foreground-muted">
                 {formatarDataAvaliacao(moeda.dataAvaliacaoHistorica)}
               </td>
 

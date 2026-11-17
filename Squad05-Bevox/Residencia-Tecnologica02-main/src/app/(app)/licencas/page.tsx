@@ -163,7 +163,7 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   return (
     // Z-Index forçado para 99999 e fundo preto com opacidade nativa do Tailwind
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-      <div className="bg-white rounded-[14px] shadow-2xl w-full max-w-[850px] max-h-[90vh] overflow-y-auto flex flex-col font-sans">
+      <div className="bg-white dark:bg-surface-raised rounded-[14px] shadow-2xl w-full max-w-[850px] max-h-[90vh] overflow-y-auto flex flex-col font-sans">
         
         {/* Header Escuro */}
         <div className="bg-[#0b1736] px-6 py-5 rounded-t-[14px] flex justify-between items-start border-b border-[#14224f]">
@@ -178,77 +178,77 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   <ShieldCheck size={10} className="inline mr-1" /> Adega Distribution
                 </span>
               </div>
-              <p className="text-[13px] text-slate-400 mt-1">
+              <p className="text-[13px] text-slate-400 dark:text-foreground-muted mt-1">
                 Configure o escopo de dados, formatos executivos e filtros para auditoria e fiscalização da Adega Distribution.
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors mt-1">
+          <button onClick={onClose} className="text-slate-400 dark:text-foreground-muted hover:text-white transition-colors mt-1">
             <X size={20} />
           </button>
         </div>
 
         {/* Corpo da Modal */}
-        <div className="p-6 flex flex-col gap-8 text-slate-800">
+        <div className="p-6 flex flex-col gap-8 text-slate-800 dark:text-foreground">
           
           <section>
             <div className="flex justify-between items-end mb-4">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[11px] font-bold">1</span>
-                <h3 className="text-[14px] font-bold text-slate-900">Seleção de Formato e Tipo de Dossiê</h3>
+                <span className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center text-[11px] font-bold">1</span>
+                <h3 className="text-[14px] font-bold text-slate-900 dark:text-foreground">Seleção de Formato e Tipo de Dossiê</h3>
               </div>
-              <span className="text-[12px] text-slate-400">Selecione o padrão de emissão</span>
+              <span className="text-[12px] text-slate-400 dark:text-foreground-muted">Selecione o padrão de emissão</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <label className="relative cursor-pointer">
                 <input type="radio" value="pdf" checked={format === 'pdf'} onChange={(e) => setFormat(e.target.value)} className="peer sr-only" />
-                <div className="h-full p-5 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-300 peer-checked:border-blue-600 peer-checked:bg-blue-50 transition-all">
+                <div className="h-full p-5 rounded-xl border-2 border-slate-200 dark:border-line bg-white dark:bg-surface-raised hover:border-blue-300 dark:hover:border-blue-800 peer-checked:border-blue-600 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-950/40 transition-all">
                   <div className="flex items-start justify-between mb-3">
                     <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-sm">
                       <FileText size={20} />
                     </div>
-                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 flex items-center justify-center">
+                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-line peer-checked:border-blue-600 peer-checked:bg-blue-600 flex items-center justify-center">
                       <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100" />
                     </div>
                   </div>
-                  <h4 className="font-bold text-[14px] text-slate-900 mb-2">Relatório Executivo PDF</h4>
-                  <span className="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-bold mb-3">Com Brasão & Gráficos</span>
-                  <p className="text-[12px] text-slate-500 leading-snug">Indicado para diretoria, bancos e auditorias externas. Inclui sumário gráfico de conformidade.</p>
+                  <h4 className="font-bold text-[14px] text-slate-900 dark:text-foreground mb-2">Relatório Executivo PDF</h4>
+                  <span className="inline-block px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-bold mb-3">Com Brasão & Gráficos</span>
+                  <p className="text-[12px] text-slate-500 dark:text-foreground-muted leading-snug">Indicado para diretoria, bancos e auditorias externas. Inclui sumário gráfico de conformidade.</p>
                 </div>
               </label>
 
               <label className="relative cursor-pointer">
                 <input type="radio" value="xlsx" checked={format === 'xlsx'} onChange={(e) => setFormat(e.target.value)} className="peer sr-only" />
-                <div className="h-full p-5 rounded-xl border-2 border-slate-200 bg-white hover:border-emerald-300 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 transition-all">
+                <div className="h-full p-5 rounded-xl border-2 border-slate-200 dark:border-line bg-white dark:bg-surface-raised hover:border-emerald-300 dark:hover:border-emerald-800 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-950/40 transition-all">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 border border-emerald-200 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center">
                       <Files size={20} />
                     </div>
-                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-emerald-500 peer-checked:bg-emerald-500 flex items-center justify-center">
+                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-line peer-checked:border-emerald-500 peer-checked:bg-emerald-500 flex items-center justify-center">
                       <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100" />
                     </div>
                   </div>
-                  <h4 className="font-bold text-[14px] text-slate-900 mb-2">Planilha Consolidada XLSX / CSV</h4>
-                  <span className="inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold mb-3">Dados Tabulares Brutos</span>
-                  <p className="text-[12px] text-slate-500 leading-snug">Base detalhada com todas as colunas, datas, condicionantes, órgãos emissores e protocolos.</p>
+                  <h4 className="font-bold text-[14px] text-slate-900 dark:text-foreground mb-2">Planilha Consolidada XLSX / CSV</h4>
+                  <span className="inline-block px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold mb-3">Dados Tabulares Brutos</span>
+                  <p className="text-[12px] text-slate-500 dark:text-foreground-muted leading-snug">Base detalhada com todas as colunas, datas, condicionantes, órgãos emissores e protocolos.</p>
                 </div>
               </label>
 
               <label className="relative cursor-pointer">
                 <input type="radio" value="zip" checked={format === 'zip'} onChange={(e) => setFormat(e.target.value)} className="peer sr-only" />
-                <div className="h-full p-5 rounded-xl border-2 border-slate-200 bg-white hover:border-purple-300 peer-checked:border-purple-500 peer-checked:bg-purple-50 transition-all">
+                <div className="h-full p-5 rounded-xl border-2 border-slate-200 dark:border-line bg-white dark:bg-surface-raised hover:border-purple-300 dark:hover:border-purple-800 peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-950/40 transition-all">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 border border-purple-200 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800 flex items-center justify-center">
                       <Archive size={20} />
                     </div>
-                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-purple-500 peer-checked:bg-purple-500 flex items-center justify-center">
+                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-line peer-checked:border-purple-500 peer-checked:bg-purple-500 flex items-center justify-center">
                       <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100" />
                     </div>
                   </div>
-                  <h4 className="font-bold text-[14px] text-slate-900 mb-2">Pacote Completo Dossiê ZIP</h4>
-                  <span className="inline-block px-2 py-0.5 rounded bg-purple-100 text-purple-700 text-[10px] font-bold mb-3">Certificados Autenticados</span>
-                  <p className="text-[12px] text-slate-500 leading-snug">Relatório consolidado + cópias digitalizadas das certidões e comprovantes autenticados ICP-Brasil.</p>
+                  <h4 className="font-bold text-[14px] text-slate-900 dark:text-foreground mb-2">Pacote Completo Dossiê ZIP</h4>
+                  <span className="inline-block px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-[10px] font-bold mb-3">Certificados Autenticados</span>
+                  <p className="text-[12px] text-slate-500 dark:text-foreground-muted leading-snug">Relatório consolidado + cópias digitalizadas das certidões e comprovantes autenticados ICP-Brasil.</p>
                 </div>
               </label>
             </div>
@@ -256,63 +256,63 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[11px] font-bold">2</span>
-              <h3 className="text-[14px] font-bold text-slate-900">Escopo e Filtros do Relatório</h3>
+              <span className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center text-[11px] font-bold">2</span>
+              <h3 className="text-[14px] font-bold text-slate-900 dark:text-foreground">Escopo e Filtros do Relatório</h3>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-white border border-slate-200 rounded-xl p-5">
+              <div className="bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-xl p-5">
                 <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-[13px] font-bold text-slate-800">Unidades e Centros de Distribuição</h4>
-                  <label className="flex items-center gap-2 text-[12px] text-blue-600 font-bold cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> Todas as 6 unidades
+                  <h4 className="text-[13px] font-bold text-slate-800 dark:text-foreground">Unidades e Centros de Distribuição</h4>
+                  <label className="flex items-center gap-2 text-[12px] text-blue-600 dark:text-blue-300 font-bold cursor-pointer">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 dark:border-line text-blue-600 dark:text-blue-300 focus:ring-blue-500" /> Todas as 6 unidades
                   </label>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {['Matriz Recife', 'CDD Paulista', 'CDD Jaboatão', 'CDD Olinda', 'CDD Cabo', 'CDD Caruaru'].map(unit => (
-                    <label key={unit} className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                      <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> {unit}
+                    <label key={unit} className="flex items-center gap-2 text-[13px] text-slate-700 dark:text-foreground border border-slate-100 dark:border-line p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-muted cursor-pointer">
+                      <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 dark:border-line text-blue-600 dark:text-blue-300 focus:ring-blue-500" /> {unit}
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-xl p-5">
+              <div className="bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-xl p-5">
                 <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-[13px] font-bold text-slate-800">Status Regulatório</h4>
-                  <span className="text-[12px] text-slate-400">Filtrar situações</span>
+                  <h4 className="text-[13px] font-bold text-slate-800 dark:text-foreground">Status Regulatório</h4>
+                  <span className="text-[12px] text-slate-400 dark:text-foreground-muted">Filtrar situações</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
+                  <label className="flex items-center gap-2 text-[13px] text-slate-700 dark:text-foreground border border-slate-100 dark:border-line p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-muted cursor-pointer">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 dark:border-line text-blue-600 dark:text-blue-300 focus:ring-blue-500" />
                     <span className="w-2 h-2 rounded-full bg-emerald-500 mr-1"></span> Regulares
                   </label>
-                  <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
+                  <label className="flex items-center gap-2 text-[13px] text-slate-700 dark:text-foreground border border-slate-100 dark:border-line p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-muted cursor-pointer">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 dark:border-line text-blue-600 dark:text-blue-300 focus:ring-blue-500" />
                     <span className="w-2 h-2 rounded-full bg-amber-500 mr-1"></span> &lt; 30 dias (Vencendo)
                   </label>
-                  <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
+                  <label className="flex items-center gap-2 text-[13px] text-slate-700 dark:text-foreground border border-slate-100 dark:border-line p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-muted cursor-pointer">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 dark:border-line text-blue-600 dark:text-blue-300 focus:ring-blue-500" />
                     <span className="w-2 h-2 rounded-full bg-red-500 mr-1"></span> Vencidas / Críticas
                   </label>
-                  <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
+                  <label className="flex items-center gap-2 text-[13px] text-slate-700 dark:text-foreground border border-slate-100 dark:border-line p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-muted cursor-pointer">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 dark:border-line text-blue-600 dark:text-blue-300 focus:ring-blue-500" />
                     <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span> Em Análise
                   </label>
                 </div>
               </div>
             </div>
             
-            <div className="mt-4 bg-white border border-slate-200 rounded-xl p-5">
+            <div className="mt-4 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-xl p-5">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
-                <h4 className="text-[13px] font-bold text-slate-800">Período de Vigência / Vencimento Considerado</h4>
+                <h4 className="text-[13px] font-bold text-slate-800 dark:text-foreground">Período de Vigência / Vencimento Considerado</h4>
                 <div className="flex gap-2">
                   {['Mês atual', 'Próximos 90 dias', 'Ano Fiscal 2026', 'Personalizado'].map(btn => (
                     <button 
                       key={btn}
                       type="button"
                       onClick={() => setPeriod(btn)}
-                      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${period === btn ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${period === btn ? 'bg-blue-600 text-white' : 'bg-white dark:bg-surface-raised border border-slate-200 dark:border-line text-slate-600 dark:text-foreground-muted hover:bg-slate-50 dark:hover:bg-surface-muted'}`}
                     >
                       {btn}
                     </button>
@@ -321,17 +321,17 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] text-slate-500 mb-1">Data Início</label>
+                  <label className="block text-[11px] text-slate-500 dark:text-foreground-muted mb-1">Data Início</label>
                   <div className="relative">
-                    <Calendar size={14} className="absolute left-3 top-2.5 text-slate-400" />
-                    <input type="text" defaultValue="01/01/2026" className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                    <Calendar size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-foreground-muted" />
+                    <input type="text" defaultValue="01/01/2026" className="w-full pl-8 pr-3 py-2 border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-500 mb-1">Data Término</label>
+                  <label className="block text-[11px] text-slate-500 dark:text-foreground-muted mb-1">Data Término</label>
                   <div className="relative">
-                    <Calendar size={14} className="absolute left-3 top-2.5 text-slate-400" />
-                    <input type="text" defaultValue="31/12/2026" className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                    <Calendar size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-foreground-muted" />
+                    <input type="text" defaultValue="31/12/2026" className="w-full pl-8 pr-3 py-2 border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
               </div>
@@ -340,12 +340,12 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
         </div>
 
-        <div className="bg-slate-50 px-6 py-4 rounded-b-[14px] border-t border-slate-200 flex justify-between items-center mt-auto">
-          <div className="flex items-center gap-2 text-[12px] text-emerald-600 font-bold">
+        <div className="bg-slate-50 dark:bg-surface-muted px-6 py-4 rounded-b-[14px] border-t border-slate-200 dark:border-line flex justify-between items-center mt-auto">
+          <div className="flex items-center gap-2 text-[12px] text-emerald-600 dark:text-emerald-300 font-bold">
             <CheckCircle2 size={16} /> 97 licenças selecionadas nos filtros configurados
           </div>
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} className="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 text-[13px] font-bold rounded-lg hover:bg-slate-50 transition-colors">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 bg-white dark:bg-surface-raised border border-slate-300 dark:border-line text-slate-700 dark:text-foreground text-[13px] font-bold rounded-lg hover:bg-slate-50 dark:hover:bg-surface-muted transition-colors">
               Cancelar
             </button>
             <button type="button" className="px-5 py-2.5 bg-blue-700 text-white text-[13px] font-bold rounded-lg hover:bg-blue-800 transition-colors flex items-center gap-2 shadow-sm">

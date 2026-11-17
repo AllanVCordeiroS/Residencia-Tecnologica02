@@ -122,12 +122,12 @@ export function ParametrosFinanceirosForm({
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-3 shadow-sm">
         <button
           type="button"
           onClick={() => router.back()}
           disabled={salvando}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-slate-50 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:opacity-60"
+          className="inline-flex h-10 items-center gap-2 rounded-lg bg-slate-50 dark:bg-surface-muted px-4 text-sm font-medium text-slate-700 dark:text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:opacity-60"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Voltar
@@ -150,7 +150,7 @@ export function ParametrosFinanceirosForm({
           role="status"
           aria-live="polite"
           className={`text-sm ${
-            status.tipo === 'erro' ? 'text-red-600' : 'text-emerald-700'
+            status.tipo === 'erro' ? 'text-red-600 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300'
           }`}
         >
           {status.tipo === 'sucesso' || status.tipo === 'erro'

@@ -63,12 +63,12 @@ export default function UsuariosPage() {
   const fim = Math.min(paginaAtual * POR_PAGINA, filtrados.length);
 
   return (
-    <main className="min-h-screen bg-[#F6F8FE] px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-surface-muted px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1200px]">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#0B1B3F]">Usuários e Permissões</h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Usuários e Permissões</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-foreground-muted">
               Gerencie os colaboradores, seus níveis de acesso, unidades vinculadas e a segurança da plataforma.
             </p>
           </div>
@@ -87,44 +87,44 @@ export default function UsuariosPage() {
             label="Total de usuários"
             value={RESUMO_MOCK.total}
             helper="Cadastrados na plataforma"
-            iconWrapper="bg-blue-100 text-blue-600"
-            helperClass="text-slate-600"
+            iconWrapper="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300"
+            helperClass="text-slate-600 dark:text-foreground-muted"
           />
           <KpiCard
             icon={CheckCircle2}
             label="Usuários ativos"
             value={RESUMO_MOCK.ativos}
             helper="Com acesso habilitado"
-            iconWrapper="bg-emerald-50 text-emerald-500"
-            helperClass="text-emerald-700"
+            iconWrapper="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 dark:text-emerald-300"
+            helperClass="text-emerald-700 dark:text-emerald-300"
           />
           <KpiCard
             icon={Clock}
             label="Convites pendentes"
             value={RESUMO_MOCK.convitesPendentes}
             helper="Aguardando ativação"
-            iconWrapper="bg-amber-50 text-amber-500"
-            helperClass="text-amber-700"
+            iconWrapper="bg-amber-50 dark:bg-amber-950/40 text-amber-500 dark:text-amber-300"
+            helperClass="text-amber-700 dark:text-amber-300"
           />
           <KpiCard
             icon={Lock}
             label="Usuários inativos / bloqueados"
             value={RESUMO_MOCK.inativos}
             helper="Sem acesso ao sistema"
-            iconWrapper="bg-red-50 text-red-500"
-            helperClass="text-red-700"
+            iconWrapper="bg-red-50 dark:bg-red-950/40 text-red-500 dark:text-red-300"
+            helperClass="text-red-700 dark:text-red-300"
           />
         </section>
 
-        <section className="mt-5 rounded-xl border border-slate-200/70 bg-white shadow-sm">
+        <section className="mt-5 rounded-xl border border-slate-200/70 dark:border-line/70 bg-white dark:bg-surface-raised shadow-sm">
           <UsersFilters filtros={filtros} onChange={alterarFiltros} contagem={contagem} />
 
           <UsersTable usuarios={visiveis} onDelete={excluir} onToggleStatus={alternarStatus} />
 
-          <footer className="flex flex-col items-center justify-between gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row">
-            <p className="text-sm text-slate-600">
-              Mostrando <strong className="text-[#0B1B3F]">{inicio} – {fim}</strong> de{" "}
-              <strong className="text-[#0B1B3F]">{filtrados.length}</strong> usuários
+          <footer className="flex flex-col items-center justify-between gap-3 border-t border-slate-100 dark:border-line px-4 py-4 sm:flex-row">
+            <p className="text-sm text-slate-600 dark:text-foreground-muted">
+              Mostrando <strong className="text-foreground">{inicio} – {fim}</strong> de{" "}
+              <strong className="text-foreground">{filtrados.length}</strong> usuários
             </p>
             <Pagination page={paginaAtual} totalPages={totalPaginas} onChange={setPagina} />
           </footer>

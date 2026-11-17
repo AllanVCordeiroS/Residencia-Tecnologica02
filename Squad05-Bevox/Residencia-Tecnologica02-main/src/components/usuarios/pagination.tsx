@@ -24,14 +24,14 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
         aria-label="Página anterior"
         disabled={page === 1}
         onClick={() => onChange(page - 1)}
-        className={cn(btn, "text-slate-500 hover:bg-slate-100 disabled:opacity-40")}
+        className={cn(btn, "text-slate-500 dark:text-foreground-muted hover:bg-slate-100 dark:hover:bg-surface-muted disabled:opacity-40")}
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
 
       {range(page, totalPages).map((item, i) =>
         item === "..." ? (
-          <span key={`e${i}`} className="px-1 text-slate-400">…</span>
+          <span key={`e${i}`} className="px-1 text-slate-400 dark:text-foreground-muted">…</span>
         ) : (
           <button
             key={item}
@@ -40,7 +40,7 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
             onClick={() => onChange(item)}
             className={cn(
               btn,
-              item === page ? "bg-blue-600 font-semibold text-white" : "text-slate-600 hover:bg-slate-100"
+              item === page ? "bg-blue-600 font-semibold text-white" : "text-slate-600 dark:text-foreground-muted hover:bg-slate-100 dark:hover:bg-surface-muted"
             )}
           >
             {item}
@@ -53,7 +53,7 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
         aria-label="Próxima página"
         disabled={page === totalPages}
         onClick={() => onChange(page + 1)}
-        className={cn(btn, "text-slate-500 hover:bg-slate-100 disabled:opacity-40")}
+        className={cn(btn, "text-slate-500 dark:text-foreground-muted hover:bg-slate-100 dark:hover:bg-surface-muted disabled:opacity-40")}
       >
         <ChevronRight className="h-4 w-4" />
       </button>

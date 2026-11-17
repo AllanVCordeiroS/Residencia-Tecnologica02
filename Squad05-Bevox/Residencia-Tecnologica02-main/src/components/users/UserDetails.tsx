@@ -87,9 +87,9 @@ const tabs: UserTab[] = [
 ];
 
 const statusStyles: Record<UserStatus, string> = {
-  Ativo: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  "Convite pendente": "bg-amber-50 text-amber-700 ring-amber-200",
-  Inativo: "bg-slate-100 text-slate-600 ring-slate-200",
+  Ativo: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 ring-emerald-200",
+  "Convite pendente": "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 ring-amber-200",
+  Inativo: "bg-slate-100 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted ring-slate-200",
 };
 
 function getInitials(name: string): string {
@@ -124,16 +124,16 @@ function SectionCard({
   children,
 }: SectionCardProps) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-start gap-3 border-b border-slate-100 px-5 py-4 sm:px-6">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+    <section className="overflow-hidden rounded-2xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised shadow-sm">
+      <div className="flex items-start gap-3 border-b border-slate-100 dark:border-line px-5 py-4 sm:px-6">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-muted text-slate-700 dark:text-foreground">
           {icon}
         </div>
 
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-foreground">{title}</h2>
           {description ? (
-            <p className="mt-1 text-sm leading-5 text-slate-500">
+            <p className="mt-1 text-sm leading-5 text-slate-500 dark:text-foreground-muted">
               {description}
             </p>
           ) : null}
@@ -153,19 +153,19 @@ function SummaryCard({
   online = false,
 }: SummaryCardProps) {
   return (
-    <article className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <article className="min-w-0 rounded-2xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-4 shadow-sm sm:p-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium text-slate-500">{title}</p>
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+        <p className="text-sm font-medium text-slate-500 dark:text-foreground-muted">{title}</p>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-muted text-slate-700 dark:text-foreground">
           {icon}
         </div>
       </div>
 
-      <p className="mt-4 break-words text-base font-semibold leading-6 text-slate-900">
+      <p className="mt-4 break-words text-base font-semibold leading-6 text-slate-900 dark:text-foreground">
         {value || "—"}
       </p>
 
-      <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+      <div className="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-foreground-muted">
         {online ? (
           <span
             className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"
@@ -182,8 +182,8 @@ function SummaryCard({
 function InfoRow({ label, value }: InfoRowProps) {
   return (
     <div className="grid grid-cols-1 gap-1 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(130px,0.8fr)_minmax(0,1.2fr)] sm:gap-4">
-      <dt className="text-sm text-slate-500">{label}</dt>
-      <dd className="break-words text-sm font-medium leading-5 text-slate-800">
+      <dt className="text-sm text-slate-500 dark:text-foreground-muted">{label}</dt>
+      <dd className="break-words text-sm font-medium leading-5 text-slate-800 dark:text-foreground">
         {value ?? "—"}
       </dd>
     </div>
@@ -198,8 +198,8 @@ function ActionButton({
 }: ActionButtonProps) {
   const variants = {
     default:
-      "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-    danger: "border-red-200 bg-white text-red-600 hover:bg-red-50",
+      "border-slate-200 dark:border-line bg-white dark:bg-surface-raised text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted",
+    danger: "border-red-200 dark:border-red-800 bg-white dark:bg-surface-raised text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40",
   };
 
   return (
@@ -219,17 +219,17 @@ function QuickAction({ label, icon, onClick }: QuickActionProps) {
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-left transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+      className="group flex w-full items-center gap-3 rounded-xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised px-3.5 py-3 text-left transition-colors hover:border-slate-300 dark:hover:border-line hover:bg-slate-50 dark:hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition-colors group-hover:bg-blue-50 group-hover:text-blue-700">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-surface-muted text-slate-700 dark:text-foreground transition-colors group-hover:bg-blue-50 dark:group-hover:bg-blue-950/40 group-hover:text-blue-700 dark:group-hover:text-blue-300">
         {icon}
       </span>
-      <span className="min-w-0 flex-1 text-sm font-medium text-slate-700">
+      <span className="min-w-0 flex-1 text-sm font-medium text-slate-700 dark:text-foreground">
         {label}
       </span>
       <ChevronRight
         size={16}
-        className="shrink-0 text-slate-400"
+        className="shrink-0 text-slate-400 dark:text-foreground-muted"
         aria-hidden="true"
       />
     </button>
@@ -243,7 +243,7 @@ function PersonalInfoCard({ user }: { user: User }) {
       description="Informações de identificação e contato do usuário."
       icon={<Users size={19} aria-hidden="true" />}
     >
-      <dl className="divide-y divide-slate-100">
+      <dl className="divide-y divide-slate-100 dark:divide-line">
         <InfoRow label="Nome completo" value={user.name} />
         <InfoRow
           label="E-mail corporativo"
@@ -251,7 +251,7 @@ function PersonalInfoCard({ user }: { user: User }) {
             <span className="inline-flex items-center gap-2">
               <Mail
                 size={15}
-                className="shrink-0 text-slate-400"
+                className="shrink-0 text-slate-400 dark:text-foreground-muted"
                 aria-hidden="true"
               />
               <span>{user.email}</span>
@@ -264,7 +264,7 @@ function PersonalInfoCard({ user }: { user: User }) {
             <span className="inline-flex items-center gap-2">
               <Phone
                 size={15}
-                className="shrink-0 text-slate-400"
+                className="shrink-0 text-slate-400 dark:text-foreground-muted"
                 aria-hidden="true"
               />
               <span>{user.phone || "Não informado"}</span>
@@ -291,7 +291,7 @@ function OrganizationCard({ user }: { user: User }) {
       description="Dados de vínculo e perfil de acesso."
       icon={<Building2 size={19} aria-hidden="true" />}
     >
-      <dl className="divide-y divide-slate-100">
+      <dl className="divide-y divide-slate-100 dark:divide-line">
         <InfoRow
           label="Unidade principal"
           value={primaryUnit || "Não informada"}
@@ -322,27 +322,27 @@ function PermissionsCard({ user }: { user: User }) {
       <div
         className={`flex items-start gap-3 rounded-xl border p-4 ${
           user.fullAccess
-            ? "border-blue-200 bg-blue-50"
-            : "border-slate-200 bg-slate-50"
+            ? "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40"
+            : "border-slate-200 dark:border-line bg-slate-50 dark:bg-surface-muted"
         }`}
       >
         <div
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
             user.fullAccess
-              ? "bg-blue-100 text-blue-700"
-              : "bg-slate-200 text-slate-700"
+              ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
+              : "bg-slate-200 dark:bg-surface-muted text-slate-700 dark:text-foreground"
           }`}
         >
           <LockKeyhole size={18} aria-hidden="true" />
         </div>
 
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">
+          <p className="text-sm font-semibold text-slate-900 dark:text-foreground">
             {user.fullAccess
               ? "Acesso total a todos os módulos do sistema"
               : "Permissões atribuídas ao perfil"}
           </p>
-          <p className="mt-1 text-sm leading-5 text-slate-600">
+          <p className="mt-1 text-sm leading-5 text-slate-600 dark:text-foreground-muted">
             {user.fullAccess
               ? "Este perfil está configurado com acesso completo aos módulos apresentados abaixo."
               : `Perfil atual: ${user.role}. Consulte as permissões específicas antes de realizar alterações.`}
@@ -355,19 +355,19 @@ function PermissionsCard({ user }: { user: User }) {
           {modules.map((moduleName) => (
             <div
               key={moduleName}
-              className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 px-3.5 py-3"
+              className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 dark:border-line px-3.5 py-3"
             >
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
                 <Check size={13} strokeWidth={2.5} aria-hidden="true" />
               </span>
-              <span className="text-sm leading-5 text-slate-700">
+              <span className="text-sm leading-5 text-slate-700 dark:text-foreground">
                 {moduleName}
               </span>
             </div>
           ))}
         </div>
       ) : (
-        <p className="mt-5 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+        <p className="mt-5 rounded-xl bg-slate-50 dark:bg-surface-muted px-4 py-3 text-sm text-slate-500 dark:text-foreground-muted">
           Não há módulos cadastrados no conjunto demonstrativo de permissões.
         </p>
       )}
@@ -389,16 +389,16 @@ function UnitsCard({ user }: { user: User }) {
           {units.map((unit) => (
             <div
               key={unit}
-              className="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-white p-3.5"
+              className="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-3.5"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted">
                 <Building2 size={19} aria-hidden="true" />
               </span>
               <div className="min-w-0">
-                <p className="break-words text-sm font-medium text-slate-800">
+                <p className="break-words text-sm font-medium text-slate-800 dark:text-foreground">
                   {unit}
                 </p>
-                <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500 dark:text-foreground-muted">
                   <MapPin size={12} aria-hidden="true" />
                   Unidade autorizada
                 </p>
@@ -407,7 +407,7 @@ function UnitsCard({ user }: { user: User }) {
           ))}
         </div>
       ) : (
-        <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+        <p className="rounded-xl bg-slate-50 dark:bg-surface-muted px-4 py-3 text-sm text-slate-500 dark:text-foreground-muted">
           Nenhuma unidade vinculada foi informada.
         </p>
       )}
@@ -424,7 +424,7 @@ function ActivityTimeline({
 }) {
   if (!activities || activities.length === 0) {
     return (
-      <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+      <p className="rounded-xl bg-slate-50 dark:bg-surface-muted px-4 py-3 text-sm text-slate-500 dark:text-foreground-muted">
         Nenhuma atividade registrada para exibição.
       </p>
     );
@@ -438,8 +438,8 @@ function ActivityTimeline({
             <span
               className={`relative z-10 flex h-9 w-9 items-center justify-center rounded-full ${
                 index === 0
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "bg-slate-100 text-slate-600"
+                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-300"
+                  : "bg-slate-100 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted"
               }`}
             >
               {index === 0 ? (
@@ -450,27 +450,27 @@ function ActivityTimeline({
             </span>
             {index < activities.length - 1 ? (
               <span
-                className="absolute left-1/2 top-9 h-[calc(100%+0.75rem)] w-px -translate-x-1/2 bg-slate-200"
+                className="absolute left-1/2 top-9 h-[calc(100%+0.75rem)] w-px -translate-x-1/2 bg-slate-200 dark:bg-surface-muted"
                 aria-hidden="true"
               />
             ) : null}
           </div>
 
           <div className="min-w-0 flex-1 pb-1">
-            <p className="break-words text-sm font-semibold text-slate-800">
+            <p className="break-words text-sm font-semibold text-slate-800 dark:text-foreground">
               {activity.title}
             </p>
-            <p className="mt-1 text-xs leading-5 text-slate-500">
+            <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-foreground-muted">
               {activity.description}
             </p>
-            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-foreground-muted">
               <CalendarDays size={13} aria-hidden="true" />
               <span>{activity.date}</span>
               <span aria-hidden="true">•</span>
               <Clock3 size={13} aria-hidden="true" />
               <span>{activity.time}</span>
             </p>
-            <p className="mt-1 break-all text-xs text-slate-400">
+            <p className="mt-1 break-all text-xs text-slate-400 dark:text-foreground-muted">
               IP: {activity.ipAddress}
             </p>
           </div>
@@ -497,15 +497,15 @@ function ActiveUserCard({ user }: { user: User }) {
       <div
         className={`flex items-start gap-3 rounded-xl border p-4 ${
           isActive
-            ? "border-emerald-200 bg-emerald-50"
-            : "border-slate-200 bg-slate-50"
+            ? "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40"
+            : "border-slate-200 dark:border-line bg-slate-50 dark:bg-surface-muted"
         }`}
       >
         <span
           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
             isActive
-              ? "bg-emerald-100 text-emerald-700"
-              : "bg-slate-200 text-slate-600"
+              ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+              : "bg-slate-200 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted"
           }`}
         >
           {isActive ? (
@@ -515,10 +515,10 @@ function ActiveUserCard({ user }: { user: User }) {
           )}
         </span>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-800">
+          <p className="text-sm font-semibold text-slate-800 dark:text-foreground">
             {isActive ? "Conta ativa e liberada" : `Status: ${user.status}`}
           </p>
-          <p className="mt-1 text-xs leading-5 text-slate-600">
+          <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-foreground-muted">
             {isActive
               ? "O status atual deste usuário é ativo."
               : "O status atual não indica uma conta ativa."}
@@ -576,16 +576,16 @@ function QuickActionsCard({
 
 function SecurityCard() {
   return (
-    <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+    <section className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 p-5">
       <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
           <ShieldCheck size={19} aria-hidden="true" />
         </span>
         <div className="min-w-0">
           <h2 className="text-sm font-semibold text-blue-950">
             Segurança e rastreabilidade
           </h2>
-          <p className="mt-2 text-xs leading-5 text-blue-900/80">
+          <p className="mt-2 text-xs leading-5 text-blue-900/80 dark:text-blue-300">
             As ações realizadas no perfil devem ser registradas para permitir
             rastreabilidade e auditoria. A persistência e a consulta desses
             registros dependem da integração com o mecanismo de auditoria
@@ -615,18 +615,18 @@ export default function UserDetails({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex min-w-0 items-center gap-4">
             <div
-              className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-2xl font-bold text-blue-800 ring-1 ring-blue-200"
+              className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-2xl font-bold text-blue-800 dark:text-blue-300 ring-1 ring-blue-200"
               aria-label={`Iniciais de ${user.name}: ${initials}`}
             >
               {initials}
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h2 className="break-words text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                <h2 className="break-words text-xl font-bold tracking-tight text-slate-900 dark:text-foreground sm:text-2xl">
                   {user.name}
                 </h2>
                 <span
@@ -635,11 +635,11 @@ export default function UserDetails({
                   {user.status}
                 </span>
               </div>
-              <p className="mt-2 flex min-w-0 items-center gap-2 break-all text-sm text-slate-500">
+              <p className="mt-2 flex min-w-0 items-center gap-2 break-all text-sm text-slate-500 dark:text-foreground-muted">
                 <Mail size={16} className="shrink-0" aria-hidden="true" />
                 {user.email}
               </p>
-              <p className="mt-1 text-sm text-slate-500">{user.jobTitle}</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-foreground-muted">{user.jobTitle}</p>
             </div>
           </div>
 
@@ -702,11 +702,11 @@ export default function UserDetails({
         />
       </section>
 
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised shadow-sm">
         <div
           role="tablist"
           aria-label="Seções dos detalhes do usuário"
-          className="flex min-w-max gap-1 border-b border-slate-200 px-3 pt-2 sm:px-5"
+          className="flex min-w-max gap-1 border-b border-slate-200 dark:border-line px-3 pt-2 sm:px-5"
         >
           {tabs.map((tab, index) => {
             const isActive = activeTab === tab;
@@ -722,8 +722,8 @@ export default function UserDetails({
                 onClick={() => setActiveTab(tab)}
                 className={`relative whitespace-nowrap rounded-t-lg px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 sm:px-4 ${
                   isActive
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                    ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+                    : "text-slate-500 dark:text-foreground-muted hover:bg-slate-50 dark:hover:bg-surface-muted hover:text-slate-800 dark:hover:text-foreground"
                 }`}
               >
                 {tab}

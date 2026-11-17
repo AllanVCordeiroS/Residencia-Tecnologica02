@@ -4,11 +4,11 @@ import type { AvatarTone } from "@/types/usuarios";
 const TONES: Record<AvatarTone, string> = {
   blueDark: "bg-blue-700 text-white",
   green: "bg-emerald-400 text-white",
-  blueLight: "bg-blue-100 text-blue-700",
-  yellow: "bg-amber-100 text-amber-600",
-  red: "bg-red-100 text-red-600",
-  mint: "bg-emerald-300 text-emerald-900",
-  lavender: "bg-indigo-100 text-indigo-700",
+  blueLight: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300",
+  yellow: "bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300",
+  red: "bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300",
+  mint: "bg-emerald-300 text-emerald-900 dark:text-emerald-300",
+  lavender: "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
   blue: "bg-blue-600 text-white",
 };
 

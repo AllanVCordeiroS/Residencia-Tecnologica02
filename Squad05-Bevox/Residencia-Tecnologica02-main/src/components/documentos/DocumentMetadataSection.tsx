@@ -22,7 +22,7 @@ export default function DocumentMetadataSection() {
     <SecaoCard
       id="secao-metadados"
       numero={1}
-      tile="bg-blue-50 text-blue-600"
+      tile="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300"
       icone={<FileText className="size-[18px]" aria-hidden="true" />}
       titulo="Metadados Fiscais & Regulatórios"
       subtitulo="Identificação legal, categorização do acervo e órgãos expedidores"
@@ -42,7 +42,7 @@ export default function DocumentMetadataSection() {
             autoComplete="off"
             icone={
               tituloValido ? (
-                <CircleCheck className="size-[18px] text-emerald-500" aria-label="Campo válido" />
+                <CircleCheck className="size-[18px] text-emerald-500 dark:text-emerald-300" aria-label="Campo válido" />
               ) : undefined
             }
           />

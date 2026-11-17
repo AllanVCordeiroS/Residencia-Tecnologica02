@@ -17,7 +17,7 @@ export default function UnitDistributionChart({ data }: { data: DashboardData })
       </div>
 
       {total === 0 ? (
-        <p className="py-16 text-center text-[13px] text-slate-500">
+        <p className="py-16 text-center text-[13px] text-slate-500 dark:text-foreground-muted">
           Nenhum documento registrado nas unidades ainda.
         </p>
       ) : (
@@ -38,7 +38,7 @@ export default function UnitDistributionChart({ data }: { data: DashboardData })
                   paddingAngle={0}
                   startAngle={90}
                   endAngle={-270}
-                  stroke="#fff"
+                  stroke="var(--surface-raised)"
                   strokeWidth={2}
                   isAnimationActive={false}
                 >
@@ -46,23 +46,31 @@ export default function UnitDistributionChart({ data }: { data: DashboardData })
                     <Cell key={f.nome} fill={f.cor} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e4e8f1", fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid var(--line)",
+                    backgroundColor: "var(--surface-raised)",
+                    color: "var(--foreground)",
+                    fontSize: 12,
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-extrabold tracking-tight text-slate-900">{total}</span>
-              <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">Documentos</span>
+              <span className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-foreground">{total}</span>
+              <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-foreground-muted">Documentos</span>
             </div>
           </div>
 
           <ul className="mt-5">
             {fatias.map((f) => (
               <li key={f.nome} className="flex items-center justify-between gap-3 border-b border-line py-2 text-[13px] last:border-0">
-                <span className={`flex min-w-0 items-center gap-2.5 ${f.valor === 0 ? "text-slate-400" : "text-slate-700"}`}>
+                <span className={`flex min-w-0 items-center gap-2.5 ${f.valor === 0 ? "text-slate-400 dark:text-foreground-muted" : "text-slate-700 dark:text-foreground"}`}>
                   <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: f.cor }} aria-hidden="true" />
                   <span className="truncate">{f.nome}</span>
                 </span>
-                <span className="font-semibold tabular-nums text-slate-900">{f.valor}</span>
+                <span className="font-semibold tabular-nums text-slate-900 dark:text-foreground">{f.valor}</span>
               </li>
             ))}
           </ul>

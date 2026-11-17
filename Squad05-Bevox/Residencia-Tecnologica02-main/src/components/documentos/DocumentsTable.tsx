@@ -22,36 +22,36 @@ import type { DocumentStatus, DueLevel, LegalDocument } from "@/types/document";
 const ALL = "all";
 
 const CARD =
-  "rounded-[12px] border border-[rgba(226,232,240,0.9)] bg-white drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.04)]";
+  "rounded-[12px] border border-line bg-surface-raised drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.04)]";
 const FOCUS = "outline-none focus-visible:ring-2 focus-visible:ring-[#1d4ed8]/30";
-const CHECKBOX = `size-[16px] shrink-0 cursor-pointer appearance-none rounded-[4px] border border-[#cbd5e1] bg-white checked:border-[#1d4ed8] checked:bg-[#1d4ed8] ${FOCUS}`;
+const CHECKBOX = `size-[16px] shrink-0 cursor-pointer appearance-none rounded-[4px] border border-line bg-white dark:bg-surface-raised checked:border-[#1d4ed8] checked:bg-[#1d4ed8] ${FOCUS}`;
 const CELL = "px-[12px] py-[12.5px] align-middle";
-const HEAD_CELL = "px-[12px] pb-[15px] pt-[14.5px] text-left align-middle text-[11px] font-bold leading-[16px] text-[#64748b]";
+const HEAD_CELL = "px-[12px] pb-[15px] pt-[14.5px] text-left align-middle text-[11px] font-bold leading-[16px] text-foreground-muted";
 
 const STATUS_STYLES: Record<DocumentStatus, { badge: string; dot: string }> = {
-  Atenção: { badge: "border-[#fde68a] bg-[#fffbeb] text-[#b45309]", dot: "bg-[#f59e0b]" },
-  Aprovado: { badge: "border-[#a7f3d0] bg-[#ecfdf5] text-[#047857]", dot: "bg-[#10b981]" },
-  Vencido: { badge: "border-[#fecdd3] bg-[#fff1f2] text-[#be123c]", dot: "bg-[#f43f5e]" },
-  "Em análise": { badge: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]", dot: "bg-[#3b82f6]" },
-  Pendente: { badge: "border-[#fde68a] bg-[#fffbeb] text-[#b45309]", dot: "bg-[#f59e0b]" },
+  Atenção: { badge: "border-[#fde68a] dark:border-amber-800 bg-[#fffbeb] dark:bg-amber-950/40 text-[#b45309] dark:text-amber-300", dot: "bg-[#f59e0b]" },
+  Aprovado: { badge: "border-[#a7f3d0] dark:border-emerald-800 bg-[#ecfdf5] dark:bg-emerald-950/40 text-[#047857] dark:text-emerald-300", dot: "bg-[#10b981]" },
+  Vencido: { badge: "border-[#fecdd3] dark:border-rose-800 bg-[#fff1f2] dark:bg-rose-950/40 text-[#be123c] dark:text-rose-300", dot: "bg-[#f43f5e]" },
+  "Em análise": { badge: "border-[#bfdbfe] dark:border-blue-800 bg-[#eff6ff] dark:bg-blue-950/40 text-[#1d4ed8] dark:text-blue-300", dot: "bg-[#3b82f6]" },
+  Pendente: { badge: "border-[#fde68a] dark:border-amber-800 bg-[#fffbeb] dark:bg-amber-950/40 text-[#b45309] dark:text-amber-300", dot: "bg-[#f59e0b]" },
 };
 
 const CATEGORY_STYLES: Record<string, string> = {
-  "Licenças e Alvarás": "border-[#f3e8ff] bg-[#faf5ff] text-[#7e22ce]",
-  Contratos: "border-[#e0f2fe] bg-[#f0f9ff] text-[#0369a1]",
-  Operacionais: "border-[#e0f2fe] bg-[#f0f9ff] text-[#0369a1]",
-  "Fiscais e Tributários": "border-[#d1fae5] bg-[#ecfdf5] text-[#047857]",
-  "Trabalhistas e Segurança": "border-[#ede9fe] bg-[#f5f3ff] text-[#6d28d9]",
-  Financeiros: "border-[#e2e8f0] bg-[#f1f5f9] text-[#334155]",
+  "Licenças e Alvarás": "border-[#f3e8ff] dark:border-purple-800 bg-[#faf5ff] dark:bg-purple-950/40 text-[#7e22ce] dark:text-purple-300",
+  Contratos: "border-[#e0f2fe] dark:border-sky-800 bg-[#f0f9ff] dark:bg-sky-950/40 text-[#0369a1] dark:text-sky-300",
+  Operacionais: "border-[#e0f2fe] dark:border-sky-800 bg-[#f0f9ff] dark:bg-sky-950/40 text-[#0369a1] dark:text-sky-300",
+  "Fiscais e Tributários": "border-[#d1fae5] dark:border-emerald-800 bg-[#ecfdf5] dark:bg-emerald-950/40 text-[#047857] dark:text-emerald-300",
+  "Trabalhistas e Segurança": "border-[#ede9fe] dark:border-violet-800 bg-[#f5f3ff] dark:bg-violet-950/40 text-[#6d28d9] dark:text-violet-300",
+  Financeiros: "border-line bg-surface-muted text-foreground",
 };
-const DEFAULT_CATEGORY_STYLE = "border-[#e2e8f0] bg-[#f1f5f9] text-[#334155]";
+const DEFAULT_CATEGORY_STYLE = "border-line bg-surface-muted text-foreground";
 
 const FILE_TONES = {
-  rose: "border-[#fecdd3] bg-[#fff1f2] text-[#f43f5e]",
-  green: "border-[#a7f3d0] bg-[#ecfdf5] text-[#059669]",
-  teal: "border-[#99f6e4] bg-[#f0fdfa] text-[#0d9488]",
-  slate: "border-[#e2e8f0] bg-[#f1f5f9] text-[#475569]",
-  sky: "border-[#bae6fd] bg-[#f0f9ff] text-[#0284c7]",
+  rose: "border-[#fecdd3] dark:border-rose-800 bg-[#fff1f2] dark:bg-rose-950/40 text-[#f43f5e] dark:text-rose-300",
+  green: "border-[#a7f3d0] dark:border-emerald-800 bg-[#ecfdf5] dark:bg-emerald-950/40 text-[#059669] dark:text-emerald-300",
+  teal: "border-[#99f6e4] dark:border-teal-800 bg-[#f0fdfa] dark:bg-teal-950/40 text-[#0d9488] dark:text-teal-300",
+  slate: "border-line bg-surface-muted text-foreground-muted",
+  sky: "border-[#bae6fd] dark:border-sky-800 bg-[#f0f9ff] dark:bg-sky-950/40 text-[#0284c7] dark:text-sky-300",
 } as const;
 
 const CATEGORY_FILE_TONE: Record<string, keyof typeof FILE_TONES> = {
@@ -69,8 +69,8 @@ function fileTone(doc: LegalDocument) {
 }
 
 const DUE_STYLES: Record<DueLevel, { color: string; icon: LucideIcon }> = {
-  critical: { color: "text-[#e11d48]", icon: CircleAlert },
-  warning: { color: "text-[#d97706]", icon: Clock },
+  critical: { color: "text-[#e11d48] dark:text-rose-300", icon: CircleAlert },
+  warning: { color: "text-[#d97706] dark:text-amber-300", icon: Clock },
 };
 
 const COLUMNS = [
@@ -127,7 +127,7 @@ function FilterSelect({ label, value, options, onChange }: FilterSelectProps) {
         aria-label={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`h-[30px] cursor-pointer appearance-none rounded-[8px] border border-[#e2e8f0] bg-white py-[7px] pl-[13px] pr-[33px] text-[12px] leading-[16px] text-[#475569] ${FOCUS}`}
+        className={`h-[30px] cursor-pointer appearance-none rounded-[8px] border border-line bg-white dark:bg-surface-raised py-[7px] pl-[13px] pr-[33px] text-[12px] leading-[16px] text-foreground-muted ${FOCUS}`}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -137,7 +137,7 @@ function FilterSelect({ label, value, options, onChange }: FilterSelectProps) {
       </select>
       <ChevronDown
         aria-hidden="true"
-        className="pointer-events-none absolute right-[9px] top-1/2 size-[18px] -translate-y-1/2 text-[#64748b]"
+        className="pointer-events-none absolute right-[9px] top-1/2 size-[18px] -translate-y-1/2 text-foreground-muted"
         strokeWidth={1.5}
       />
     </div>
@@ -150,7 +150,7 @@ function DueCell({ doc }: { doc: LegalDocument }) {
 
     return (
       <div className="flex flex-col gap-[2px]">
-        <p className="text-[12px] font-medium leading-[16px] text-[#1e293b]">{doc.dueDate}</p>
+        <p className="text-[12px] font-medium leading-[16px] text-foreground">{doc.dueDate}</p>
         <p className={`flex items-center gap-[4px] whitespace-nowrap text-[10px] font-semibold leading-[16px] ${color}`}>
           <Icon aria-hidden="true" className="size-[9px] shrink-0" strokeWidth={2.25} />
           {doc.dueText}
@@ -162,13 +162,13 @@ function DueCell({ doc }: { doc: LegalDocument }) {
   if (doc.dueDate) {
     return (
       <div className="flex flex-col">
-        <p className="text-[11px] leading-[16px] text-[#94a3b8]">{doc.dueDate}</p>
-        <p className="whitespace-nowrap text-[10px] leading-[16px] text-[#94a3b8]">{doc.dueText}</p>
+        <p className="text-[11px] leading-[16px] text-foreground-muted">{doc.dueDate}</p>
+        <p className="whitespace-nowrap text-[10px] leading-[16px] text-foreground-muted">{doc.dueText}</p>
       </div>
     );
   }
 
-  return <p className="whitespace-nowrap text-[11px] leading-[16px] text-[#94a3b8]">{doc.dueText}</p>;
+  return <p className="whitespace-nowrap text-[11px] leading-[16px] text-foreground-muted">{doc.dueText}</p>;
 }
 
 interface DocumentRowProps {
@@ -179,10 +179,10 @@ interface DocumentRowProps {
 
 function DocumentRow({ doc, selected, onToggle }: DocumentRowProps) {
   const status = STATUS_STYLES[doc.status];
-  const actionButton = `flex items-center justify-center rounded-[4px] text-[#94a3b8] ${FOCUS}`;
+  const actionButton = `flex items-center justify-center rounded-[4px] text-foreground-muted ${FOCUS}`;
 
   return (
-    <tr className="border-t border-[#f1f5f9] first:border-t-0">
+    <tr className="border-t border-line first:border-t-0">
       <td className="py-[12.5px] pl-[46px] pr-[14px] align-middle">
         <input
           type="checkbox"
@@ -202,8 +202,8 @@ function DocumentRow({ doc, selected, onToggle }: DocumentRowProps) {
             {doc.fileType}
           </div>
           <div>
-            <p className="whitespace-nowrap text-[12px] font-bold leading-[16px] text-[#0f172a]">{doc.title}</p>
-            <p className="whitespace-nowrap text-[10px] leading-[16px] text-[#94a3b8]">
+            <p className="whitespace-nowrap text-[12px] font-bold leading-[16px] text-foreground">{doc.title}</p>
+            <p className="whitespace-nowrap text-[10px] leading-[16px] text-foreground-muted">
               {doc.fileType} • {doc.fileSize}
             </p>
           </div>
@@ -221,12 +221,12 @@ function DocumentRow({ doc, selected, onToggle }: DocumentRowProps) {
       </td>
 
       <td className={CELL}>
-        <p className="text-[12px] font-medium leading-[16px] text-[#1e293b]">{doc.unit}</p>
-        <p className="text-[10px] leading-[16px] text-[#94a3b8]">{doc.unitType}</p>
+        <p className="text-[12px] font-medium leading-[16px] text-foreground">{doc.unit}</p>
+        <p className="text-[10px] leading-[16px] text-foreground-muted">{doc.unitType}</p>
       </td>
 
       <td className={CELL}>
-        <p className="whitespace-nowrap text-[12px] leading-[16px] text-[#475569]">{doc.responsible}</p>
+        <p className="whitespace-nowrap text-[12px] leading-[16px] text-foreground-muted">{doc.responsible}</p>
       </td>
 
       <td className={CELL}>
@@ -260,16 +260,16 @@ function DocumentRow({ doc, selected, onToggle }: DocumentRowProps) {
 }
 
 function Pagination({ range, total }: { range: string; total: number }) {
-  const pageButton = `flex size-[28px] items-center justify-center rounded-[4px] border border-[#e2e8f0] text-[12px] leading-[16px] text-[#475569] ${FOCUS}`;
+  const pageButton = `flex size-[28px] items-center justify-center rounded-[4px] border border-line text-[12px] leading-[16px] text-foreground-muted ${FOCUS}`;
 
   return (
     <nav
       aria-label="Paginação"
-      className="flex items-center justify-between gap-[12px] border-t border-[#e2e8f0] pb-[16px] pl-[16px] pr-[16px] pt-[17px] max-[768px]:flex-col max-[768px]:items-start"
+      className="flex items-center justify-between gap-[12px] border-t border-line pb-[16px] pl-[16px] pr-[16px] pt-[17px] max-[768px]:flex-col max-[768px]:items-start"
     >
-      <p className="whitespace-nowrap text-[12px] leading-[16px] text-[#64748b]">
-        Mostrando <span className="font-semibold text-[#1e293b]">{range}</span> de{" "}
-        <span className="font-semibold text-[#1e293b]">{total}</span> documentos
+      <p className="whitespace-nowrap text-[12px] leading-[16px] text-foreground-muted">
+        Mostrando <span className="font-semibold text-foreground">{range}</span> de{" "}
+        <span className="font-semibold text-foreground">{total}</span> documentos
       </p>
 
       <ul className="flex items-center gap-[4px]">
@@ -296,7 +296,7 @@ function Pagination({ range, total }: { range: string; total: number }) {
           </li>
         ))}
         <li aria-hidden="true" className="px-[4px]">
-          <span className="text-[12px] leading-[16px] text-[#94a3b8]">...</span>
+          <span className="text-[12px] leading-[16px] text-foreground-muted">...</span>
         </li>
         <li>
           <button type="button" aria-label="Página 16" className={pageButton}>
@@ -359,7 +359,7 @@ export default function DocumentsTable() {
         <div className="relative min-w-[240px] max-w-[448px] flex-1 max-[768px]:max-w-none">
           <Search
             aria-hidden="true"
-            className="pointer-events-none absolute left-[12px] top-1/2 size-[12px] -translate-y-1/2 text-[#94a3b8]"
+            className="pointer-events-none absolute left-[12px] top-1/2 size-[12px] -translate-y-1/2 text-foreground-muted"
           />
           <input
             type="text"
@@ -367,7 +367,7 @@ export default function DocumentsTable() {
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Buscar documentos"
             placeholder="Buscar por nome, categoria, CNPJ ou responsável..."
-            className={`h-[30px] w-full rounded-[8px] border border-[#e2e8f0] bg-[#f8fafc] pl-[37px] pr-[13px] text-[12px] text-[#0f172a] placeholder:text-[#94a3b8] ${FOCUS}`}
+            className={`h-[30px] w-full rounded-[8px] border border-line bg-surface-muted pl-[37px] pr-[13px] text-[12px] text-foreground placeholder:text-foreground-muted ${FOCUS}`}
           />
         </div>
 
@@ -377,7 +377,7 @@ export default function DocumentsTable() {
           <FilterSelect label="Filtrar por status" value={status} options={STATUS_OPTIONS} onChange={setStatus} />
           <button
             type="button"
-            className={`flex items-center gap-[6px] rounded-[8px] border border-[#e2e8f0] bg-[#f8fafc] px-[13px] py-[7px] text-[12px] font-medium leading-[16px] text-[#334155] ${FOCUS}`}
+            className={`flex items-center gap-[6px] rounded-[8px] border border-line bg-surface-muted px-[13px] py-[7px] text-[12px] font-medium leading-[16px] text-foreground ${FOCUS}`}
           >
             <SlidersHorizontal aria-hidden="true" className="size-[11px]" />
             Filtros
@@ -394,7 +394,7 @@ export default function DocumentsTable() {
             ))}
           </colgroup>
           <thead className="bg-[rgba(248,250,252,0.7)]">
-            <tr className="border-b border-[#e2e8f0]">
+            <tr className="border-b border-line">
               <th scope="col" className="py-[15px] pl-[46px] pr-[14px] text-left align-middle">
                 <input
                   type="checkbox"
@@ -408,13 +408,13 @@ export default function DocumentsTable() {
                 <th key={label} scope="col" className={HEAD_CELL}>
                   <span className="flex items-center gap-[4px]">
                     {label}
-                    <SortIcon aria-hidden="true" className="size-[9px] text-[#94a3b8]" strokeWidth={2} />
+                    <SortIcon aria-hidden="true" className="size-[9px] text-foreground-muted" strokeWidth={2} />
                   </span>
                 </th>
               ))}
               <th
                 scope="col"
-                className="pb-[15px] pl-[16px] pr-[42px] pt-[14.5px] text-right align-middle text-[11px] font-bold leading-[16px] text-[#64748b]"
+                className="pb-[15px] pl-[16px] pr-[42px] pt-[14.5px] text-right align-middle text-[11px] font-bold leading-[16px] text-foreground-muted"
               >
                 Ações
               </th>
@@ -431,7 +431,7 @@ export default function DocumentsTable() {
             ))}
             {documents.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-[12px] py-[24px] text-center text-[12px] leading-[16px] text-[#64748b]">
+                <td colSpan={8} className="px-[12px] py-[24px] text-center text-[12px] leading-[16px] text-foreground-muted">
                   Nenhum documento encontrado.
                 </td>
               </tr>

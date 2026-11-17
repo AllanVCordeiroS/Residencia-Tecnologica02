@@ -3,17 +3,17 @@ import type { MetricaCard } from "@/lib/dashboard";
 import { Card } from "@/components/ui/Card";
 
 const ESTILO: Record<MetricaCard["id"], { icone: LucideIcon; tile: string; barra: string }> = {
-  unidades: { icone: Building2, tile: "bg-blue-50 text-blue-600", barra: "bg-blue-600" },
-  documentos: { icone: FileText, tile: "bg-sky-50 text-sky-600", barra: "bg-sky-500" },
-  tarefas: { icone: ClipboardCheck, tile: "bg-indigo-50 text-indigo-600", barra: "bg-indigo-600" },
-  licencas: { icone: ShieldCheck, tile: "bg-emerald-50 text-emerald-600", barra: "bg-emerald-500" },
+  unidades: { icone: Building2, tile: "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300", barra: "bg-blue-600" },
+  documentos: { icone: FileText, tile: "bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-300", barra: "bg-sky-500" },
+  tarefas: { icone: ClipboardCheck, tile: "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300", barra: "bg-indigo-600" },
+  licencas: { icone: ShieldCheck, tile: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-300", barra: "bg-emerald-500" },
 };
 
 const TOM: Record<NonNullable<MetricaCard["badge"]>["tom"], string> = {
-  positivo: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  aviso: "border-amber-200 bg-amber-50 text-amber-700",
-  critico: "border-red-200 bg-red-50 text-red-600",
-  neutro: "border-slate-200 bg-slate-50 text-slate-600",
+  positivo: "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300",
+  aviso: "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300",
+  critico: "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300",
+  neutro: "border-slate-200 dark:border-line bg-slate-50 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted",
 };
 
 export default function MetricCard({ metrica }: { metrica: MetricaCard }) {
@@ -31,12 +31,12 @@ export default function MetricCard({ metrica }: { metrica: MetricaCard }) {
           </span>
         )}
       </div>
-      <h3 id={titleId} className="mt-4 text-[12px] font-semibold uppercase tracking-wider text-slate-500">
+      <h3 id={titleId} className="mt-4 text-[12px] font-semibold uppercase tracking-wider text-slate-500 dark:text-foreground-muted">
         {metrica.titulo}
       </h3>
       <p className="mt-1 flex items-baseline gap-2">
-        <span className="text-4xl font-extrabold tracking-tight text-slate-900">{metrica.valor}</span>
-        <span className="text-[13px] text-slate-400">{metrica.complemento}</span>
+        <span className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-foreground">{metrica.valor}</span>
+        <span className="text-[13px] text-slate-400 dark:text-foreground-muted">{metrica.complemento}</span>
       </p>
       <div
         role="progressbar"
@@ -45,7 +45,7 @@ export default function MetricCard({ metrica }: { metrica: MetricaCard }) {
         aria-valuenow={metrica.progresso}
         aria-label={metrica.progressoDescricao}
         title={metrica.progressoDescricao}
-        className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-100"
+        className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-surface-muted"
       >
         <div className={`h-full rounded-full ${barra}`} style={{ width: `${metrica.progresso}%` }} />
       </div>

@@ -1,7 +1,7 @@
 import { FileText, Shield, type LucideIcon } from "lucide-react";
 
 const CARD =
-  "rounded-[12px] border border-[rgba(226,232,240,0.9)] bg-white drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.04)]";
+  "rounded-[12px] border border-line bg-surface-raised drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.04)]";
 
 interface CategoryBar {
   name: string;
@@ -63,27 +63,27 @@ const chartDescription = STATUS_SLICES.map((slice) => `${slice.label}: ${slice.c
 function CategoriesCard() {
   return (
     <section aria-labelledby="categories-title" className={`flex min-w-px flex-1 flex-col p-[25px] ${CARD}`}>
-      <h2 id="categories-title" className="text-[14px] font-bold leading-[20px] text-[#0f172a]">
+      <h2 id="categories-title" className="text-[14px] font-bold leading-[20px] text-foreground">
         Documentos por categoria
       </h2>
-      <p className="text-[11px] leading-[16.5px] text-[#94a3b8]">Distribuição dos documentos por tipo.</p>
+      <p className="text-[11px] leading-[16.5px] text-foreground-muted">Distribuição dos documentos por tipo.</p>
 
       <ul className="flex flex-col gap-[14px] pt-[18px]">
         {CATEGORIES.map(({ name, count, share, width, color, icon: Icon }) => (
           <li key={name} className="flex items-center">
             <div className="flex w-[176px] shrink-0 items-center gap-[8px] overflow-clip max-[768px]:w-[148px]">
-              <Icon aria-hidden="true" className="size-[12px] shrink-0 text-[#94a3b8]" strokeWidth={1.75} />
-              <span className="whitespace-nowrap text-[12px] leading-[16px] text-[#475569]">{name}</span>
+              <Icon aria-hidden="true" className="size-[12px] shrink-0 text-foreground-muted" strokeWidth={1.75} />
+              <span className="whitespace-nowrap text-[12px] leading-[16px] text-foreground-muted">{name}</span>
             </div>
             <div className="min-w-px flex-1 px-[12px]">
-              <div aria-hidden="true" className="h-[8px] overflow-clip rounded-full bg-[#f1f5f9]">
+              <div aria-hidden="true" className="h-[8px] overflow-clip rounded-full bg-surface-muted">
                 <div className={`h-full rounded-full ${width} ${color}`} />
               </div>
             </div>
-            <span className="w-[32px] shrink-0 text-right text-[11px] font-bold leading-[16px] text-[#1e293b]">
+            <span className="w-[32px] shrink-0 text-right text-[11px] font-bold leading-[16px] text-foreground">
               {count}
             </span>
-            <span className="w-[48px] shrink-0 text-right text-[10px] leading-[16px] text-[#94a3b8]">
+            <span className="w-[48px] shrink-0 text-right text-[10px] leading-[16px] text-foreground-muted">
               {share}
             </span>
           </li>
@@ -99,10 +99,10 @@ function StatusCard() {
       aria-labelledby="status-title"
       className={`flex min-w-px flex-1 flex-col px-[25px] pb-[41px] pt-[25px] ${CARD}`}
     >
-      <h2 id="status-title" className="text-[14px] font-bold leading-[20px] text-[#0f172a]">
+      <h2 id="status-title" className="text-[14px] font-bold leading-[20px] text-foreground">
         Situação dos documentos
       </h2>
-      <p className="text-[11px] leading-[16.5px] text-[#94a3b8]">Visão geral do status dos documentos.</p>
+      <p className="text-[11px] leading-[16.5px] text-foreground-muted">Visão geral do status dos documentos.</p>
 
       <div className="flex flex-wrap items-center justify-center gap-x-[100px] gap-y-[24px] pt-[22px] max-[1024px]:gap-x-[48px]">
         <div className="relative flex size-[176px] shrink-0 items-center justify-center">
@@ -128,8 +128,8 @@ function StatusCard() {
             ))}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <p className="text-[20px] font-extrabold leading-[25px] text-[#1e293b]">{TOTAL}</p>
-            <p className="text-[10px] font-medium leading-[15px] text-[#94a3b8]">documentos</p>
+            <p className="text-[20px] font-extrabold leading-[25px] text-foreground">{TOTAL}</p>
+            <p className="text-[10px] font-medium leading-[15px] text-foreground-muted">documentos</p>
           </div>
         </div>
 
@@ -138,13 +138,13 @@ function StatusCard() {
             <li key={slice.id} className="flex items-center justify-between">
               <div className="flex items-center gap-[8px]">
                 <span aria-hidden="true" className={`size-[10px] rounded-full ${slice.dot}`} />
-                <span className="whitespace-nowrap text-[12px] font-medium leading-[16px] text-[#475569]">
+                <span className="whitespace-nowrap text-[12px] font-medium leading-[16px] text-foreground-muted">
                   {slice.label}
                 </span>
               </div>
               <div className="flex items-center">
-                <span className="text-[11px] font-bold leading-[16px] text-[#1e293b]">{slice.count}</span>
-                <span className="w-[48px] pl-[12px] text-right text-[11px] leading-[16px] text-[#94a3b8]">
+                <span className="text-[11px] font-bold leading-[16px] text-foreground">{slice.count}</span>
+                <span className="w-[48px] pl-[12px] text-right text-[11px] leading-[16px] text-foreground-muted">
                   {slice.share}
                 </span>
               </div>

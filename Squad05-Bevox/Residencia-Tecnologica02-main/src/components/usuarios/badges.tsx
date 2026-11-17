@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 import type { Perfil, StatusUsuario } from "@/types/usuarios";
 
 const PERFIL_STYLE: Record<Perfil, { icon: LucideIcon; className: string }> = {
-  "Administrador Geral": { icon: ShieldCheck, className: "bg-blue-100 text-blue-700" },
-  "Gestor de Unidade": { icon: Lock, className: "bg-indigo-100 text-indigo-700" },
-  Financeiro: { icon: Banknote, className: "bg-emerald-50 text-emerald-700" },
-  Operacional: { icon: Lock, className: "bg-blue-50 text-blue-700" },
-  Colaborador: { icon: MessageSquare, className: "bg-slate-100 text-slate-600" },
+  "Administrador Geral": { icon: ShieldCheck, className: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" },
+  "Gestor de Unidade": { icon: Lock, className: "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300" },
+  Financeiro: { icon: Banknote, className: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300" },
+  Operacional: { icon: Lock, className: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" },
+  Colaborador: { icon: MessageSquare, className: "bg-slate-100 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted" },
 };
 
 export function PerfilBadge({ perfil }: { perfil: Perfil }) {
@@ -21,9 +21,9 @@ export function PerfilBadge({ perfil }: { perfil: Perfil }) {
 }
 
 const STATUS_STYLE: Record<StatusUsuario, { label: string; dot: string; className: string }> = {
-  ativo: { label: "Ativo", dot: "bg-emerald-500", className: "bg-emerald-50 text-emerald-700" },
-  convite_pendente: { label: "Convite pendente", dot: "bg-amber-500", className: "bg-amber-50 text-amber-700" },
-  inativo: { label: "Inativo", dot: "bg-red-500", className: "bg-red-50 text-red-700" },
+  ativo: { label: "Ativo", dot: "bg-emerald-500", className: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300" },
+  convite_pendente: { label: "Convite pendente", dot: "bg-amber-500", className: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300" },
+  inativo: { label: "Inativo", dot: "bg-red-500", className: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300" },
 };
 
 export function StatusBadge({ status }: { status: StatusUsuario }) {

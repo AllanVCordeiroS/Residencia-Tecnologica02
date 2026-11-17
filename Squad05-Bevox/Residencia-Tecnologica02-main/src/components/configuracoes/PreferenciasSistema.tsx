@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 import {
   ArrowLeft,
@@ -14,6 +16,8 @@ import {
   Sun,
   UserRound,
 } from "lucide-react";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import type { ThemePreference } from "@/schemas/preferences";
 
 type PreferenceFieldProps = {
   label: string;
@@ -39,6 +43,7 @@ type ThemeOptionProps = {
   label: string;
   selected: boolean;
   icon: ReactNode;
+  onSelect: () => void;
 };
 
 function PreferenceField({ label, children }: PreferenceFieldProps) {
@@ -98,27 +103,31 @@ function TableViewOption({ label, selected, icon }: TableViewOptionProps) {
   );
 }
 
-function ThemeOption({ label, selected, icon }: ThemeOptionProps) {
+function ThemeOption({
+  label,
+  selected,
+  icon,
+  onSelect,
+}: ThemeOptionProps) {
   return (
-    <div
-      className={`bevox-settings-theme-option ${selected ? "is-selected" : ""}`}
-      aria-label={`${label}${selected ? ", selecionado" : ""}`}
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`bevox-settings-theme-option ${selected ? "is-selected" : ""} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600`}
+      aria-label={label}
+      aria-pressed={selected}
     >
       <span className="bevox-settings-theme-icon">{icon}</span>
       <span className="bevox-settings-theme-label">{label}</span>
-    </div>
+    </button>
   );
 }
 
-/**
- * Réplica visual da área de Preferências do Sistema do BEVOX.
- * Sidebar, Header e Rodapé pertencem ao layout principal da aplicação e não
- * são renderizados por este componente.
- *
- * Os controles são somente visuais nesta entrega. Nenhuma preferência é
- * persistida e os botões não executam ações de negócio.
- */
 export default function PreferenciasSistema() {
+  const { theme, setTheme } = useTheme();
+
+  const selecionarTema = (tema: ThemePreference) => () => setTheme(tema);
+
   return (
     <div className="bevox-settings-page">
       <div className="bevox-settings-content">
@@ -205,9 +214,24 @@ export default function PreferenciasSistema() {
             <div className="bevox-settings-user-column bevox-settings-theme-column">
               <div className="bevox-settings-field-label">Tema do Sistema Pessoal</div>
               <div className="bevox-settings-theme-options">
-                <ThemeOption label="Claro" selected icon={<Sun size={19} strokeWidth={2} />} />
-                <ThemeOption label="Escuro" selected={false} icon={<Moon size={19} strokeWidth={2} />} />
-                <ThemeOption label="Automático" selected={false} icon={<Monitor size={19} strokeWidth={2} />} />
+                <ThemeOption
+                  label="Claro"
+                  selected={theme === "light"}
+                  onSelect={selecionarTema("light")}
+                  icon={<Sun size={19} strokeWidth={2} />}
+                />
+                <ThemeOption
+                  label="Escuro"
+                  selected={theme === "dark"}
+                  onSelect={selecionarTema("dark")}
+                  icon={<Moon size={19} strokeWidth={2} />}
+                />
+                <ThemeOption
+                  label="Automático"
+                  selected={theme === "system"}
+                  onSelect={selecionarTema("system")}
+                  icon={<Monitor size={19} strokeWidth={2} />}
+                />
               </div>
               <TogglePreference label="Ativar Sons de Notificação" enabled />
             </div>
