@@ -13,19 +13,19 @@ import { atributosDeErro, Caixa, Campo, INPUT_CLASSE, SecaoCard } from "./Docume
 
 const CARTAO_ALERTA: Record<TomAlerta, { ativo: string; titulo: string; descricao: string }> = {
   azul: {
-    ativo: "border-blue-200 bg-blue-50/60",
-    titulo: "text-slate-900",
-    descricao: "text-slate-400",
+    ativo: "border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/40",
+    titulo: "text-slate-900 dark:text-foreground",
+    descricao: "text-slate-400 dark:text-foreground-muted",
   },
   ambar: {
-    ativo: "border-amber-300 bg-amber-50",
-    titulo: "text-amber-800",
-    descricao: "text-amber-700",
+    ativo: "border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40",
+    titulo: "text-amber-800 dark:text-amber-300",
+    descricao: "text-amber-700 dark:text-amber-300",
   },
   vermelho: {
-    ativo: "border-red-300 bg-red-50",
-    titulo: "text-slate-900",
-    descricao: "font-semibold text-red-600",
+    ativo: "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40",
+    titulo: "text-slate-900 dark:text-foreground",
+    descricao: "font-semibold text-red-600 dark:text-red-300",
   },
 };
 
@@ -45,19 +45,19 @@ export default function DocumentValiditySection() {
     <SecaoCard
       id="secao-vigencia"
       numero={2}
-      tile="bg-amber-50 text-amber-600"
+      tile="bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300"
       icone={<CalendarClock className="size-[18px]" aria-hidden="true" />}
       titulo="Vigência & Régua de Notificação Inteligente"
       subtitulo="SLA de renovação, datas limites e canais automáticos de disparo"
     >
-      <div className="rounded-xl border border-line bg-slate-50/70 p-4">
+      <div className="rounded-xl border border-line bg-slate-50/70 dark:bg-surface-muted/70 p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h3 className="flex items-center gap-2 text-[13px] font-semibold text-slate-900">
-            <Hourglass className="size-4 text-blue-600" aria-hidden="true" />
+          <h3 className="flex items-center gap-2 text-[13px] font-semibold text-slate-900 dark:text-foreground">
+            <Hourglass className="size-4 text-blue-600 dark:text-blue-300" aria-hidden="true" />
             Ciclo de Validade Regulamentar
           </h3>
 
-          <label className="flex cursor-pointer items-center gap-2 text-[12.5px] text-slate-600">
+          <label className="flex cursor-pointer items-center gap-2 text-[12.5px] text-slate-600 dark:text-foreground-muted">
             <span className="relative inline-flex h-5 w-9 shrink-0">
               <input
                 type="checkbox"
@@ -67,11 +67,11 @@ export default function DocumentValiditySection() {
               />
               <span
                 aria-hidden="true"
-                className="absolute inset-0 rounded-full bg-slate-300 transition peer-checked:bg-blue-600"
+                className="absolute inset-0 rounded-full bg-slate-300 dark:bg-surface-muted transition peer-checked:bg-blue-600"
               />
               <span
                 aria-hidden="true"
-                className="absolute left-0.5 top-0.5 size-4 rounded-full bg-white shadow transition peer-checked:translate-x-4"
+                className="absolute left-0.5 top-0.5 size-4 rounded-full bg-white dark:bg-surface-raised shadow transition peer-checked:translate-x-4"
               />
             </span>
             Prazo indeterminado
@@ -108,11 +108,11 @@ export default function DocumentValiditySection() {
       {/* fieldset desabilitado não altera os valores do formulário, só bloqueia a interação */}
       <fieldset disabled={indeterminado} className="mt-5 min-w-0 disabled:opacity-60">
         <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-          <h3 className="flex items-center gap-2 text-[13px] font-semibold text-slate-900">
-            <Bell className="size-4 text-amber-500" aria-hidden="true" />
+          <h3 className="flex items-center gap-2 text-[13px] font-semibold text-slate-900 dark:text-foreground">
+            <Bell className="size-4 text-amber-500 dark:text-amber-300" aria-hidden="true" />
             Régua de Alertas Preventivos Configurável
           </h3>
-          <span className="text-[11.5px] text-slate-400">Disparo multicanal automático</span>
+          <span className="text-[11.5px] text-slate-400 dark:text-foreground-muted">Disparo multicanal automático</span>
         </div>
 
         <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
@@ -123,11 +123,11 @@ export default function DocumentValiditySection() {
               <label
                 key={alerta.id}
                 className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-3 transition ${
-                  ativo ? estilo.ativo : "border-slate-200 bg-white"
+                  ativo ? estilo.ativo : "border-slate-200 dark:border-line bg-white dark:bg-surface-raised"
                 }`}
               >
                 <span className="flex items-center justify-between gap-2">
-                  <span className={`text-[13px] font-semibold ${ativo ? estilo.titulo : "text-slate-500"}`}>
+                  <span className={`text-[13px] font-semibold ${ativo ? estilo.titulo : "text-slate-500 dark:text-foreground-muted"}`}>
                     {alerta.titulo}
                   </span>
                   <Caixa
@@ -137,7 +137,7 @@ export default function DocumentValiditySection() {
                     aria-label={`Alerta ${alerta.titulo} antes do vencimento`}
                   />
                 </span>
-                <span className={`text-[11.5px] ${ativo ? estilo.descricao : "text-slate-400"}`}>
+                <span className={`text-[11.5px] ${ativo ? estilo.descricao : "text-slate-400 dark:text-foreground-muted"}`}>
                   {alerta.descricao}
                 </span>
               </label>
@@ -145,30 +145,30 @@ export default function DocumentValiditySection() {
           })}
         </div>
         {errors.alertas?.message && (
-          <p role="alert" className="mt-1.5 text-[12px] text-red-600">
+          <p role="alert" className="mt-1.5 text-[12px] text-red-600 dark:text-red-300">
             {errors.alertas.message}
           </p>
         )}
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-line bg-slate-50/70 px-3.5 py-2.5">
-          <span className="flex items-center gap-2 text-[12.5px] font-semibold text-slate-800">
-            <Megaphone className="size-4 text-blue-600" aria-hidden="true" />
+        <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-line bg-slate-50/70 dark:bg-surface-muted/70 px-3.5 py-2.5">
+          <span className="flex items-center gap-2 text-[12.5px] font-semibold text-slate-800 dark:text-foreground">
+            <Megaphone className="size-4 text-blue-600 dark:text-blue-300" aria-hidden="true" />
             Canais ativos:
           </span>
           {CANAIS_DOCUMENTO.map((canal) => (
-            <label key={canal.id} className="flex cursor-pointer items-center gap-2 text-[12.5px] text-slate-600">
+            <label key={canal.id} className="flex cursor-pointer items-center gap-2 text-[12.5px] text-slate-600 dark:text-foreground-muted">
               <Caixa tom={canal.tom} value={canal.id} {...register("canais")} />
               {canal.rotulo}
             </label>
           ))}
         </div>
         {errors.canais?.message && (
-          <p role="alert" className="mt-1.5 text-[12px] text-red-600">
+          <p role="alert" className="mt-1.5 text-[12px] text-red-600 dark:text-red-300">
             {errors.canais.message}
           </p>
         )}
         {canaisAtivos.length > 0 && indeterminado && (
-          <p className="mt-2 text-[11.5px] text-slate-400">
+          <p className="mt-2 text-[11.5px] text-slate-400 dark:text-foreground-muted">
             Alertas desativados: documentos de prazo indeterminado não possuem vencimento.
           </p>
         )}

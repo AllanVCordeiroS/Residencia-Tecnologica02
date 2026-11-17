@@ -37,13 +37,13 @@ export default function LoginForm() {
       <div>
         <label
           htmlFor="email"
-          className="mb-2 block text-sm font-bold text-slate-700"
+          className="mb-2 block text-sm font-bold text-slate-700 dark:text-foreground"
         >
           E-MAIL CORPORATIVO
         </label>
 
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-foreground-muted">
             @
           </span>
 
@@ -58,27 +58,27 @@ export default function LoginForm() {
               setEmail(event.target.value);
               setErro("");
             }}
-            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-lg border border-slate-300 dark:border-line bg-white dark:bg-surface-raised py-3 pl-10 pr-4 text-slate-900 dark:text-foreground outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
           />
         </div>
       </div>
 
       <div className="mb-2 flex items-center justify-between">
-        <label htmlFor="senha" className="text-sm font-bold text-slate-700">
+        <label htmlFor="senha" className="text-sm font-bold text-slate-700 dark:text-foreground">
           SENHA DE ACESSO
         </label>
 
         <a
         //♙ ESSE SÍMBOLO É PROVISÓRIO A GENTE PRECISA INSTALAR ALGUMA BIBLIOTECA PRA PEGAR TODOS OS ICONES DO PROJETO
           href="#"//HREF N FUNCIONAL PQ ESTÁ FALTANDO A TELA DE ESQUECEU A SENHA
-          className="text-xs font-medium text-blue-700 hover:text-blue-800"
+          className="text-xs font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-300"
         > 
           Esqueceu a senha?
         </a>
       </div>
 
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-foreground-muted">
           ♙
         </span>
 
@@ -93,20 +93,20 @@ export default function LoginForm() {
             setSenha(event.target.value);
             setErro("");
           }}
-          className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-12 text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+          className="w-full rounded-lg border border-slate-300 dark:border-line bg-white dark:bg-surface-raised py-3 pl-10 pr-12 text-slate-900 dark:text-foreground outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
         />
 
         <button
           type="button"
           onClick={() => exibirSenha(!mostraSenha)}
           aria-label={mostraSenha ? "Ocultar senha" : "Mostrar senha"}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 hover:text-slate-700"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 dark:text-foreground-muted hover:text-slate-700 dark:hover:text-foreground"
         >
           {mostraSenha ? "Ocultar" : "Mostrar"}
         </button>
       </div>
 
-      <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-500">
+      <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-500 dark:text-foreground-muted">
         <input
           type="checkbox"
           checked={lembrarDispositivo}
@@ -117,7 +117,7 @@ export default function LoginForm() {
       </label>
 
       {erro && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-600 dark:text-red-300">
           {erro}
         </p>
       )}

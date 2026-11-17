@@ -28,12 +28,12 @@ export function Switch({ checked, onChange, size = "md", disabled, label }: Swit
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",
         track,
-        checked ? "bg-blue-600" : "bg-slate-200"
+        checked ? "bg-blue-600" : "bg-slate-200 dark:bg-surface-muted"
       )}
     >
       <span
         className={cn(
-          "inline-block translate-x-0.5 rounded-full bg-white shadow transition-transform",
+          "inline-block translate-x-0.5 rounded-full bg-white dark:bg-surface-raised shadow transition-transform",
           thumb,
           checked && shift
         )}

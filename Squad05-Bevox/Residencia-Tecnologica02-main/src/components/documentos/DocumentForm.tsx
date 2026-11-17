@@ -172,7 +172,7 @@ export default function DocumentForm() {
         {mostrarBannerRascunho && rascunho && (
           <div
             role="status"
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-[13px] text-blue-900"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-4 py-3 text-[13px] text-blue-900 dark:text-blue-300"
           >
             <span className="flex items-center gap-2">
               <Info className="size-4 shrink-0" aria-hidden="true" />
@@ -189,7 +189,7 @@ export default function DocumentForm() {
               <button
                 type="button"
                 onClick={ignorarRascunho}
-                className="rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-[12px] font-semibold text-blue-700 hover:bg-blue-100"
+                className="rounded-lg border border-blue-200 dark:border-blue-800 bg-white dark:bg-surface-raised px-3 py-1.5 text-[12px] font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/40"
               >
                 Ignorar
               </button>
@@ -218,27 +218,27 @@ export default function DocumentForm() {
         </div>
 
         {/* Barra de ações */}
-        <div className="sticky bottom-4 z-20 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-xl border border-line bg-white/95 px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
+        <div className="sticky bottom-4 z-20 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-xl border border-line bg-white/95 dark:bg-surface-raised/95 px-5 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px]">
-            <span className="flex items-center gap-2 font-medium text-slate-700">
+            <span className="flex items-center gap-2 font-medium text-slate-700 dark:text-foreground">
               <span
                 aria-hidden="true"
-                className={`size-2 rounded-full ${salvoEm ? "bg-blue-500" : "bg-slate-300"}`}
+                className={`size-2 rounded-full ${salvoEm ? "bg-blue-500" : "bg-slate-300 dark:bg-surface-muted"}`}
               />
               {salvoEm
                 ? `Rascunho salvo às ${formatarHoraRascunho(salvoEm)}`
                 : "Rascunho ainda não salvo"}
             </span>
-            <span aria-hidden="true" className="hidden text-slate-300 sm:inline">
+            <span aria-hidden="true" className="hidden text-slate-300 dark:text-foreground-muted sm:inline">
               •
             </span>
             {pendentes === 0 ? (
-              <span className="flex items-center gap-1.5 text-emerald-600">
+              <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-300">
                 <CircleCheck className="size-3.5" aria-hidden="true" />
                 Todos os campos obrigatórios validados
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 text-amber-600">
+              <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-300">
                 <TriangleAlert className="size-3.5" aria-hidden="true" />
                 {pendentes} {pendentes === 1 ? "item obrigatório pendente" : "itens obrigatórios pendentes"}
               </span>
@@ -250,7 +250,7 @@ export default function DocumentForm() {
               type="button"
               onClick={aoDescartar}
               disabled={enviando || concluido}
-              className="h-10 rounded-lg px-4 text-[13px] font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+              className="h-10 rounded-lg px-4 text-[13px] font-semibold text-slate-700 dark:text-foreground hover:bg-slate-100 dark:hover:bg-surface-muted disabled:opacity-50"
             >
               Descartar
             </button>
@@ -279,10 +279,10 @@ export default function DocumentForm() {
             role={aviso.tipo === "erro" ? "alert" : "status"}
             className={`pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 text-[13px] shadow-lg ${
               aviso.tipo === "sucesso"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                ? "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300"
                 : aviso.tipo === "erro"
-                  ? "border-red-200 bg-red-50 text-red-900"
-                  : "border-blue-200 bg-blue-50 text-blue-900"
+                  ? "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-300"
+                  : "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300"
             }`}
           >
             {aviso.tipo === "sucesso" ? (
@@ -337,12 +337,12 @@ function DialogoDescarte({
         aria-modal="true"
         aria-labelledby="descarte-titulo"
         aria-describedby="descarte-texto"
-        className="w-full max-w-md rounded-2xl border border-line bg-white p-6 shadow-2xl"
+        className="w-full max-w-md rounded-2xl border border-line bg-white dark:bg-surface-raised p-6 shadow-2xl"
       >
-        <h2 id="descarte-titulo" className="text-[17px] font-bold text-slate-900">
+        <h2 id="descarte-titulo" className="text-[17px] font-bold text-slate-900 dark:text-foreground">
           Descartar este registro?
         </h2>
-        <p id="descarte-texto" className="mt-2 text-[13px] text-slate-500">
+        <p id="descarte-texto" className="mt-2 text-[13px] text-slate-500 dark:text-foreground-muted">
           Os campos preenchidos, os arquivos anexados e o rascunho salvo serão removidos. Esta ação não pode
           ser desfeita.
         </p>
@@ -351,7 +351,7 @@ function DialogoDescarte({
             type="button"
             autoFocus
             onClick={onCancelar}
-            className="h-10 rounded-lg border border-line px-4 text-[13px] font-semibold text-slate-700 hover:bg-slate-50"
+            className="h-10 rounded-lg border border-line px-4 text-[13px] font-semibold text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted"
           >
             Continuar editando
           </button>

@@ -102,17 +102,17 @@ export default function NovoUsuarioPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F6F8FE] px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-surface-muted px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1200px]">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#0B1B3F]">Novo usuário</h1>
-            <p className="mt-1 text-sm text-slate-600">Cadastre o colaborador e configure seu acesso ao BEVOX.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Novo usuário</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-foreground-muted">Cadastre o colaborador e configure seu acesso ao BEVOX.</p>
           </div>
           <div className="flex gap-3">
             <Link
               href="/usuarios"
-              className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#0B1B3F] hover:bg-slate-50"
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 dark:border-line bg-white dark:bg-surface-raised px-4 text-sm font-semibold text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted"
             >
               <X className="h-4 w-4" />
               Cancelar
@@ -135,28 +135,28 @@ export default function NovoUsuarioPage() {
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field label="Nome completo" htmlFor="nome" required error={erros.nome}>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
                     <input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex: João da Silva Santos" className={inputClass} />
                   </div>
                 </Field>
 
                 <Field label="E-mail corporativo" htmlFor="email" required error={erros.email}>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
                     <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="exemplo@adega.com.br" className={inputClass} />
                   </div>
                 </Field>
 
                 <Field label="Cargo ou função" htmlFor="cargo" required error={erros.cargo}>
                   <div className="relative">
-                    <Briefcase className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Briefcase className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
                     <input id="cargo" value={cargo} onChange={(e) => setCargo(e.target.value)} placeholder="Ex: Vendedor, Analista, etc." className={inputClass} />
                   </div>
                 </Field>
 
                 <Field label="Telefone (opcional)" htmlFor="telefone">
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
                     <input id="telefone" type="tel" value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="(81) 91234-5678" className={inputClass} />
                   </div>
                 </Field>
@@ -167,25 +167,25 @@ export default function NovoUsuarioPage() {
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field label="Unidade vinculada" htmlFor="unidade" required error={erros.unidade}>
                   <div className="relative">
-                    <Landmark className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Landmark className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
                     <select
                       id="unidade"
                       value={unidade}
                       onChange={(e) => setUnidade(e.target.value)}
-                      className={`${inputClass} appearance-none pr-9 ${unidade ? "text-slate-800" : "text-slate-400"}`}
+                      className={`${inputClass} appearance-none pr-9 ${unidade ? "text-slate-800 dark:text-foreground" : "text-slate-400 dark:text-foreground-muted"}`}
                     >
                       <option value="">Selecione a unidade</option>
                       {UNIDADES.map((u) => (
                         <option key={u} value={u}>{u}</option>
                       ))}
                     </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-foreground-muted" />
                   </div>
                 </Field>
 
                 <Field label="Perfil de acesso" htmlFor="perfil" required>
                   <div className="relative">
-                    <ShieldCheck className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <ShieldCheck className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
                     <select
                       id="perfil"
                       value={perfil}
@@ -196,21 +196,21 @@ export default function NovoUsuarioPage() {
                         <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-foreground-muted" />
                   </div>
                 </Field>
               </div>
 
-              <div className="mt-5 flex flex-col gap-3 rounded-lg bg-blue-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-5 flex flex-col gap-3 rounded-lg bg-blue-50/70 dark:bg-blue-950/40 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3">
-                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
+                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-300" />
                   <div className="text-sm">
-                    <p className="font-semibold text-blue-700">Resumo do acesso</p>
-                    <p className="text-slate-700">Perfil selecionado: <strong>{perfil}</strong></p>
-                    <p className="text-slate-700">Escopo de unidade: <strong>{escopo}</strong></p>
+                    <p className="font-semibold text-blue-700 dark:text-blue-300">Resumo do acesso</p>
+                    <p className="text-slate-700 dark:text-foreground">Perfil selecionado: <strong>{perfil}</strong></p>
+                    <p className="text-slate-700 dark:text-foreground">Escopo de unidade: <strong>{escopo}</strong></p>
                   </div>
                 </div>
-                <p className="max-w-xs text-xs text-blue-700 sm:text-right">
+                <p className="max-w-xs text-xs text-blue-700 dark:text-blue-300 sm:text-right">
                   As permissões efetivas serão validadas no servidor, de acordo com o perfil e as unidades autorizadas.
                 </p>
               </div>
@@ -221,16 +221,16 @@ export default function NovoUsuarioPage() {
                 <div className="flex items-start gap-3">
                   <Switch checked={enviarConvite} onChange={setEnviarConvite} label="Enviar convite por e-mail" />
                   <div>
-                    <p className="text-sm font-semibold text-[#0B1B3F]">Enviar convite por e-mail para ativação da conta</p>
-                    <p className="text-xs text-slate-600">O usuário receberá um link temporário para criar sua senha.</p>
+                    <p className="text-sm font-semibold text-foreground">Enviar convite por e-mail para ativação da conta</p>
+                    <p className="text-xs text-slate-600 dark:text-foreground-muted">O usuário receberá um link temporário para criar sua senha.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <Switch checked={exigirMfa} onChange={setExigirMfa} label="Exigir autenticação multifator" />
                   <div>
-                    <p className="text-sm font-semibold text-[#0B1B3F]">Exigir autenticação multifator (MFA)</p>
-                    <p className="text-xs text-slate-600">Quando disponível, aumenta a segurança da conta.</p>
+                    <p className="text-sm font-semibold text-foreground">Exigir autenticação multifator (MFA)</p>
+                    <p className="text-xs text-slate-600 dark:text-foreground-muted">Quando disponível, aumenta a segurança da conta.</p>
                   </div>
                 </div>
               </div>

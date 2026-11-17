@@ -129,12 +129,12 @@ export function CategoriasPlanoContas({
       titulo="Categorias e Plano de Contas"
       descricao="Controle das categorias e subcategorias do plano de Contas."
     >
-      <div className="flex items-center justify-between rounded-lg bg-slate-100 px-3 py-2.5 text-xs font-medium text-slate-500">
+      <div className="flex items-center justify-between rounded-lg bg-slate-100 dark:bg-surface-muted px-3 py-2.5 text-xs font-medium text-slate-500 dark:text-foreground-muted">
         <button
           type="button"
           onClick={ordenarPorNome}
           aria-label="Ordenar categorias por nome"
-          className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-slate-800 dark:hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
         >
           Categoria
           <ArrowUpDown className="h-3 w-3" aria-hidden="true" />
@@ -165,7 +165,7 @@ export function CategoriasPlanoContas({
                 type="button"
                 aria-label={`Reordenar ${categoria.nome || 'nova categoria'} (use as setas para cima e para baixo)`}
                 onKeyDown={(e) => moverPorTeclado(e, indice)}
-                className="cursor-grab rounded text-slate-400 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 active:cursor-grabbing"
+                className="cursor-grab rounded text-slate-400 dark:text-foreground-muted hover:text-slate-600 dark:hover:text-foreground-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 active:cursor-grabbing"
               >
                 <GripVertical className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -179,10 +179,10 @@ export function CategoriasPlanoContas({
                   aria-label="Nome da categoria"
                   onChange={(e) => setRascunho(e.target.value)}
                   onKeyDown={aoDigitar}
-                  className="h-9 min-w-0 flex-1 rounded-md border border-blue-600 bg-white px-2 text-sm text-slate-900 outline-none ring-2 ring-blue-600/20"
+                  className="h-9 min-w-0 flex-1 rounded-md border border-blue-600 bg-white dark:bg-surface-raised px-2 text-sm text-slate-900 dark:text-foreground outline-none ring-2 ring-blue-600/20"
                 />
               ) : (
-                <span className="min-w-0 flex-1 text-sm text-slate-900">
+                <span className="min-w-0 flex-1 text-sm text-slate-900 dark:text-foreground">
                   {categoria.nome}
                 </span>
               )}
@@ -194,7 +194,7 @@ export function CategoriasPlanoContas({
                       type="button"
                       onClick={confirmarEdicao}
                       aria-label="Confirmar nome da categoria"
-                      className="text-emerald-600 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                      className="text-emerald-600 dark:text-emerald-300 hover:text-emerald-700 dark:hover:text-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                     >
                       <Check className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -202,7 +202,7 @@ export function CategoriasPlanoContas({
                       type="button"
                       onClick={cancelarEdicao}
                       aria-label="Cancelar edição"
-                      className="text-slate-500 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                      className="text-slate-500 dark:text-foreground-muted hover:text-slate-700 dark:hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                     >
                       <X className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -213,7 +213,7 @@ export function CategoriasPlanoContas({
                       type="button"
                       onClick={() => iniciarEdicao(categoria)}
                       aria-label={`Editar ${categoria.nome}`}
-                      className="text-blue-700 hover:text-blue-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                      className="text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                     >
                       <Pencil className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -221,7 +221,7 @@ export function CategoriasPlanoContas({
                       type="button"
                       onClick={() => excluir(categoria)}
                       aria-label={`Excluir ${categoria.nome}`}
-                      className="text-red-600 hover:text-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                      className="text-red-600 dark:text-red-300 hover:text-red-800 dark:hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                     >
                       <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -233,7 +233,7 @@ export function CategoriasPlanoContas({
         })}
 
         {categorias.length === 0 && (
-          <li className="px-3 py-6 text-center text-sm text-slate-500">
+          <li className="px-3 py-6 text-center text-sm text-slate-500 dark:text-foreground-muted">
             Nenhuma categoria cadastrada. Adicione a primeira para montar o plano de contas.
           </li>
         )}
@@ -242,7 +242,7 @@ export function CategoriasPlanoContas({
       <button
         type="button"
         onClick={adicionarCategoria}
-        className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+        className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 px-3 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
       >
         <Plus className="h-4 w-4" aria-hidden="true" />
         Adicionar Nova Categoria

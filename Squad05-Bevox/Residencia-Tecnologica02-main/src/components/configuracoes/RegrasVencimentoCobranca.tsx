@@ -73,8 +73,8 @@ export function RegrasVencimentoCobranca({
         />
       </div>
 
-      <p className="mt-4 flex items-center gap-2 text-[13px] text-slate-600">
-        <Info className="h-4 w-4 shrink-0 text-blue-700" aria-hidden="true" />
+      <p className="mt-4 flex items-center gap-2 text-[13px] text-slate-600 dark:text-foreground-muted">
+        <Info className="h-4 w-4 shrink-0 text-blue-700 dark:text-blue-300" aria-hidden="true" />
         Aplicado automaticamente em notas e boletos expedidos via SEFAZ.
       </p>
     </CartaoSecao>

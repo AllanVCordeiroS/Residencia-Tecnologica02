@@ -25,12 +25,12 @@ export default function QuickAccess() {
           <li key={titulo}>
             <Link
               href={href}
-              className="group flex h-full min-h-[7rem] flex-col items-center justify-center gap-2.5 rounded-xl border border-line bg-slate-50/60 p-3 text-center transition hover:border-blue-200 hover:bg-blue-50/60 focus-visible:outline-2 focus-visible:outline-blue-600"
+              className="group flex h-full min-h-[7rem] flex-col items-center justify-center gap-2.5 rounded-xl border border-line bg-slate-50/60 dark:bg-surface-muted/60 p-3 text-center transition hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50/60 dark:hover:bg-blue-950/40 focus-visible:outline-2 focus-visible:outline-blue-600"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-blue-600 shadow-sm ring-1 ring-line group-hover:ring-blue-200">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white dark:bg-surface-raised text-blue-600 dark:text-blue-300 shadow-sm ring-1 ring-line group-hover:ring-blue-200">
                 <Icone className="h-5 w-5" aria-hidden="true" />
               </span>
-              <span className="text-[12px] font-medium leading-tight text-slate-700">{titulo}</span>
+              <span className="text-[12px] font-medium leading-tight text-slate-700 dark:text-foreground">{titulo}</span>
             </Link>
           </li>
         ))}

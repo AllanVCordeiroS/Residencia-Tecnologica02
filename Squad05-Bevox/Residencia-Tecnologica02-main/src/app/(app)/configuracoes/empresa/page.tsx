@@ -30,7 +30,7 @@ export default function EmpresaConfigPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-6 w-full font-sans">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-surface-muted/50 p-6 w-full font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Cabeçalho */}
@@ -40,11 +40,11 @@ export default function EmpresaConfigPage() {
               <Building2 size={24} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Empresa</h1>
-              <p className="text-slate-500 text-[13px]">Gerencie sua Empresa.</p>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-foreground tracking-tight">Empresa</h1>
+              <p className="text-slate-500 dark:text-foreground-muted text-[13px]">Gerencie sua Empresa.</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-[13px] font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">
+          <div className="flex items-center gap-2 text-[13px] font-medium text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-full">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             Sistema ativo
           </div>
@@ -53,89 +53,89 @@ export default function EmpresaConfigPage() {
         <div className="flex flex-col lg:flex-row gap-6">
           
           {/* Formulário Principal (Esquerda) */}
-          <div className="flex-1 bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-              <Building2 size={20} className="text-blue-600" />
+          <div className="flex-1 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-line">
+              <Building2 size={20} className="text-blue-600 dark:text-blue-300" />
               <div>
-                <h2 className="font-bold text-slate-800 text-[15px]">Dados da Empresa</h2>
-                <p className="text-slate-500 text-[12px]">Informações cadastrais da Adega Distribution.</p>
+                <h2 className="font-bold text-slate-800 dark:text-foreground text-[15px]">Dados da Empresa</h2>
+                <p className="text-slate-500 dark:text-foreground-muted text-[12px]">Informações cadastrais da Adega Distribution.</p>
               </div>
             </div>
 
             <form className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Razão Social <span className="text-rose-500">*</span></label>
-                  <input type="text" defaultValue="Adega Distribution Ltda." className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5">Razão Social <span className="text-rose-500 dark:text-rose-300">*</span></label>
+                  <input type="text" defaultValue="Adega Distribution Ltda." className="w-full px-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5 flex items-center gap-1">E-mail Corporativo <span className="text-rose-500">*</span></label>
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5 flex items-center gap-1">E-mail Corporativo <span className="text-rose-500 dark:text-rose-300">*</span></label>
                   <div className="relative">
-                    <Mail size={14} className="absolute left-3 top-2.5 text-slate-400" />
-                    <input type="email" defaultValue="contato@adegadistribution.com.br" className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                    <Mail size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-foreground-muted" />
+                    <input type="email" defaultValue="contato@adegadistribution.com.br" className="w-full pl-8 pr-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Nome Fantasia <span className="text-rose-500">*</span></label>
-                  <input type="text" defaultValue="Adega Distribution" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5">Nome Fantasia <span className="text-rose-500 dark:text-rose-300">*</span></label>
+                  <input type="text" defaultValue="Adega Distribution" className="w-full px-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5 flex items-center gap-1">Endereço <span className="text-rose-500">*</span></label>
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5 flex items-center gap-1">Endereço <span className="text-rose-500 dark:text-rose-300">*</span></label>
                   <div className="relative">
-                    <MapPin size={14} className="absolute left-3 top-2.5 text-slate-400" />
-                    <input type="text" defaultValue="Av. Recife, 1000" className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                    <MapPin size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-foreground-muted" />
+                    <input type="text" defaultValue="Av. Recife, 1000" className="w-full pl-8 pr-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5">CNPJ <span className="text-rose-500">*</span></label>
-                  <input type="text" defaultValue="12.345.678/0001-90" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5">CNPJ <span className="text-rose-500 dark:text-rose-300">*</span></label>
+                  <input type="text" defaultValue="12.345.678/0001-90" className="w-full px-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Bairro</label>
-                  <input type="text" defaultValue="Boa Viagem" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5">Bairro</label>
+                  <input type="text" defaultValue="Boa Viagem" className="w-full px-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Inscrição Estadual</label>
-                  <input type="text" defaultValue="123.456.789" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5">Inscrição Estadual</label>
+                  <input type="text" defaultValue="123.456.789" className="w-full px-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-1">
-                    <label className="block text-[12px] font-bold text-slate-700 mb-1.5 flex items-center gap-1">Cidade <span className="text-rose-500">*</span></label>
+                    <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5 flex items-center gap-1">Cidade <span className="text-rose-500 dark:text-rose-300">*</span></label>
                     <div className="relative">
-                      <Building2 size={14} className="absolute left-2.5 top-2.5 text-slate-400" />
-                      <input type="text" defaultValue="Recife" className="w-full pl-7 pr-2 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                      <Building2 size={14} className="absolute left-2.5 top-2.5 text-slate-400 dark:text-foreground-muted" />
+                      <input type="text" defaultValue="Recife" className="w-full pl-7 pr-2 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                     </div>
                   </div>
                   <div className="col-span-1">
-                    <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Estado <span className="text-rose-500">*</span></label>
-                    <select className="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500">
+                    <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5">Estado <span className="text-rose-500 dark:text-rose-300">*</span></label>
+                    <select className="w-full px-2 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500">
                       <option value="PE">PE</option>
                       <option value="SP">SP</option>
                       <option value="RJ">RJ</option>
                     </select>
                   </div>
                   <div className="col-span-1">
-                    <label className="block text-[12px] font-bold text-slate-700 mb-1.5">CEP <span className="text-rose-500">*</span></label>
-                    <input type="text" defaultValue="51021-000" className="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                    <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5">CEP <span className="text-rose-500 dark:text-rose-300">*</span></label>
+                    <input type="text" defaultValue="51021-000" className="w-full px-2 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-[12px] font-bold text-slate-700 mb-1.5 flex items-center gap-1">Telefone <span className="text-rose-500">*</span></label>
+                  <label className="block text-[12px] font-bold text-slate-700 dark:text-foreground mb-1.5 flex items-center gap-1">Telefone <span className="text-rose-500 dark:text-rose-300">*</span></label>
                   <div className="relative">
-                    <Phone size={14} className="absolute left-3 top-2.5 text-slate-400" />
-                    <input type="text" defaultValue="(81) 3123-4567" className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                    <Phone size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-foreground-muted" />
+                    <input type="text" defaultValue="(81) 3123-4567" className="w-full pl-8 pr-3 py-2 bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-lg text-[13px] text-slate-700 dark:text-foreground focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
               </div>
@@ -144,10 +144,10 @@ export default function EmpresaConfigPage() {
 
           {/* Cartão do Logotipo (Direita) */}
           <aside className="w-full lg:w-[340px]">
-            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <div className="bg-white dark:bg-surface-raised border border-slate-200 dark:border-line rounded-xl p-6 shadow-sm">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-slate-800 text-[15px]">Logotipo da Empresa</h3>
-                <Box size={16} className="text-slate-400" />
+                <h3 className="font-bold text-slate-800 dark:text-foreground text-[15px]">Logotipo da Empresa</h3>
+                <Box size={16} className="text-slate-400 dark:text-foreground-muted" />
               </div>
               
               {/* Preview Escuro */}
@@ -178,12 +178,12 @@ export default function EmpresaConfigPage() {
               <button 
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2.5 bg-blue-50 text-blue-600 font-bold text-[13px] rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 mb-2 cursor-pointer"
+                className="w-full py-2.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 font-bold text-[13px] rounded-lg border border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors flex items-center justify-center gap-2 mb-2 cursor-pointer"
               >
                 <UploadCloud size={16} /> Alterar Logo
               </button>
               
-              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+              <p className="text-[11px] text-slate-400 dark:text-foreground-muted text-center leading-relaxed">
                 Formatos aceitos: PNG, JPG. Tamanho máximo: 2MB.
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function EmpresaConfigPage() {
         <div className="flex justify-between items-center pt-4">
           <button 
             onClick={() => router.back()} 
-            className="flex items-center gap-2 text-[13px] font-bold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-[13px] font-bold text-slate-600 dark:text-foreground-muted hover:text-slate-900 dark:hover:text-foreground transition-colors cursor-pointer"
           >
             <ArrowLeft size={16} /> Voltar
           </button>

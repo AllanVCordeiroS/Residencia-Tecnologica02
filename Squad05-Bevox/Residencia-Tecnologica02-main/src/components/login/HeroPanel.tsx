@@ -55,7 +55,7 @@ export default function HeroPanel() {
 
       <header className="relative flex items-start justify-between gap-4">
         <Logo />
-        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300">
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 dark:text-foreground-muted">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
           Ambiente Enterprise v4.8
         </span>
@@ -74,7 +74,7 @@ export default function HeroPanel() {
           de alta performance.
         </h1>
 
-        <p className="mt-6 max-w-md text-base leading-relaxed text-slate-300">
+        <p className="mt-6 max-w-md text-base leading-relaxed text-slate-300 dark:text-foreground-muted">
           Rastreabilidade completa do barril à garrafa, roteirização inteligente
           e controle preventivo de conformidade fiscal e sanitária em um único
           backoffice.
@@ -91,9 +91,9 @@ export default function HeroPanel() {
               >
                 {feature.icon}
               </span>
-              <p className="text-[11px] font-medium text-slate-400">{feature.tag}</p>
+              <p className="text-[11px] font-medium text-slate-400 dark:text-foreground-muted">{feature.tag}</p>
               <p className="mt-0.5 text-sm font-bold leading-tight">{feature.title}</p>
-              <p className="mt-1.5 text-[11px] leading-snug text-slate-400">
+              <p className="mt-1.5 text-[11px] leading-snug text-slate-400 dark:text-foreground-muted">
                 {feature.text}
               </p>
             </li>
@@ -114,14 +114,14 @@ export default function HeroPanel() {
             ))}
           </div>
           <div className="text-xs leading-snug">
-            <p className="font-semibold text-slate-200">
+            <p className="font-semibold text-slate-200 dark:text-foreground-muted">
               Utilizado por distribuidoras líderes
             </p>
-            <p className="text-slate-400">Ex: Adega Distribution Nordeste, Primor Log</p>
+            <p className="text-slate-400 dark:text-foreground-muted">Ex: Adega Distribution Nordeste, Primor Log</p>
           </div>
         </div>
 
-        <p className="flex shrink-0 items-center gap-1.5 text-xs text-slate-300">
+        <p className="flex shrink-0 items-center gap-1.5 text-xs text-slate-300 dark:text-foreground-muted">
           <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
           Disponibilidade SLA 99,98%
         </p>

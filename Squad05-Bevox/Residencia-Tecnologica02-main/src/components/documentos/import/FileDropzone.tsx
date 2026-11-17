@@ -26,11 +26,11 @@ export default function FileDropzone({ onFilesSelected }: Props) {
   }
 
   const etiqueta = {
-    border: "1px solid #e2e8f0",
+    border: "1px solid var(--line)",
     borderRadius: 6,
     padding: "4px 10px",
     fontSize: 12,
-    background: "#fff",
+    background: "var(--surface-raised)",
   } as const;
 
   return (
@@ -43,9 +43,9 @@ export default function FileDropzone({ onFilesSelected }: Props) {
           processar(e.dataTransfer.files);
         }}
         style={{
-          border: "2px dashed #93b4f5",
+          border: "2px dashed var(--line)",
           borderRadius: 12,
-          background: "#f5f8ff",
+          background: "var(--surface-muted)",
           padding: 32,
           textAlign: "center",
           cursor: "pointer",
@@ -64,7 +64,7 @@ export default function FileDropzone({ onFilesSelected }: Props) {
           <span style={etiqueta}>ZIP Regulatório</span>
           <span style={etiqueta}>Planilhas XLSX/CSV</span>
         </div>
-        <p style={{ fontSize: 12, color: "#64748b", marginTop: 12 }}>
+        <p style={{ fontSize: 12, color: "var(--foreground-muted)", marginTop: 12 }}>
           Limite até 50MB por lote (máx. 100 arquivos)
         </p>
       </div>

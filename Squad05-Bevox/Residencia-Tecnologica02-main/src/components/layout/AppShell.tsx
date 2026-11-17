@@ -24,7 +24,7 @@ export default function AppShell({ children, footer }: { children: ReactNode; fo
   }, [menuAberto]);
 
   return (
-    <div className="min-h-screen bg-surface text-slate-900">
+    <div className="min-h-screen bg-surface text-slate-900 dark:text-foreground">
       {/* Sidebar fixa (desktop) */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 lg:block">
         <Sidebar />
