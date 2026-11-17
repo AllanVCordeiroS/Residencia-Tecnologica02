@@ -16,7 +16,8 @@ import {
   SlidersHorizontal,
   type LucideIcon,
 } from "lucide-react";
-import { categoryNames, mockDocuments, totalDocuments } from "@/data/mockDocuments";
+import { categoryNames, totalDocuments } from "@/data/mockDocuments";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import type { DocumentStatus, DueLevel, LegalDocument } from "@/types/document";
 
 const ALL = "all";
@@ -98,10 +99,6 @@ interface FilterOption {
   label: string;
 }
 
-const UNIT_OPTIONS: FilterOption[] = [
-  { value: ALL, label: "Todas as unidades" },
-  ...Array.from(new Set(mockDocuments.map((doc) => doc.unit))).map((unit) => ({ value: unit, label: unit })),
-];
 
 const CATEGORY_OPTIONS: FilterOption[] = [
   { value: ALL, label: "Todas as categorias" },
@@ -314,6 +311,21 @@ function Pagination({ range, total }: { range: string; total: number }) {
 }
 
 export default function DocumentsTable() {
+  const {
+    data: allDocuments = [],
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useDocumentsQuery();
+  const unitOptions = useMemo<FilterOption[]>(
+    () => [
+      { value: ALL, label: "Todas as unidades" },
+      ...Array.from(new Set(allDocuments.map((doc) => doc.unit))).map((unit) => ({ value: unit, label: unit })),
+    ],
+    [allDocuments],
+  );
   const [search, setSearch] = useState("");
   const [unit, setUnit] = useState(ALL);
   const [category, setCategory] = useState(ALL);
@@ -325,7 +337,7 @@ export default function DocumentsTable() {
 
   const documents = useMemo(
     () =>
-      mockDocuments.filter(
+      allDocuments.filter(
         (doc) =>
           (unit === ALL || doc.unit === unit) &&
           (category === ALL || doc.category === category) &&
@@ -335,7 +347,7 @@ export default function DocumentsTable() {
               field.toLowerCase().includes(term)
             ))
       ),
-    [term, unit, category, status]
+    [allDocuments, term, unit, category, status]
   );
 
   const allSelected = documents.length > 0 && documents.every((doc) => selected.has(doc.id));
@@ -372,7 +384,7 @@ export default function DocumentsTable() {
         </div>
 
         <div className="flex flex-wrap items-center gap-[8px]">
-          <FilterSelect label="Filtrar por unidade" value={unit} options={UNIT_OPTIONS} onChange={setUnit} />
+          <FilterSelect label="Filtrar por unidade" value={unit} options={unitOptions} onChange={setUnit} />
           <FilterSelect label="Filtrar por categoria" value={category} options={CATEGORY_OPTIONS} onChange={setCategory} />
           <FilterSelect label="Filtrar por status" value={status} options={STATUS_OPTIONS} onChange={setStatus} />
           <button
@@ -421,7 +433,24 @@ export default function DocumentsTable() {
             </tr>
           </thead>
           <tbody>
-            {documents.map((doc) => (
+            {isPending && (
+              <tr>
+                <td colSpan={8} className="px-[12px] py-[24px] text-center text-[12px] leading-[16px] text-[#64748b]">
+                  Carregando documentos...
+                </td>
+              </tr>
+            )}
+            {isError && (
+              <tr>
+                <td colSpan={8} className="px-[12px] py-[24px] text-center text-[12px] leading-[18px] text-red-600">
+                  <span>{error instanceof Error ? error.message : "Não foi possível carregar os documentos."}</span>{" "}
+                  <button type="button" onClick={() => void refetch()} disabled={isFetching} className="font-semibold underline disabled:opacity-50">
+                    {isFetching ? "Tentando novamente..." : "Tentar novamente"}
+                  </button>
+                </td>
+              </tr>
+            )}
+            {!isPending && !isError && documents.map((doc) => (
               <DocumentRow
                 key={doc.id}
                 doc={doc}
@@ -429,7 +458,7 @@ export default function DocumentsTable() {
                 onToggle={() => toggleOne(doc.id)}
               />
             ))}
-            {documents.length === 0 && (
+            {!isPending && !isError && documents.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-[12px] py-[24px] text-center text-[12px] leading-[16px] text-[#64748b]">
                   Nenhum documento encontrado.
