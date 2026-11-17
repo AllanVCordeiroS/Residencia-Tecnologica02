@@ -2,9 +2,9 @@
 
 export default function DashboardError({ reset }: { error: Error; reset: () => void }) {
   return (
-    <div role="alert" className="mx-auto max-w-md rounded-2xl border border-red-200 bg-white p-8 text-center">
-      <h1 className="text-lg font-bold text-slate-900">Não foi possível carregar o dashboard</h1>
-      <p className="mt-2 text-sm text-slate-500">Houve um erro ao obter os dados. Tente novamente.</p>
+    <div role="alert" className="mx-auto max-w-md rounded-2xl border border-red-200 dark:border-red-800 bg-white dark:bg-surface-raised p-8 text-center">
+      <h1 className="text-lg font-bold text-slate-900 dark:text-foreground">Não foi possível carregar o dashboard</h1>
+      <p className="mt-2 text-sm text-slate-500 dark:text-foreground-muted">Houve um erro ao obter os dados. Tente novamente.</p>
       <button
         type="button"
         onClick={reset}

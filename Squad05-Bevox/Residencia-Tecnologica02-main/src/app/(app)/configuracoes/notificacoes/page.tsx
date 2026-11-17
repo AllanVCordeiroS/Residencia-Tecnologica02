@@ -106,31 +106,31 @@ export default function NotificacoesPage(): React.ReactElement {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen text-gray-800 font-sans">
+    <div className="p-6 bg-gray-50 dark:bg-surface-muted min-h-screen text-gray-800 dark:text-foreground font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Banner de Mensagem / Alerta */}
         {statusMessage && (
-          <div className="p-4 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl text-sm font-medium transition-all">
+          <div className="p-4 bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl text-sm font-medium transition-all">
             {statusMessage}
           </div>
         )}
 
         <div>
-          <div className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-            <span>BEVOX</span> / <span>Adega Distribution</span> / <span className="text-blue-600 font-medium">Configurações</span>
+          <div className="text-xs text-gray-400 dark:text-foreground-muted mb-1 flex items-center gap-1">
+            <span>BEVOX</span> / <span>Adega Distribution</span> / <span className="text-blue-600 dark:text-blue-300 font-medium">Configurações</span>
           </div>
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
                 <span className="p-1.5 bg-blue-600 text-white rounded-lg">🔔</span>
                 Notificações
               </h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-foreground-muted">
                 Configure os alertas e defina quem receberá as notificações.
               </p>
             </div>
-            <span className="text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-medium flex items-center gap-1 border border-emerald-200">
+            <span className="text-xs text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full font-medium flex items-center gap-1 border border-emerald-200 dark:border-emerald-800">
               ● Configurações salvas
             </span>
           </div>
@@ -141,76 +141,76 @@ export default function NotificacoesPage(): React.ReactElement {
           <div className="lg:col-span-2 space-y-6">
             
             {/* Canais de Notificação */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-sm mb-1 flex items-center gap-2">
+            <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-1 flex items-center gap-2">
                 <span>📢</span> Canais de notificação
               </h3>
-              <p className="text-xs text-gray-500 mb-4">Escolha como deseja receber os alertas do sistema.</p>
+              <p className="text-xs text-gray-500 dark:text-foreground-muted mb-4">Escolha como deseja receber os alertas do sistema.</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="border border-gray-200 rounded-xl p-4 flex flex-col items-center text-center relative bg-gray-50/50">
-                  <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-sm mb-2">✉️</div>
-                  <span className="font-bold text-xs text-gray-900">E-mail</span>
-                  <span className="text-[10px] text-gray-400 mb-3">Receba notificações por e-mail.</span>
+                <div className="border border-gray-200 dark:border-line rounded-xl p-4 flex flex-col items-center text-center relative bg-gray-50/50 dark:bg-surface-muted/50">
+                  <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 flex items-center justify-center text-sm mb-2">✉️</div>
+                  <span className="font-bold text-xs text-gray-900 dark:text-foreground">E-mail</span>
+                  <span className="text-[10px] text-gray-400 dark:text-foreground-muted mb-3">Receba notificações por e-mail.</span>
                   <button 
                     type="button"
                     onClick={() => setEmailActive(!emailActive)}
-                    className={`w-10 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${emailActive ? 'bg-blue-600' : 'bg-gray-300'}`}
+                    className={`w-10 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${emailActive ? 'bg-blue-600' : 'bg-gray-300 dark:bg-surface-muted'}`}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${emailActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                    <div className={`w-4 h-4 bg-white dark:bg-surface-raised rounded-full transition-transform ${emailActive ? 'translate-x-5' : 'translate-x-0'}`} />
                   </button>
                 </div>
 
-                <div className="border border-gray-200 rounded-xl p-4 flex flex-col items-center text-center relative bg-gray-50/50">
-                  <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-sm mb-2">📲</div>
-                  <span className="font-bold text-xs text-gray-900">Notificação no sistema</span>
-                  <span className="text-[10px] text-gray-400 mb-3">Visualize os alertas no painel.</span>
+                <div className="border border-gray-200 dark:border-line rounded-xl p-4 flex flex-col items-center text-center relative bg-gray-50/50 dark:bg-surface-muted/50">
+                  <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 flex items-center justify-center text-sm mb-2">📲</div>
+                  <span className="font-bold text-xs text-gray-900 dark:text-foreground">Notificação no sistema</span>
+                  <span className="text-[10px] text-gray-400 dark:text-foreground-muted mb-3">Visualize os alertas no painel.</span>
                   <button 
                     type="button"
                     onClick={() => setSistemaActive(!sistemaActive)}
-                    className={`w-10 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${sistemaActive ? 'bg-blue-600' : 'bg-gray-300'}`}
+                    className={`w-10 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${sistemaActive ? 'bg-blue-600' : 'bg-gray-300 dark:bg-surface-muted'}`}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${sistemaActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                    <div className={`w-4 h-4 bg-white dark:bg-surface-raised rounded-full transition-transform ${sistemaActive ? 'translate-x-5' : 'translate-x-0'}`} />
                   </button>
                 </div>
 
-                <div className="border border-gray-200 rounded-xl p-4 flex flex-col items-center text-center relative bg-gray-50/50">
-                  <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm mb-2">💬</div>
-                  <span className="font-bold text-xs text-gray-900">WhatsApp <span className="text-[9px] font-normal text-gray-400">(opcional)</span></span>
-                  <span className="text-[10px] text-gray-400 mb-3">Receba alertas via WhatsApp.</span>
+                <div className="border border-gray-200 dark:border-line rounded-xl p-4 flex flex-col items-center text-center relative bg-gray-50/50 dark:bg-surface-muted/50">
+                  <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-sm mb-2">💬</div>
+                  <span className="font-bold text-xs text-gray-900 dark:text-foreground">WhatsApp <span className="text-[9px] font-normal text-gray-400 dark:text-foreground-muted">(opcional)</span></span>
+                  <span className="text-[10px] text-gray-400 dark:text-foreground-muted mb-3">Receba alertas via WhatsApp.</span>
                   <button 
                     type="button"
                     onClick={() => setWhatsappActive(!whatsappActive)}
-                    className={`w-10 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${whatsappActive ? 'bg-blue-600' : 'bg-gray-300'}`}
+                    className={`w-10 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${whatsappActive ? 'bg-blue-600' : 'bg-gray-300 dark:bg-surface-muted'}`}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${whatsappActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                    <div className={`w-4 h-4 bg-white dark:bg-surface-raised rounded-full transition-transform ${whatsappActive ? 'translate-x-5' : 'translate-x-0'}`} />
                   </button>
                 </div>
               </div>
             </div>
 
             {/* Eventos e Preferências */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-sm mb-1 flex items-center gap-2">
+            <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-1 flex items-center gap-2">
                 <span>⚙️</span> Eventos e preferências
               </h3>
-              <p className="text-xs text-gray-500 mb-4">Selecione quais eventos irão gerar notificações.</p>
+              <p className="text-xs text-gray-500 dark:text-foreground-muted mb-4">Selecione quais eventos irão gerar notificações.</p>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="text-gray-400 border-b border-gray-100">
+                    <tr className="text-gray-400 dark:text-foreground-muted border-b border-gray-100 dark:border-line">
                       <th className="pb-2 font-medium">EVENTO</th>
                       <th className="pb-2 font-medium">DESCRIÇÃO</th>
                       <th className="pb-2 font-medium">CANAL</th>
                       <th className="pb-2 font-medium">FREQUÊNCIA</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-gray-50 dark:divide-line">
                     {preferences.map((pref) => (
                       <tr key={pref.id}>
-                        <td className="py-3 font-semibold text-gray-900">{pref.evento}</td>
-                        <td className="py-3 text-gray-500 text-[11px] max-w-[200px]">{pref.descricao}</td>
+                        <td className="py-3 font-semibold text-gray-900 dark:text-foreground">{pref.evento}</td>
+                        <td className="py-3 text-gray-500 dark:text-foreground-muted text-[11px] max-w-[200px]">{pref.descricao}</td>
                         <td className="py-3">
                           <div className="flex items-center gap-2 text-[10px]">
                             <label className="flex items-center gap-1 cursor-pointer">
@@ -218,7 +218,7 @@ export default function NotificacoesPage(): React.ReactElement {
                                 type="checkbox" 
                                 checked={pref.email} 
                                 onChange={() => handleCheckboxChange(pref.id, "email")}
-                                className="rounded text-blue-600 focus:ring-0" 
+                                className="rounded text-blue-600 dark:text-blue-300 focus:ring-0"
                               />
                               <span>E-mail</span>
                             </label>
@@ -227,7 +227,7 @@ export default function NotificacoesPage(): React.ReactElement {
                                 type="checkbox" 
                                 checked={pref.sistema} 
                                 onChange={() => handleCheckboxChange(pref.id, "sistema")}
-                                className="rounded text-blue-600 focus:ring-0" 
+                                className="rounded text-blue-600 dark:text-blue-300 focus:ring-0"
                               />
                               <span>Sistema</span>
                             </label>
@@ -236,7 +236,7 @@ export default function NotificacoesPage(): React.ReactElement {
                                 type="checkbox" 
                                 checked={pref.whatsapp} 
                                 onChange={() => handleCheckboxChange(pref.id, "whatsapp")}
-                                className="rounded text-blue-600 focus:ring-0" 
+                                className="rounded text-blue-600 dark:text-blue-300 focus:ring-0"
                               />
                               <span>WhatsApp</span>
                             </label>
@@ -246,7 +246,7 @@ export default function NotificacoesPage(): React.ReactElement {
                           <select 
                             value={pref.frequencia} 
                             onChange={(e) => handleFrequenciaChange(pref.id, e.target.value)}
-                            className="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-[11px] text-gray-700 cursor-pointer"
+                            className="bg-gray-50 dark:bg-surface-muted border border-gray-200 dark:border-line rounded px-2 py-1 text-[11px] text-gray-700 dark:text-foreground cursor-pointer"
                           >
                             <option value="Imediato">Imediato</option>
                             <option value="7 dias antes">7 dias antes</option>
@@ -261,19 +261,19 @@ export default function NotificacoesPage(): React.ReactElement {
             </div>
 
             {/* Horário e Frequência */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-sm mb-1 flex items-center gap-2">
+            <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-1 flex items-center gap-2">
                 <span>🕒</span> Horário e frequência
               </h3>
-              <p className="text-xs text-gray-500 mb-4">Defina o horário de envio das notificações por e-mail.</p>
+              <p className="text-xs text-gray-500 dark:text-foreground-muted mb-4">Defina o horário de envio das notificações por e-mail.</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Horário preferencial</label>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-foreground-muted mb-1">Horário preferencial</label>
                   <select 
                     value={horario} 
                     onChange={(e) => setHorario(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium text-gray-700 cursor-pointer"
+                    className="w-full bg-gray-50 dark:bg-surface-muted border border-gray-200 dark:border-line rounded-lg px-3 py-2 text-xs font-medium text-gray-700 dark:text-foreground cursor-pointer"
                   >
                     <option value="06:00">🕒 06:00</option>
                     <option value="08:00">🕒 08:00</option>
@@ -283,7 +283,7 @@ export default function NotificacoesPage(): React.ReactElement {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Dias da semana</label>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-foreground-muted mb-1">Dias da semana</label>
                   <div className="flex gap-1 flex-wrap">
                     {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((day, idx) => {
                       const isSelected = selectedDays.includes(day);
@@ -293,7 +293,7 @@ export default function NotificacoesPage(): React.ReactElement {
                           type="button"
                           onClick={() => toggleDay(day)}
                           className={`px-2.5 py-1.5 rounded text-xs font-medium cursor-pointer transition-colors ${
-                            isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-surface-muted text-gray-600 dark:text-foreground-muted hover:bg-gray-200 dark:hover:bg-surface-muted'
                           }`}
                         >
                           {day}
@@ -310,32 +310,32 @@ export default function NotificacoesPage(): React.ReactElement {
           <div className="space-y-6">
             
             {/* Pré-visualização */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-sm mb-1 flex items-center gap-2">
+            <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-1 flex items-center gap-2">
                 <span>👁️</span> Pré-visualização
               </h3>
-              <p className="text-xs text-gray-500 mb-4">Veja um exemplo de como será a notificação.</p>
+              <p className="text-xs text-gray-500 dark:text-foreground-muted mb-4">Veja um exemplo de como será a notificação.</p>
 
-              <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/60 space-y-3">
+              <div className="border border-gray-100 dark:border-line rounded-xl p-4 bg-gray-50/60 dark:bg-surface-muted/60 space-y-3">
                 <div className="flex justify-between items-center text-[11px]">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-black text-white rounded font-bold text-[9px] flex items-center justify-center">BX</div>
                     <div>
-                      <div className="font-bold text-gray-900">BEVOX</div>
-                      <div className="text-gray-400 text-[9px]">notificacoes@bevox.com.br</div>
+                      <div className="font-bold text-gray-900 dark:text-foreground">BEVOX</div>
+                      <div className="text-gray-400 dark:text-foreground-muted text-[9px]">notificacoes@bevox.com.br</div>
                     </div>
                   </div>
-                  <span className="text-gray-400 text-[10px]">Hoje, {horario}</span>
+                  <span className="text-gray-400 dark:text-foreground-muted text-[10px]">Hoje, {horario}</span>
                 </div>
 
                 <div>
-                  <div className="font-bold text-xs text-gray-900 mb-1">Tarefa atrasada</div>
-                  <p className="text-[11px] text-gray-600 leading-relaxed">
+                  <div className="font-bold text-xs text-gray-900 dark:text-foreground mb-1">Tarefa atrasada</div>
+                  <p className="text-[11px] text-gray-600 dark:text-foreground-muted leading-relaxed">
                     A tarefa &quot;Conferir documentos de licenciamento&quot; da Unidade Matriz — Recife está atrasada.
                   </p>
                 </div>
 
-                <div className="text-[10px] text-gray-500 bg-white p-2 rounded border border-gray-100 space-y-0.5">
+                <div className="text-[10px] text-gray-500 dark:text-foreground-muted bg-white dark:bg-surface-raised p-2 rounded border border-gray-100 dark:border-line space-y-0.5">
                   <div>👤 <strong>Responsável:</strong> Ana Souza</div>
                   <div>📅 <strong>Prazo:</strong> 20/10/2026</div>
                 </div>
@@ -351,16 +351,16 @@ export default function NotificacoesPage(): React.ReactElement {
             </div>
 
             {/* Testar Notificações */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-sm mb-1 flex items-center gap-2">
+            <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-1 flex items-center gap-2">
                 <span>🧪</span> Testar notificações
               </h3>
-              <p className="text-xs text-gray-500 mb-4">Receba um alerta de teste para verificar as configurações atuais.</p>
+              <p className="text-xs text-gray-500 dark:text-foreground-muted mb-4">Receba um alerta de teste para verificar as configurações atuais.</p>
 
               <button 
                 type="button"
                 onClick={handleEnviarTeste}
-                className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs py-2 rounded-lg font-medium shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full bg-white dark:bg-surface-raised border border-gray-300 dark:border-line hover:bg-gray-50 dark:hover:bg-surface-muted text-gray-700 dark:text-foreground text-xs py-2 rounded-lg font-medium shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <span>▷</span> Enviar notificação de teste
               </button>
@@ -371,11 +371,11 @@ export default function NotificacoesPage(): React.ReactElement {
         </div>
 
         {/* Rodapé de Ações */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-line">
           <button 
             type="button"
             onClick={() => router.back()}
-            className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+            className="bg-white dark:bg-surface-raised border border-gray-300 dark:border-line hover:bg-gray-50 dark:hover:bg-surface-muted text-gray-700 dark:text-foreground px-5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
           >
             Cancelar
           </button>

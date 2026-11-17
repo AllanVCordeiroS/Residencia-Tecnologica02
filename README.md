@@ -209,7 +209,6 @@ Integrantes em ordem alfabética:
 - Allan Vinícius
 - Arthur Santiago
 - Breno Matheus
-- Bruno Falcão
 - Emanuelly Lapa
 - Matheus Felipe
 - Thays Fernanda

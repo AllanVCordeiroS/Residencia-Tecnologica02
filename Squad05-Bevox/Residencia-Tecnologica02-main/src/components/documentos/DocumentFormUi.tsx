@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card";
 /** Primitivos visuais compartilhados pelas seções do formulário "Novo Documento". */
 
 export const INPUT_CLASSE =
-  "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-[13px] text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 read-only:bg-slate-100 read-only:text-slate-600 aria-invalid:border-red-400 aria-invalid:ring-2 aria-invalid:ring-red-100";
+  "h-10 w-full rounded-lg border border-slate-200 dark:border-line bg-white dark:bg-surface-raised px-3 text-[13px] text-slate-800 dark:text-foreground outline-none transition placeholder:text-slate-400 dark:placeholder:text-foreground-muted hover:border-slate-300 dark:hover:border-line focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 dark:disabled:bg-surface-muted disabled:text-slate-400 dark:disabled:text-foreground-muted read-only:bg-slate-100 dark:read-only:bg-surface-muted read-only:text-slate-600 dark:read-only:text-foreground-muted aria-invalid:border-red-400 aria-invalid:ring-2 aria-invalid:ring-red-100";
 
 export function atributosDeErro(id: string, mensagem?: string) {
   return {
@@ -40,12 +40,12 @@ export function SecaoCard({
           {icone}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 id={id} className="text-[15px] font-semibold leading-tight text-slate-900">
+          <h2 id={id} className="text-[15px] font-semibold leading-tight text-slate-900 dark:text-foreground">
             {titulo}
           </h2>
-          <p className="mt-0.5 text-[12px] text-slate-500">{subtitulo}</p>
+          <p className="mt-0.5 text-[12px] text-slate-500 dark:text-foreground-muted">{subtitulo}</p>
         </div>
-        <span className="hidden shrink-0 rounded border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-slate-500 sm:block">
+        <span className="hidden shrink-0 rounded border border-slate-200 dark:border-line bg-slate-50 dark:bg-surface-muted px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-slate-500 dark:text-foreground-muted sm:block">
           Seção {numero} de 3
         </span>
       </header>
@@ -71,17 +71,17 @@ export function Campo({
 }) {
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1.5 block text-[13px] font-medium text-slate-800">
+      <label htmlFor={id} className="mb-1.5 block text-[13px] font-medium text-slate-800 dark:text-foreground">
         {rotulo}
         {obrigatorio && (
-          <span aria-hidden="true" className="ml-1 text-red-500">
+          <span aria-hidden="true" className="ml-1 text-red-500 dark:text-red-300">
             *
           </span>
         )}
       </label>
       {children}
       {erro && (
-        <p id={`${id}-erro`} role="alert" className="mt-1 text-[12px] text-red-600">
+        <p id={`${id}-erro`} role="alert" className="mt-1 text-[12px] text-red-600 dark:text-red-300">
           {erro}
         </p>
       )}
@@ -98,7 +98,7 @@ export function EntradaTexto({
     <div className="relative">
       <input {...props} className={`${INPUT_CLASSE} ${icone ? "pr-10" : ""} ${className}`} />
       {icone && (
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-foreground-muted">
           {icone}
         </span>
       )}
@@ -114,7 +114,7 @@ export function Selecao({ className = "", children, ...props }: ComponentProps<"
       </select>
       <ChevronDown
         aria-hidden="true"
-        className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+        className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted"
       />
     </div>
   );
@@ -138,7 +138,7 @@ export function Caixa({
       <input
         {...props}
         type="checkbox"
-        className={`peer size-[18px] cursor-pointer appearance-none rounded-[5px] border border-slate-300 bg-white transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 ${TOM_CAIXA[tom]}`}
+        className={`peer size-[18px] cursor-pointer appearance-none rounded-[5px] border border-slate-300 dark:border-line bg-white dark:bg-surface-raised transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 ${TOM_CAIXA[tom]}`}
       />
       <Check
         aria-hidden="true"
@@ -156,7 +156,7 @@ export function RadioPonto(props: Omit<ComponentProps<"input">, "type">) {
       <input
         {...props}
         type="radio"
-        className="peer size-[18px] cursor-pointer appearance-none rounded-full border-2 border-slate-300 bg-white transition checked:border-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        className="peer size-[18px] cursor-pointer appearance-none rounded-full border-2 border-slate-300 dark:border-line bg-white dark:bg-surface-raised transition checked:border-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
       />
       <span
         aria-hidden="true"

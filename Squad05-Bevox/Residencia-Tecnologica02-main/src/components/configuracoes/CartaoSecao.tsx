@@ -21,20 +21,20 @@ export function CartaoSecao({
   return (
     <section
       aria-labelledby={idTitulo}
-      className={`rounded-xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}
+      className={`rounded-xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-5 shadow-sm ${className}`}
     >
       <header className="mb-5 flex items-center gap-3">
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
           aria-hidden="true"
         >
           <Icone className="h-5 w-5" />
         </div>
         <div className="min-w-0">
-          <h2 id={idTitulo} className="text-base font-semibold text-slate-900">
+          <h2 id={idTitulo} className="text-base font-semibold text-slate-900 dark:text-foreground">
             {titulo}
           </h2>
-          <p className="text-[13px] leading-snug text-slate-500">{descricao}</p>
+          <p className="text-[13px] leading-snug text-slate-500 dark:text-foreground-muted">{descricao}</p>
         </div>
       </header>
 

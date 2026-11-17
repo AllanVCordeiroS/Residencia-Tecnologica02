@@ -34,7 +34,7 @@ export default function DocumentCustodySection() {
     <SecaoCard
       id="secao-custodia"
       numero={3}
-      tile="bg-indigo-50 text-indigo-600"
+      tile="bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300"
       icone={<UserRoundCog className="size-[18px]" aria-hidden="true" />}
       titulo="Custódia & Responsabilidade Técnica"
       subtitulo="Gestor responsável, alçada de segurança e nível de confidencialidade"
@@ -65,10 +65,10 @@ export default function DocumentCustodySection() {
 
       <div role="group" aria-labelledby="confidencialidade-titulo" className="mt-5 min-w-0">
         <div className="mb-2 flex items-center justify-between">
-          <span id="confidencialidade-titulo" className="text-[13px] font-medium text-slate-800">
+          <span id="confidencialidade-titulo" className="text-[13px] font-medium text-slate-800 dark:text-foreground">
             Nível de Confidencialidade &amp; Acesso Restrito
           </span>
-          <Lock className="size-3.5 text-slate-400" aria-hidden="true" />
+          <Lock className="size-3.5 text-slate-400 dark:text-foreground-muted" aria-hidden="true" />
         </div>
 
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
@@ -78,16 +78,16 @@ export default function DocumentCustodySection() {
               <label
                 key={opcao.id}
                 className={`flex cursor-pointer flex-col gap-1.5 rounded-lg border p-3 transition ${
-                  ativo ? "border-blue-500 bg-blue-50/60" : "border-slate-200 bg-white hover:border-slate-300"
+                  ativo ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/40" : "border-slate-200 dark:border-line bg-white dark:bg-surface-raised hover:border-slate-300 dark:hover:border-line"
                 }`}
               >
                 <span className="flex items-start justify-between gap-2">
-                  <span className={`text-[13px] font-semibold ${ativo ? "text-blue-700" : "text-slate-900"}`}>
+                  <span className={`text-[13px] font-semibold ${ativo ? "text-blue-700 dark:text-blue-300" : "text-slate-900 dark:text-foreground"}`}>
                     {opcao.titulo}
                   </span>
                   <RadioPonto value={opcao.id} {...register("confidencialidade")} />
                 </span>
-                <span className={`text-[11.5px] leading-snug ${ativo ? "text-blue-600" : "text-slate-400"}`}>
+                <span className={`text-[11.5px] leading-snug ${ativo ? "text-blue-600 dark:text-blue-300" : "text-slate-400 dark:text-foreground-muted"}`}>
                   {opcao.descricao}
                 </span>
               </label>
@@ -110,7 +110,7 @@ export default function DocumentCustodySection() {
           placeholder="Ex.: Alvará definitivo emitido após vistoria sanitária e aprovação de habite-se."
           className={`${INPUT_CLASSE} h-auto resize-y py-2.5 leading-snug`}
         />
-        <p className="mt-1 text-right text-[11px] text-slate-400">{observacoes.length}/500</p>
+        <p className="mt-1 text-right text-[11px] text-slate-400 dark:text-foreground-muted">{observacoes.length}/500</p>
       </Campo>
     </SecaoCard>
   );

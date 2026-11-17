@@ -37,11 +37,11 @@ function Select({
         aria-label={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-11 w-full min-w-40 appearance-none rounded-lg border-0 bg-slate-50 pl-3 pr-9 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="h-11 w-full min-w-40 appearance-none rounded-lg border-0 bg-slate-50 dark:bg-surface-muted pl-3 pr-9 text-sm text-slate-700 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         {children}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-foreground-muted" />
     </div>
   );
 }
@@ -60,13 +60,13 @@ export function UsersFilters({ filtros, onChange, contagem }: Props) {
     <div className="px-4 pt-4">
       <div className="flex flex-col gap-3 lg:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
           <input
             type="search"
             value={filtros.busca}
             onChange={(e) => set("busca", e.target.value)}
             placeholder="Buscar por nome, e-mail ou unidade..."
-            className="h-11 w-full rounded-lg bg-slate-50 pl-10 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="h-11 w-full rounded-lg bg-slate-50 dark:bg-surface-muted pl-10 pr-3 text-sm text-slate-800 dark:text-foreground placeholder:text-slate-400 dark:placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -93,7 +93,7 @@ export function UsersFilters({ filtros, onChange, contagem }: Props) {
 
         <button
           type="button"
-          className="flex h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          className="flex h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted"
         >
           <SlidersHorizontal className="h-4 w-4" />
           Filtros
@@ -112,11 +112,11 @@ export function UsersFilters({ filtros, onChange, contagem }: Props) {
               onClick={() => set("status", t.key)}
               className={cn(
                 "-mb-px flex items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-sm font-medium transition-colors",
-                active ? "border-blue-600 font-semibold text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"
+                active ? "border-blue-600 font-semibold text-blue-700 dark:text-blue-300" : "border-transparent text-slate-500 dark:text-foreground-muted hover:text-slate-800 dark:hover:text-foreground"
               )}
             >
               {t.label}
-              <span className={cn("rounded-md px-1.5 py-0.5 text-xs font-semibold", active ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600")}>
+              <span className={cn("rounded-md px-1.5 py-0.5 text-xs font-semibold", active ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" : "bg-slate-100 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted")}>
                 {t.count}
               </span>
             </button>

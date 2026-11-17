@@ -49,8 +49,8 @@ export default function ConfiguracoesPage() {
           <Settings size={24} aria-hidden="true" />
         </span>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Configurações</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-foreground">Configurações</h1>
+          <p className="text-sm text-slate-500 dark:text-foreground-muted">
             Gerencie as preferências e os parâmetros do BEVOX.
           </p>
         </div>
@@ -61,21 +61,21 @@ export default function ConfiguracoesPage() {
           <Link
             key={href}
             href={href}
-            className="group flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5 transition-colors hover:border-blue-300"
+            className="group flex items-center justify-between gap-4 rounded-lg border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-5 transition-colors hover:border-blue-300 dark:hover:border-blue-800"
           >
             <span className="flex items-center gap-4">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
                 <Icon size={20} aria-hidden="true" />
               </span>
               <span>
-                <span className="block font-semibold text-slate-800">{label}</span>
-                <span className="mt-1 block text-sm text-slate-500">{description}</span>
+                <span className="block font-semibold text-slate-800 dark:text-foreground">{label}</span>
+                <span className="mt-1 block text-sm text-slate-500 dark:text-foreground-muted">{description}</span>
               </span>
             </span>
             <ChevronRight
               size={18}
               aria-hidden="true"
-              className="shrink-0 text-slate-400 transition-colors group-hover:text-blue-600"
+              className="shrink-0 text-slate-400 dark:text-foreground-muted transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-300"
             />
           </Link>
         ))}

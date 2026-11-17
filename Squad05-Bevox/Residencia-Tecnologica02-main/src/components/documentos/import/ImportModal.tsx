@@ -76,7 +76,7 @@ export default function ImportModal({ onClose }: Props) {
     >
       <div
         style={{
-          background: "#fff",
+          background: "var(--surface-raised)",
           borderRadius: 16,
           width: "min(720px, 100%)",
           maxHeight: "90vh",
@@ -90,12 +90,12 @@ export default function ImportModal({ onClose }: Props) {
             justifyContent: "space-between",
             alignItems: "flex-start",
             padding: 20,
-            borderBottom: "1px solid #e2e8f0",
+            borderBottom: "1px solid var(--line)",
           }}
         >
           <div>
             <h2 style={{ margin: 0, fontSize: 18 }}>Importação em Lote de Documentos</h2>
-            <p style={{ margin: "4px 0 0", fontSize: 13, color: "#64748b" }}>
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--foreground-muted)" }}>
               Faça upload simulado de múltiplos PDFs, XMLs ou planilhas de indexação.
             </p>
           </div>
@@ -113,14 +113,14 @@ export default function ImportModal({ onClose }: Props) {
 
           {itens.length > 0 && (
             <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--foreground-muted)", marginBottom: 8 }}>
                 FILA DE INGESTÃO E PROCESSAMENTO ({itens.length} arquivos)
               </div>
               {itens.map((item) => (
                 <div
                   key={item.id}
                   style={{
-                    border: "1px solid #e2e8f0",
+                    border: "1px solid var(--line)",
                     borderRadius: 10,
                     padding: 12,
                     marginBottom: 8,
@@ -143,7 +143,7 @@ export default function ImportModal({ onClose }: Props) {
                       <div style={{ fontSize: 14, fontWeight: 600, wordBreak: "break-all" }}>
                         {item.nome}
                       </div>
-                      <div style={{ fontSize: 12, color: "#64748b" }}>
+                      <div style={{ fontSize: 12, color: "var(--foreground-muted)" }}>
                         {formatar(item.tamanho)} •{" "}
                         {item.status === "enviando" && "Processando..."}
                         {item.status === "sucesso" && "Processado com sucesso"}
@@ -155,10 +155,10 @@ export default function ImportModal({ onClose }: Props) {
                       aria-label="Remover"
                       style={{ background: "none", border: "none", cursor: "pointer" }}
                     >
-                      <Trash2 size={16} color="#94a3b8" />
+                      <Trash2 size={16} color="var(--foreground-muted)" />
                     </button>
                   </div>
-                  <div style={{ background: "#e2e8f0", height: 6, borderRadius: 3, marginTop: 10 }}>
+                  <div style={{ background: "var(--line)", height: 6, borderRadius: 3, marginTop: 10 }}>
                     <div
                       style={{
                         width: `${item.progresso}%`,
@@ -182,10 +182,10 @@ export default function ImportModal({ onClose }: Props) {
             gap: 12,
             flexWrap: "wrap",
             padding: 20,
-            borderTop: "1px solid #e2e8f0",
+            borderTop: "1px solid var(--line)",
           }}
         >
-          <span style={{ fontSize: 12, color: "#475569" }}>
+          <span style={{ fontSize: 12, color: "var(--foreground-muted)" }}>
             {itens.length} arquivos selecionados ({totalMB} MB) • {processados} processado(s),{" "}
             {andamento} em andamento, {comErro} com erro
           </span>
@@ -195,8 +195,8 @@ export default function ImportModal({ onClose }: Props) {
               style={{
                 padding: "10px 16px",
                 borderRadius: 8,
-                border: "1px solid #cbd5e1",
-                background: "#fff",
+                border: "1px solid var(--line)",
+                background: "var(--surface-raised)",
                 cursor: "pointer",
               }}
             >

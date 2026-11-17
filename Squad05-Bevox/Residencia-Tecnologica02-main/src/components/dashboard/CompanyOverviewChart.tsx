@@ -107,7 +107,7 @@ export default function CompanyOverviewChart({
           </defs>
 
           <CartesianGrid
-            stroke="#e2e8f0"
+            stroke="var(--chart-grid)"
             strokeDasharray="3 4"
             vertical={false}
           />
@@ -115,8 +115,8 @@ export default function CompanyOverviewChart({
           <XAxis
             dataKey="rotulo"
             tickLine={false}
-            axisLine={{ stroke: "#e2e8f0" }}
-            tick={{ fontSize: 11, fill: "#94a3b8" }}
+            axisLine={{ stroke: "var(--chart-grid)" }}
+            tick={{ fontSize: 11, fill: "var(--chart-axis)" }}
             interval={0}
           />
 
@@ -125,15 +125,17 @@ export default function CompanyOverviewChart({
             tickCount={6}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "#94a3b8" }}
+            tick={{ fontSize: 11, fill: "var(--chart-axis)" }}
             width={44}
           />
 
           <Tooltip
-            cursor={{ stroke: "#cbd5e1", strokeDasharray: "3 3" }}
+            cursor={{ stroke: "var(--chart-grid)", strokeDasharray: "3 3" }}
             contentStyle={{
               borderRadius: 12,
-              border: "1px solid #e4e8f1",
+              border: "1px solid var(--line)",
+              backgroundColor: "var(--surface-raised)",
+              color: "var(--foreground)",
               fontSize: 12,
               boxShadow: "0 8px 24px rgba(15,23,42,.08)",
             }}
@@ -150,7 +152,7 @@ export default function CompanyOverviewChart({
               fill={`url(#${uid}-${s.key})`}
               dot={{
                 r: 4,
-                fill: "#fff",
+                fill: "var(--surface-raised)",
                 stroke: s.cor,
                 strokeWidth: 2,
               }}
@@ -201,14 +203,14 @@ export default function CompanyOverviewChart({
               />
 
               <span className="leading-tight">
-                <span className="text-[14px] font-bold text-slate-900">
+                <span className="text-[14px] font-bold text-slate-900 dark:text-foreground">
                   {ultimo[s.key]}
                 </span>
 
                 {v !== null && (
                   <span
                     className={`ml-1.5 text-[11px] font-semibold ${
-                      v >= 0 ? "text-emerald-600" : "text-red-600"
+                      v >= 0 ? "text-emerald-600 dark:text-emerald-300" : "text-red-600 dark:text-red-300"
                     }`}
                   >
                     {v >= 0 ? "+" : ""}
@@ -216,7 +218,7 @@ export default function CompanyOverviewChart({
                   </span>
                 )}
 
-                <span className="block text-[12px] text-slate-500">
+                <span className="block text-[12px] text-slate-500 dark:text-foreground-muted">
                   {s.legenda}
                 </span>
               </span>
@@ -225,7 +227,7 @@ export default function CompanyOverviewChart({
         })}
       </ul>
 
-      <p className="mt-3 text-[11px] text-slate-400">
+      <p className="mt-3 text-[11px] text-slate-400 dark:text-foreground-muted">
         Variação em relação ao início do período anual • dados demonstrativos.
       </p>
     </Card>

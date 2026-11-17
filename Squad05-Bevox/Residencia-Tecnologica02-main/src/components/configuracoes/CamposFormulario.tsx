@@ -7,12 +7,12 @@ import type { OpcaoSelect } from '@/types/configuracoes';
 
 export function classeControle(comErro: boolean): string {
   return [
-    'h-10 w-full rounded-lg border bg-slate-50 px-3 text-sm text-slate-900',
-    'outline-none transition-colors placeholder:text-slate-400',
-    'focus:bg-white focus:ring-2',
+    'h-10 w-full rounded-lg border bg-slate-50 dark:bg-surface-muted px-3 text-sm text-slate-900 dark:text-foreground',
+    'outline-none transition-colors placeholder:text-slate-400 dark:placeholder:text-foreground-muted',
+    'focus:bg-white dark:focus:bg-surface-raised focus:ring-2',
     comErro
       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-      : 'border-slate-200/70 focus:border-blue-600 focus:ring-blue-600/20',
+      : 'border-slate-200/70 dark:border-line/70 focus:border-blue-600 focus:ring-blue-600/20',
   ].join(' ');
 }
 
@@ -25,12 +25,12 @@ interface CampoProps {
 }
 
 export function Campo({ id, rotulo, obrigatorio, erro, children }: CampoProps) {
-  const classeRotulo = 'mb-1.5 block text-xs font-medium text-slate-700';
+  const classeRotulo = 'mb-1.5 block text-xs font-medium text-slate-700 dark:text-foreground';
   const conteudo = (
     <>
       {rotulo}
       {obrigatorio && (
-        <span className="ml-0.5 text-red-500" aria-hidden="true">
+        <span className="ml-0.5 text-red-500 dark:text-red-300" aria-hidden="true">
           *
         </span>
       )}
@@ -53,7 +53,7 @@ export function Campo({ id, rotulo, obrigatorio, erro, children }: CampoProps) {
         <p
           id={id ? `${id}-erro` : undefined}
           role="alert"
-          className="mt-1 text-xs text-red-600"
+          className="mt-1 text-xs text-red-600 dark:text-red-300"
         >
           {erro}
         </p>
@@ -142,7 +142,7 @@ export function CampoSelect<T extends string | number>({
           ))}
         </select>
         <ChevronDown
-          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-foreground-muted"
           aria-hidden="true"
         />
       </div>
@@ -185,7 +185,7 @@ export function CampoPercentual({
     <Campo id={id} rotulo={rotulo} obrigatorio={obrigatorio} erro={erro}>
       <div className="relative">
         <span
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 dark:text-foreground-muted"
           aria-hidden="true"
         >
           %
@@ -230,7 +230,7 @@ export function Interruptor({
   onChange,
   texto,
   ariaLabel,
-  classeTexto = 'text-sm font-medium text-slate-900',
+  classeTexto = 'text-sm font-medium text-slate-900 dark:text-foreground',
 }: InterruptorProps) {
   return (
     <div className="inline-flex items-center gap-3">
@@ -241,12 +241,12 @@ export function Interruptor({
         aria-label={ariaLabel ?? texto}
         onClick={() => onChange(!ativo)}
         className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 ${
-          ativo ? 'bg-blue-700' : 'bg-slate-300'
+          ativo ? 'bg-blue-700' : 'bg-slate-300 dark:bg-surface-muted'
         }`}
       >
         <span
           aria-hidden="true"
-          className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${
+          className={`inline-block h-5 w-5 rounded-full bg-white dark:bg-surface-raised shadow transition-transform ${
             ativo ? 'translate-x-[22px]' : 'translate-x-0.5'
           }`}
         />
