@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronsUpDown, LogOut } from "lucide-react";
 
 import { BeerIcon } from "@/components/login/icons";
 import { navGroups } from "@/config/navigation";
-import { empresaDemo, usuarioDemo } from "@/data/mockData";
+import { useSessionUser } from "@/hooks/useSessionUser";
+import { empresaDemo } from "@/data/mockData";
+import { clearSessionCookie } from "@/lib/auth-cookie";
 
 export default function Sidebar({
   onNavigate,
@@ -14,6 +16,13 @@ export default function Sidebar({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const usuario = useSessionUser();
+
+  function handleLogout() {
+    clearSessionCookie();
+    router.replace("/login");
+  }
 
   return (
     <div className="flex h-full flex-col bg-navy-950 text-slate-300">
@@ -106,7 +115,7 @@ export default function Sidebar({
       {/* Usuário */}
       <div className="flex items-center gap-3 border-t border-white/10 px-5 py-4">
         <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-800 text-[12px] font-bold text-white ring-1 ring-white/15">
-          {usuarioDemo.iniciais}
+          {usuario.iniciais}
 
           <span
             className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-navy-950 bg-emerald-500"
@@ -116,22 +125,23 @@ export default function Sidebar({
 
         <span className="min-w-0 flex-1 leading-tight">
           <span className="block truncate text-[13px] font-semibold text-white">
-            {usuarioDemo.nome}
+            {usuario.nome}
           </span>
 
           <span className="block truncate text-[11px] text-slate-400">
-            {usuarioDemo.perfil}
+            {usuario.perfil}
           </span>
         </span>
 
-        {/* Sair: Visual, Colocar a navegação aqui.  */}
-        <span
+        <button
+          type="button"
+          onClick={handleLogout}
           title="Sair"
           aria-label="Sair da plataforma"
-          className="rounded-lg p-2 text-slate-400"
+          className="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
-        </span>
+        </button>
       </div>
     </div>
   );
