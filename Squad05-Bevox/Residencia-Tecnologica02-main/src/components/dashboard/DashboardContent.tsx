@@ -8,9 +8,11 @@ import RecentTasks from "@/components/dashboard/RecentTasks";
 import UnitDistributionChart from "@/components/dashboard/UnitDistributionChart";
 import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
 import { useDashboardQuery } from "@/hooks/queries/useDashboardQuery";
+import { useSessionUser } from "@/hooks/useSessionUser";
 
 export default function DashboardContent() {
   const { data, isPending, isError, error, refetch, isFetching } = useDashboardQuery();
+  const usuario = useSessionUser();
 
   if (isPending) {
     return (
@@ -41,7 +43,7 @@ export default function DashboardContent() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6">
-      <WelcomeBanner data={data} />
+      <WelcomeBanner data={{ ...data, usuario }} />
       <DashboardMetrics data={data} />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">

@@ -11,8 +11,9 @@ import {
   Sun,
 } from "lucide-react";
 
+import { useSessionUser } from "@/hooks/useSessionUser";
 import { tituloDaRota } from "@/config/navigation";
-import { empresaDemo, usuarioDemo } from "@/data/mockData";
+import { empresaDemo } from "@/data/mockData";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
 const focoBotao =
@@ -25,6 +26,7 @@ export default function Header({
 }) {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
+  const usuario = useSessionUser();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-line bg-white/95 dark:bg-surface-raised/95 px-4 backdrop-blur sm:px-8">
@@ -123,20 +125,20 @@ export default function Header({
 
         {/* Usuario, Vou criar um menu aqui. Ass: Breno  */}
         <div
-          aria-label={`Perfil de ${usuarioDemo.nome}`}
+          aria-label={`Perfil de ${usuario.nome}`}
           className="flex items-center gap-3 rounded-xl p-1.5"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-[12px] font-bold text-white">
-            {usuarioDemo.iniciais}
+            {usuario.iniciais}
           </span>
 
           <span className="hidden text-left leading-tight sm:block">
             <span className="block text-[14px] font-semibold text-slate-900 dark:text-foreground">
-              {usuarioDemo.nome}
+              {usuario.nome}
             </span>
 
             <span className="block text-[12px] text-slate-500 dark:text-foreground-muted">
-              {usuarioDemo.perfil}
+              {usuario.perfil}
             </span>
           </span>
 

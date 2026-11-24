@@ -1,3 +1,4 @@
+export type { LoginCredentials } from "@/types/auth";
 export type {
   Alerta,
   AlertaTipo,
