@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import DocumentCharts from "@/components/documentos/DocumentCharts";
 import DocumentsTable from "@/components/documentos/DocumentsTable";
-import { totalDocuments } from "@/data/mockDocuments";
+import { listarDocumentosAction } from "@/app/actions/documentos";
+import { mockDocuments, totalDocuments } from "@/data/mockDocuments";
 
 const NEW_DOCUMENT_ROUTE = "/documentos/new";
 const IMPORT_DOCUMENTS_ROUTE = "/documentos/import";
@@ -32,50 +33,11 @@ interface Metric {
   iconStyle: string;
 }
 
-const METRICS: Metric[] = [
-  {
-    label: "Total registrado",
-    value: String(totalDocuments),
-    description: "Documentos cadastrados",
-    trend: "+ 5% este mês",
-    trendColor: "text-[#059669]",
-    icon: FileText,
-    iconStyle: "bg-[#eff6ff] text-[#2563eb]",
-  },
-  {
-    label: "Pendentes",
-    value: "12",
-    description: "Aguardando análise",
-    trend: "+ 3% este mês",
-    trendColor: "text-[#f43f5e]",
-    icon: Clock,
-    iconStyle: "bg-[#fffbeb] text-[#f59e0b]",
-  },
-  {
-    label: "Próximos do vencimento",
-    value: "5",
-    description: "Nos próximos 30 dias",
-    trend: "+ 2% este mês",
-    trendColor: "text-[#f43f5e]",
-    icon: CalendarX,
-    iconStyle: "bg-[#fff1f2] text-[#f43f5e]",
-  },
-  {
-    label: "Aprovados",
-    value: "98",
-    description: "Documentos aprovados",
-    trend: "+ 6% este mês",
-    trendColor: "text-[#059669]",
-    icon: CircleCheck,
-    iconStyle: "bg-[#ecfdf5] text-[#10b981]",
-  },
-];
-
-function MetricCards() {
+function MetricCards({ metrics }: { metrics: Metric[] }) {
   return (
     <section aria-label="Indicadores de documentos">
       <ul className="grid grid-cols-4 gap-[16px] max-[1024px]:grid-cols-2 max-[768px]:grid-cols-1">
-        {METRICS.map(({ label, value, description, trend, trendColor, icon: Icon, iconStyle }) => (
+        {metrics.map(({ label, value, description, trend, trendColor, icon: Icon, iconStyle }) => (
           <li key={label} className={`flex min-w-px items-start justify-between p-[21px] ${CARD}`}>
             <div className="flex flex-col gap-[4px] pt-[5.5px]">
               <p className="text-[12px] font-medium leading-[16px] text-[#64748b]">{label}</p>
@@ -96,7 +58,61 @@ function MetricCards() {
   );
 }
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+  const res = await listarDocumentosAction();
+  const temDadosReais = res.ok && res.data.length > 0;
+  const listaDocumentos = temDadosReais ? res.data : mockDocuments;
+
+  const totalCount = temDadosReais ? res.data.length : totalDocuments;
+  const pendentesCount = temDadosReais
+    ? res.data.filter((d) => d.status === "Pendente" || d.status === "Em análise").length
+    : 12;
+  const vencendoCount = temDadosReais
+    ? res.data.filter((d) => d.dueLevel === "warning" || d.dueLevel === "critical").length
+    : 5;
+  const aprovadosCount = temDadosReais
+    ? res.data.filter((d) => d.status === "Aprovado").length
+    : 98;
+
+  const metrics: Metric[] = [
+    {
+      label: "Total registrado",
+      value: String(totalCount),
+      description: "Documentos cadastrados",
+      trend: "+ 5% este mês",
+      trendColor: "text-[#059669]",
+      icon: FileText,
+      iconStyle: "bg-[#eff6ff] text-[#2563eb]",
+    },
+    {
+      label: "Pendentes",
+      value: String(pendentesCount),
+      description: "Aguardando análise",
+      trend: "+ 3% este mês",
+      trendColor: "text-[#f43f5e]",
+      icon: Clock,
+      iconStyle: "bg-[#fffbeb] text-[#f59e0b]",
+    },
+    {
+      label: "Próximos do vencimento",
+      value: String(vencendoCount),
+      description: "Nos próximos 30 dias",
+      trend: "+ 2% este mês",
+      trendColor: "text-[#f43f5e]",
+      icon: CalendarX,
+      iconStyle: "bg-[#fff1f2] text-[#f43f5e]",
+    },
+    {
+      label: "Aprovados",
+      value: String(aprovadosCount),
+      description: "Documentos aprovados",
+      trend: "+ 6% este mês",
+      trendColor: "text-[#059669]",
+      icon: CircleCheck,
+      iconStyle: "bg-[#ecfdf5] text-[#10b981]",
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-[24px] px-[32px] pb-[24px] pt-[11px] font-['Inter',sans-serif] max-[1024px]:px-[24px] max-[768px]:px-[16px]">
       <header className="flex items-center justify-between gap-[16px] max-[768px]:flex-col max-[768px]:items-start">
@@ -150,9 +166,9 @@ export default function DocumentsPage() {
         </div>
       </header>
 
-      <MetricCards />
+      <MetricCards metrics={metrics} />
       <DocumentCharts />
-      <DocumentsTable />
+      <DocumentsTable items={listaDocumentos} />
     </div>
   );
 }

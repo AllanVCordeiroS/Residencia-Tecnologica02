@@ -313,7 +313,7 @@ function Pagination({ range, total }: { range: string; total: number }) {
   );
 }
 
-export default function DocumentsTable() {
+export default function DocumentsTable({ items = mockDocuments }: { items?: LegalDocument[] }) {
   const [search, setSearch] = useState("");
   const [unit, setUnit] = useState(ALL);
   const [category, setCategory] = useState(ALL);
@@ -325,7 +325,7 @@ export default function DocumentsTable() {
 
   const documents = useMemo(
     () =>
-      mockDocuments.filter(
+      items.filter(
         (doc) =>
           (unit === ALL || doc.unit === unit) &&
           (category === ALL || doc.category === category) &&

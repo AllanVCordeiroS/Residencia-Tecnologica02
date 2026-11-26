@@ -100,7 +100,7 @@ export default function ImportPage() {
             </p>
           </div>
           <button
-            onClick={() => router.push("/documents")}
+            onClick={() => router.push("/documentos")}
             aria-label="Fechar"
             style={{ background: "none", border: "none", cursor: "pointer" }}
           >
@@ -191,7 +191,7 @@ export default function ImportPage() {
           </span>
           <div style={{ display: "flex", gap: 8 }}>
             <button
-              onClick={() => router.push("/documents")}
+              onClick={() => router.push("/documentos")}
               style={{
                 padding: "10px 16px",
                 borderRadius: 8,
@@ -204,7 +204,7 @@ export default function ImportPage() {
             </button>
             <button
               disabled={!podeConfirmar}
-              onClick={() => router.push("/documents")}
+              onClick={() => router.push("/documentos")}
               style={{
                 padding: "10px 16px",
                 borderRadius: 8,

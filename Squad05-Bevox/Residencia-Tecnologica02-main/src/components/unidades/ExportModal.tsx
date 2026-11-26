@@ -21,15 +21,17 @@ export default function ExportModal({ aberto, onFechar, unidades }: ExportModalP
   const [escopo, setEscopo] = useState("todas");
   const [periodo, setPeriodo] = useState("6m");
   const [modulos, setModulos] = useState<ModuloRelatorio[]>(["cadastro", "documentos", "tarefas", "licencas"]);
+  const [avisoPopup, setAvisoPopup] = useState<string | null>(null);
   if (!aberto) return null;
 
   const alternarModulo = (modulo: ModuloRelatorio) => setModulos((atuais) => atuais.includes(modulo) ? atuais.filter((item) => item !== modulo) : [...atuais, modulo]);
   const gerarRelatorio = () => {
+    setAvisoPopup(null);
     const dados = escopo === "todas" ? unidades : unidades.filter((u) => u.nome.toLowerCase().includes(escopo));
     const nomeArquivo = `bevox-relatorio-unidades-${new Date().toISOString().slice(0, 10)}`;
     if (formato === "pdf") {
       const janela = window.open("", "_blank", "width=1000,height=750");
-      if (!janela) { window.alert("Permita pop-ups para gerar o relatório em PDF."); return; }
+      if (!janela) { setAvisoPopup("Permita pop-ups para gerar o relatório em PDF."); return; }
       const linhas = dados.map((u) => `<tr><td>${u.nome}</td><td>${u.cnpj}</td><td>${u.cidade}</td><td>${u.tipo}</td><td>${u.responsavel}</td><td>${u.funcionarios}</td><td>${u.situacao}</td></tr>`).join("");
       janela.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório de Unidades BEVOX</title><style>body{font:12px Arial,sans-serif;padding:28px;color:#172033}h1{font-size:22px}p{color:#586174}table{width:100%;border-collapse:collapse;margin-top:24px}th,td{border:1px solid #dce2ed;padding:8px;text-align:left}th{background:#eff4ff}@media print{button{display:none}}</style></head><body><h1>Relatório de Unidades Operacionais</h1><p>Adega Distribution · Gerado em ${new Date().toLocaleDateString("pt-BR")} · Período: ${periodo}</p><table><thead><tr><th>Unidade</th><th>CNPJ</th><th>Cidade</th><th>Tipo</th><th>Responsável</th><th>Funcionários</th><th>Situação</th></tr></thead><tbody>${linhas}</tbody></table><script>window.onload=()=>window.print()</script></body></html>`);
       janela.document.close();
@@ -44,6 +46,11 @@ export default function ExportModal({ aberto, onFechar, unidades }: ExportModalP
     <section className="my-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
       <header className="flex items-start justify-between border-b border-slate-100 px-5 py-5 sm:px-7"><div className="flex gap-3"><div className="rounded-xl bg-blue-50 p-3 text-blue-700"><Download size={21}/></div><div><h2 id="export-title" className="text-lg font-bold text-slate-900">Exportar Relatório de Unidades Operacionais</h2><p className="mt-1 text-xs text-slate-500">Doc Ref: BEVOX-OPS-UNIT-2026 · Documento corporativo</p></div></div><button onClick={onFechar} aria-label="Fechar modal" className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X size={19}/></button></header>
       <div className="max-h-[70vh] space-y-6 overflow-y-auto px-5 py-5 sm:px-7">
+        {avisoPopup && (
+          <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
+            {avisoPopup}
+          </div>
+        )}
         <section><h3 className="mb-3 text-sm font-bold text-slate-800">1. Formato do arquivo</h3><div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{formatos.map(({id,titulo,descricao,Icone}) => <button key={id} type="button" onClick={() => setFormato(id)} className={`relative flex items-start gap-3 rounded-xl border p-4 text-left transition ${formato === id ? "border-blue-500 bg-blue-50/70 ring-1 ring-blue-500" : "border-slate-200 hover:border-slate-300"}`}><Icone size={21} className={formato === id ? "text-blue-700" : "text-slate-500"}/><span className="flex-1"><span className="block text-sm font-semibold text-slate-800">{titulo}</span><span className="mt-1 block text-xs text-slate-500">{descricao}</span></span>{formato === id && <Check size={17} className="text-blue-700"/>}</button>)}</div></section>
         <section><h3 className="mb-3 text-sm font-bold text-slate-800">2. Escopo &amp; filtros</h3><div className="grid grid-cols-1 gap-4 sm:grid-cols-2"><label className="text-xs font-medium text-slate-600">Unidades inclusas<select value={escopo} onChange={(e) => setEscopo(e.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-500"><option value="todas">Todas as unidades</option>{unidades.map((u) => <option key={u.nome} value={u.nome.toLowerCase()}>{u.nome}</option>)}</select></label><label className="text-xs font-medium text-slate-600">Período dos indicadores<select value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-500"><option value="30d">Últimos 30 dias</option><option value="3m">Últimos 3 meses</option><option value="6m">Últimos 6 meses</option><option value="1a">Último ano</option></select></label></div></section>
         <section><h3 className="mb-3 text-sm font-bold text-slate-800">3. Módulos a incluir</h3><div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{([{id:"cadastro",label:"Cadastro das unidades",desc:"Dados cadastrais e responsáveis"},{id:"documentos",label:"Documentos",desc:"Regularidade e pendências"},{id:"tarefas",label:"Tarefas operacionais",desc:"Atribuições e status"},{id:"licencas",label:"Licenças e alvarás",desc:"Validade e vencimentos"}] as {id:ModuloRelatorio;label:string;desc:string}[]).map((item) => <label key={item.id} className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 p-3"><input type="checkbox" checked={modulos.includes(item.id)} onChange={() => alternarModulo(item.id)} className="mt-1 h-4 w-4 accent-blue-600"/><span><span className="block text-sm font-medium text-slate-800">{item.label}</span><span className="mt-0.5 block text-xs text-slate-500">{item.desc}</span></span></label>)}</div></section>

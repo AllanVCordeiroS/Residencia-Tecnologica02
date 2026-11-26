@@ -1,6 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  listarLicencasAction,
+  type SerializedLicenseItem,
+} from '@/app/actions/licencas';
 import Link from 'next/link';
 import {
   ArrowDown, ArrowDownUp, ArrowUp, Award, Calendar, CalendarClock,
@@ -27,6 +31,15 @@ const licenses: LicenseRecord[] = [
   { name: 'Licença de\nTransporte', number: 'Nº 556/2024', kind: 'Licença', kindTone: 'purple', unit: 'Unidade Jaboatão', unitKind: 'Filial', issuer: 'ANTT', owner: 'Mariana Costa', due: '–', dueMeta: 'Sem vencimento', dueTone: 'muted', status: 'Regular', icon: Truck, iconTone: 'indigo' },
   { name: 'Alvará de\nFuncionamento', number: 'Nº 2025-7761', kind: 'Alvará', kindTone: 'blue', unit: 'Unidade Salvador', unitKind: 'Filial', issuer: 'Prefeitura\nMunicipal', owner: 'Felipe Rocha', due: '28/09/2026', dueMeta: 'Vencida há 18\ndias', dueTone: 'danger', status: 'Vencida', icon: FileX, iconTone: 'red' },
 ];
+
+const ICON_MAP: Record<SerializedLicenseItem['iconKey'], LucideIcon> = {
+  fileText: FileText,
+  leaf: Leaf,
+  shieldCheck: ShieldCheck,
+  award: Award,
+  truck: Truck,
+  fileX: FileX,
+};
 
 function PageHeading({ onOpenExport }: { onOpenExport: () => void }) {
   return (
@@ -69,7 +82,7 @@ function StatusPill({ status }: { status: LicenseRecord['status'] }) {
   return <span className={`status-pill ${tone}`}><span className="status-dot" />{status}</span>;
 }
 
-function LicenseTable() {
+function LicenseTable({ items }: { items: LicenseRecord[] }) {
   return (
     <section className="table-card">
       <div className="filters-panel">
@@ -103,10 +116,10 @@ function LicenseTable() {
             </tr>
           </thead>
           <tbody>
-            {licenses.map((record) => {
+            {items.map((record, index) => {
               const DocIcon = record.icon;
               return (
-                <tr key={record.number}>
+                <tr key={`${record.number}-${index}`}>
                   <td><span className="checkbox-display" /></td>
                   <td>
                     <div className="license-name-cell">
@@ -139,15 +152,11 @@ function LicenseTable() {
         </table>
       </div>
       <div className="table-footer">
-        <span>Mostrando <strong>1 – 6</strong> de <strong>124</strong> licenças e alvarás</span>
+        <span>Mostrando <strong>1 – {items.length}</strong> de <strong>{items.length}</strong> licenças e alvarás</span>
         <div className="pagination">
           <button className="page-arrow disabled" type="button"><ChevronLeft size={16} /></button>
           <button className="page-number selected" type="button">1</button>
-          <button className="page-number" type="button">2</button>
-          <button className="page-number" type="button">3</button>
-          <span className="page-ellipsis">...</span>
-          <button className="page-number" type="button">16</button>
-          <button className="page-arrow" type="button"><ChevronRight size={16} /></button>
+          <button className="page-arrow disabled" type="button"><ChevronRight size={16} /></button>
         </div>
       </div>
     </section>
@@ -161,11 +170,8 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   if (!isOpen) return null;
 
   return (
-    // Z-Index forçado para 99999 e fundo preto com opacidade nativa do Tailwind
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
       <div className="bg-white rounded-[14px] shadow-2xl w-full max-w-[850px] max-h-[90vh] overflow-y-auto flex flex-col font-sans">
-        
-        {/* Header Escuro */}
         <div className="bg-[#0b1736] px-6 py-5 rounded-t-[14px] flex justify-between items-start border-b border-[#14224f]">
           <div className="flex gap-4">
             <div className="w-10 h-10 rounded-lg bg-[#14224f] flex items-center justify-center text-blue-400 shrink-0 border border-[#1e3270]">
@@ -188,9 +194,7 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           </button>
         </div>
 
-        {/* Corpo da Modal */}
         <div className="p-6 flex flex-col gap-8 text-slate-800">
-          
           <section>
             <div className="flex justify-between items-end mb-4">
               <div className="flex items-center gap-2">
@@ -284,31 +288,31 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                     <span className="w-2 h-2 rounded-full bg-emerald-500 mr-1"></span> Regulares
                   </label>
                   <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
-                    <span className="w-2 h-2 rounded-full bg-amber-500 mr-1"></span> &lt; 30 dias (Vencendo)
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                    <span className="w-2 h-2 rounded-full bg-amber-500 mr-1"></span> {'< 30'} dias (Vencendo)
                   </label>
                   <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                     <span className="w-2 h-2 rounded-full bg-red-500 mr-1"></span> Vencidas / Críticas
                   </label>
                   <label className="flex items-center gap-2 text-[13px] text-slate-700 border border-slate-100 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" /> 
+                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                     <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span> Em Análise
                   </label>
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-4 bg-white border border-slate-200 rounded-xl p-5">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
                 <h4 className="text-[13px] font-bold text-slate-800">Período de Vigência / Vencimento Considerado</h4>
                 <div className="flex gap-2">
                   {['Mês atual', 'Próximos 90 dias', 'Ano Fiscal 2026', 'Personalizado'].map(btn => (
-                    <button 
+                    <button
                       key={btn}
                       type="button"
                       onClick={() => setPeriod(btn)}
@@ -337,7 +341,6 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               </div>
             </div>
           </section>
-
         </div>
 
         <div className="bg-slate-50 px-6 py-4 rounded-b-[14px] border-t border-slate-200 flex justify-between items-center mt-auto">
@@ -353,7 +356,6 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -362,11 +364,99 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 // Componente Principal da Página
 export default function ListagemLicencasPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [items, setItems] = useState<LicenseRecord[]>(licenses);
+  const [hasDbItems, setHasDbItems] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    listarLicencasAction().then((res) => {
+      if (!active || !res.ok || res.data.length === 0) return;
+      setHasDbItems(true);
+      setItems(
+        res.data.map((item) => ({
+          name: item.name,
+          number: item.number,
+          kind: item.kind,
+          kindTone: item.kindTone,
+          unit: item.unit,
+          unitKind: item.unitKind,
+          issuer: item.issuer,
+          owner: item.owner,
+          due: item.due,
+          dueMeta: item.dueMeta,
+          dueTone: item.dueTone,
+          status: item.status,
+          icon: ICON_MAP[item.iconKey],
+          iconTone: item.iconTone,
+        }))
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const regularesCount = items.filter((i) => i.status === 'Regular').length;
+  const vencendoCount = items.filter((i) => i.status === 'A vencer').length;
+  const vencidasCount = items.filter((i) => i.status === 'Vencida').length;
+  const pendentesCount = items.filter((i) => i.dueTone === 'muted').length;
+
+  const metricRegular = hasDbItems ? String(regularesCount) : '86';
+  const metricVencendo = hasDbItems ? String(vencendoCount) : '5';
+  const metricVencidas = hasDbItems ? String(vencidasCount) : '2';
+  const metricPendentes = hasDbItems ? String(pendentesCount) : '4';
+
+  const categoryCounts = hasDbItems
+    ? {
+        alvaras: items.filter((i) => i.kind === 'Alvará').length,
+        ambientais: items.filter((i) => i.name.toLowerCase().includes('ambiental')).length,
+        sanitarias: items.filter((i) => i.name.toLowerCase().includes('sanitária') || i.name.toLowerCase().includes('sanitaria')).length,
+        certificados: items.filter((i) => i.name.toLowerCase().includes('certificado')).length,
+        transporte: items.filter((i) => i.name.toLowerCase().includes('transporte')).length,
+        outros: items.filter(
+          (i) =>
+            i.kind !== 'Alvará' &&
+            !i.name.toLowerCase().includes('ambiental') &&
+            !i.name.toLowerCase().includes('sanitária') &&
+            !i.name.toLowerCase().includes('sanitaria') &&
+            !i.name.toLowerCase().includes('certificado') &&
+            !i.name.toLowerCase().includes('transporte')
+        ).length,
+      }
+    : null;
+
+  const attentionItems = [
+    {
+      title: 'Licenças vencidas',
+      subtitle: 'Renovação necessária',
+      count: hasDbItems ? String(vencidasCount) : '2',
+      tone: 'red',
+    },
+    {
+      title: 'Vencem em até 30 dias',
+      subtitle: 'Acompanhe os prazos',
+      count: hasDbItems ? String(vencendoCount) : '5',
+      tone: 'amber',
+    },
+    {
+      title: 'Pendentes de regularização',
+      subtitle: 'Aguardam documento ou\nanálise',
+      count: hasDbItems ? String(pendentesCount) : '4',
+      tone: 'blue',
+    },
+  ];
+
+  const categoryRows = [
+    { label: 'Alvarás', count: categoryCounts ? categoryCounts.alvaras : 12, icon: FileText, tone: 'blue' },
+    { label: 'Licenças Ambientais', count: categoryCounts ? categoryCounts.ambientais : 8, icon: Leaf, tone: 'green' },
+    { label: 'Licenças Sanitárias', count: categoryCounts ? categoryCounts.sanitarias : 6, icon: ShieldCheck, tone: 'purple' },
+    { label: 'Certificados', count: categoryCounts ? categoryCounts.certificados : 5, icon: Award, tone: 'purple' },
+    { label: 'Licenças de Transporte', count: categoryCounts ? categoryCounts.transporte : 4, icon: Truck, tone: 'cyan' },
+    { label: 'Outros', count: categoryCounts ? categoryCounts.outros : 3, icon: Files, tone: 'red' },
+  ];
 
   return (
     <div className="main-content relative">
-      
-      {/* CABEÇALHO INTEGRADO (Evita problemas de passagem de estado) */}
       <div className="page-breadcrumbs">
         <span>BEVOX</span><span>/</span><span>Gestão Corporativa</span><span>/</span><span className="page-current">Licenças e Alvarás</span>
       </div>
@@ -377,34 +467,30 @@ export default function ListagemLicencasPage() {
         </div>
         <div className="page-actions">
           <Link href="/licencas/cadastrar" className="primary-button"><Plus size={16} />Cadastrar licença</Link>
-          <button 
-            className="secondary-button" 
-            type="button" 
+          <button
+            className="secondary-button"
+            type="button"
             onClick={() => setIsExportModalOpen(true)}
           >
             <Download size={16} />Exportar relatório
           </button>
         </div>
       </div>
-      
+
       <div className="metrics-grid">
-        <MetricCard value="86" label="Licenças regulares" growth="+6% este mês" variant="green" icon={CheckCircle2} trend="up" />
-        <MetricCard value="5" label="Próximos do vencimento" growth="+2% este mês" variant="amber" icon={Clock3} trend="up" />
-        <MetricCard value="2" label="Licenças vencidas" growth="+1% este mês" variant="red" icon={CalendarClock} trend="up" />
-        <MetricCard value="4" label={<>Pendentes de<br />regularização</>} growth="+3% este mês" variant="blue" icon={FileText} trend="down" />
+        <MetricCard value={metricRegular} label="Licenças regulares" growth="+6% este mês" variant="green" icon={CheckCircle2} trend="up" />
+        <MetricCard value={metricVencendo} label="Próximos do vencimento" growth="+2% este mês" variant="amber" icon={Clock3} trend="up" />
+        <MetricCard value={metricVencidas} label="Licenças vencidas" growth="+1% este mês" variant="red" icon={CalendarClock} trend="up" />
+        <MetricCard value={metricPendentes} label={<>Pendentes de<br />regularização</>} growth="+3% este mês" variant="blue" icon={FileText} trend="down" />
       </div>
-      
+
       <div className="content-grid">
-        <LicenseTable />
+        <LicenseTable items={items} />
         <aside className="right-column">
           <section className="side-card attention-card">
             <div className="side-card-heading"><span className="attention-heading-icon"><CircleAlert size={16} /></span><h2>Atenção</h2></div>
             <div className="attention-list">
-              {[
-                { title: 'Licenças vencidas', subtitle: 'Renovação necessária', count: '2', tone: 'red' },
-                { title: 'Vencem em até 30 dias', subtitle: 'Acompanhe os prazos', count: '5', tone: 'amber' },
-                { title: 'Pendentes de regularização', subtitle: 'Aguardam documento ou\nanálise', count: '4', tone: 'blue' },
-              ].map(item => (
+              {attentionItems.map(item => (
                 <div className="attention-item" key={item.title}>
                   <div className="attention-copy"><strong>{item.title}</strong><span>{item.subtitle.split('\n').map((part, i) => <span key={part + i}>{part}{i === 0 && item.subtitle.includes('\n') ? <br /> : null}</span>)}</span></div>
                   <span className={`attention-count count-${item.tone}`}>{item.count}</span>
@@ -413,18 +499,11 @@ export default function ListagemLicencasPage() {
               ))}
             </div>
           </section>
-          
+
           <section className="side-card categories-card">
             <div className="side-card-heading categories-heading"><span className="categories-heading-icon"><Files size={15} /></span><h2> Categorias</h2></div>
             <div className="category-list">
-              {[
-                { label: 'Alvarás', count: 12, icon: FileText, tone: 'blue' },
-                { label: 'Licenças Ambientais', count: 8, icon: Leaf, tone: 'green' },
-                { label: 'Licenças Sanitárias', count: 6, icon: ShieldCheck, tone: 'purple' },
-                { label: 'Certificados', count: 5, icon: Award, tone: 'purple' },
-                { label: 'Licenças de Transporte', count: 4, icon: Truck, tone: 'cyan' },
-                { label: 'Outros', count: 3, icon: Files, tone: 'red' },
-              ].map(({ label, count, icon: Icon, tone }) => (
+              {categoryRows.map(({ label, count, icon: Icon, tone }) => (
                 <div className="category-row" key={label}>
                   <Icon className={`category-icon category-${tone}`} size={15} strokeWidth={1.9} />
                   <span>{label}</span><strong>{count}</strong>

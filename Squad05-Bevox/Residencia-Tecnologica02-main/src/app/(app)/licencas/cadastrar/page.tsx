@@ -1,19 +1,19 @@
-//!!PRECISA DA API TODOS, OS BGLS SÃO FICTÍCIOS!!
 'use client';
 
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { 
-  ChevronLeft, FileText, Leaf, ShieldCheck, Flame, Truck, 
-  Building2, Landmark, Hash, User, UploadCloud, CalendarClock, 
+import {
+  ChevronLeft, FileText, Leaf, ShieldCheck,
+  Building2, Landmark, Hash, User, UploadCloud, CalendarClock,
   BellRing, Lock, Trash2, CheckCircle2
 } from 'lucide-react';
+import { criarLicencaAction } from '@/app/actions/licencas';
+// Importa a action de listar unidades (ajusta o caminho caso necessário)
+import { listarUnidadesAction } from '@/app/actions/unidades';
 
-// 1. Contrato de Dados (Zod) Completo
 const licencaSchema = z.object({
   tipoLicenca: z.string().min(1, 'Selecione o tipo de licença'),
   categoriaGovernanca: z.string().min(1, 'Selecione a categoria'),
@@ -40,11 +40,20 @@ const licencaSchema = z.object({
 
 type LicencaFormData = z.infer<typeof licencaSchema>;
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Interface para tipar as unidades vindas do banco
+interface Unidade {
+  id: string;
+  nome: string;
+}
+
 export default function CadastrarLicencaPage() {
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [unidades, setUnidades] = useState<Unidade[]>([]); // Estado para armazenar as unidades reais
 
-  // 2. Motor do Formulário
   const methods = useForm<LicencaFormData>({
     resolver: zodResolver(licencaSchema),
     defaultValues: {
@@ -63,15 +72,62 @@ export default function CadastrarLicencaPage() {
     }
   });
 
+  const tipoLicencaSelecionado = methods.watch('tipoLicenca');
+
+  // Carregar unidades reais do banco ao montar a página
+  useEffect(() => {
+    async function carregarUnidades() {
+      try {
+        const res = await listarUnidadesAction();
+        if (res?.ok && Array.isArray(res.data)) {
+          setUnidades(res.data);
+        } else if (Array.isArray(res)) {
+          setUnidades(res);
+        } else if (res && 'unidades' in res && Array.isArray(res.unidades)) {
+          setUnidades(res.unidades);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar unidades:", err);
+      }
+    }
+    carregarUnidades();
+  }, []);
+
+  useEffect(() => {
+    const categoria =
+      tipoLicencaSelecionado === 'Alvará de Funcionamento'
+        ? 'Alvarás Municipais & Posturas'
+        : 'Controle Ambiental';
+    methods.setValue('categoriaGovernanca', categoria, { shouldValidate: true });
+  }, [tipoLicencaSelecionado, methods]);
+
   const onSubmit = async (dados: LicencaFormData) => {
-    // 1. Simula o tempo de resposta da API (ex: 2 segundos a fazer upload do PDF)(!!SÓ SIMULA/ PRECISA FAZER O CORRE DA API!!)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    // 2. Executa a ação de sucesso
-    console.log(' Payload validado e pronto para a API:', dados);
-    alert('Licença cadastrada com sucesso! Verifica a consola para ver o payload.');
-    
-    // router.push('/licencas'); // Redireciona para a listagem
+    setSubmitError(null);
+
+    const unidadeIdValido = UUID_REGEX.test(dados.unidade) ? dados.unidade : undefined;
+
+    const res = await criarLicencaAction({
+      tipoLicenca: dados.tipoLicenca,
+      categoriaGovernanca: dados.categoriaGovernanca,
+      unidadeId: unidadeIdValido,
+      orgaoEmissor: dados.orgaoEmissor,
+      numeroDocumento: dados.numeroDocumento,
+      responsavelTecnico: dados.responsavel,
+      dataEmissao: dados.dataEmissao,
+      dataVencimento: dados.dataVencimento,
+      alerta60: dados.alerta60,
+      alerta30: dados.alerta30,
+      alerta15: dados.alerta15,
+      bloqueioCautelar: dados.bloqueioCautelar,
+    });
+
+    if (!res.ok) {
+      setSubmitError(res.error ?? 'Erro ao salvar licença no banco.');
+      return;
+    }
+
+    router.push('/licencas');
+    router.refresh();
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -103,13 +159,15 @@ export default function CadastrarLicencaPage() {
 
   const arquivoAtual = methods.watch('arquivo');
 
+  // Encontrar o nome da unidade selecionada para mostrar no resumo lateral
+  const unidadeSelecionadaObj = unidades.find(u => u.id === methods.watch('unidade'));
+
   return (
     <div className="min-h-screen bg-slate-50 p-8 w-full">
-      {/* HEADER */}
       <header className="mb-8">
-        <button 
+        <button
           type="button"
-          onClick={() => router.back()} 
+          onClick={() => router.back()}
           className="flex items-center text-sm text-slate-500 hover:text-blue-600 mb-3 font-medium transition-colors"
         >
           <ChevronLeft className="w-4 h-4 mr-1" /> Voltar para Listagem
@@ -120,7 +178,6 @@ export default function CadastrarLicencaPage() {
         </p>
       </header>
 
-      {/* STEPPER */}
       <div className="flex items-center gap-4 mb-8 overflow-x-auto pb-2">
         <div className="flex items-center gap-3 bg-white border border-blue-600 rounded-xl px-4 py-3 min-w-max shadow-sm">
           <span className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">1</span>
@@ -154,18 +211,16 @@ export default function CadastrarLicencaPage() {
 
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col lg:flex-row gap-6">
-          
+
           <div className="flex-1 space-y-6">
-            
-           {/* SECÇÃO 1 */}
+
             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-2 h-2 rounded-full bg-blue-600"></div>
                 <h2 className="text-[15px] font-bold text-slate-800">Tipo de Licença e Enquadramento Operacional</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {/* Cartão 1: Alvará */}
                 <label className="relative cursor-pointer">
                   <input type="radio" value="Alvará de Funcionamento" {...methods.register('tipoLicenca')} className="peer sr-only" />
                   <div className="h-full p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-300 peer-checked:border-blue-600 peer-checked:bg-blue-50/30 transition-all">
@@ -181,7 +236,6 @@ export default function CadastrarLicencaPage() {
                   </div>
                 </label>
 
-                {/* Cartão 2: Licença Ambiental */}
                 <label className="relative cursor-pointer">
                   <input type="radio" value="Licença Ambiental" {...methods.register('tipoLicenca')} className="peer sr-only" />
                   <div className="h-full p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-blue-300 peer-checked:border-emerald-600 peer-checked:bg-emerald-50/30 transition-all">
@@ -203,20 +257,12 @@ export default function CadastrarLicencaPage() {
                   Categoria de Governança Atribuída
                 </label>
                 <div className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-[13px] text-slate-500 cursor-not-allowed">
-                  {methods.watch('tipoLicenca') === 'Alvará de Funcionamento' 
-                    ? 'Alvarás Municipais & Posturas' 
-                    : 'Controle Ambiental'}
+                  {methods.watch('categoriaGovernanca')}
                 </div>
-                {/* O valor continua a ser registado e enviado para a API(PRECISA FAZER O CORRE DA API AINDA) */}
-                <input 
-                  type="hidden" 
-                  value={methods.watch('tipoLicenca') === 'Alvará de Funcionamento' ? 'Alvarás Municipais & Posturas' : 'Controle Ambiental'} 
-                  {...methods.register('categoriaGovernanca')} 
-                />
+                <input type="hidden" {...methods.register('categoriaGovernanca')} />
               </div>
             </section>
 
-            {/* SECÇÃO 2 */}
             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-2 h-2 rounded-full bg-blue-600"></div>
@@ -229,9 +275,11 @@ export default function CadastrarLicencaPage() {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><Building2 size={15} /></div>
                     <select {...methods.register('unidade')} className={`w-full pl-9 pr-4 py-2.5 bg-white border rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-1 ${methods.formState.errors.unidade ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500'}`}>
                       <option value="">Selecione a filial ou matriz...</option>
-                      <option value="Filial CDD Paulista (PE)">Filial CDD Paulista (PE)</option>
-                      <option value="Filial Salvador (BA)">Filial Salvador (BA)</option>
-                      <option value="Matriz Recife (PE)">Matriz Recife (PE)</option>
+                      {unidades.map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.nome}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -259,13 +307,12 @@ export default function CadastrarLicencaPage() {
               </div>
             </section>
 
-            {/* SECÇÃO 3 */}
             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 rounded-full bg-blue-600"></div>
                 <h2 className="text-[15px] font-bold text-slate-800">Vínculo de Documento Digital</h2>
               </div>
-              
+
               {arquivoAtual ? (
                 <div className="w-full p-4 border border-emerald-200 bg-emerald-50 rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-3 min-w-0">
@@ -284,7 +331,7 @@ export default function CadastrarLicencaPage() {
                   </button>
                 </div>
               ) : (
-                <div 
+                <div
                   onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}
                   className={`relative w-full p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center transition-colors cursor-pointer ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100'}`}
                 >
@@ -296,7 +343,6 @@ export default function CadastrarLicencaPage() {
               )}
             </section>
 
-            {/* SECÇÃO 4 */}
             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-2 h-2 rounded-full bg-blue-600"></div>
@@ -357,12 +403,18 @@ export default function CadastrarLicencaPage() {
               </div>
             </section>
 
+            {submitError && (
+              <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-[13px] font-medium">
+                {submitError}
+              </div>
+            )}
+
             <div className="flex justify-between pt-4 pb-12">
               <button type="button" onClick={() => router.back()} className="px-6 py-2.5 border border-slate-300 text-slate-700 text-[13px] font-bold rounded-lg hover:bg-slate-50 transition-colors">
                 Cancelar
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={methods.formState.isSubmitting}
                 className="px-8 py-2.5 bg-blue-700 text-white text-[14px] font-bold rounded-lg hover:bg-blue-800 transition-colors shadow-sm flex items-center gap-2 disabled:bg-blue-400 disabled:cursor-not-allowed"
               >
@@ -380,7 +432,6 @@ export default function CadastrarLicencaPage() {
             </div>
           </div>
 
-          {/* COLUNA DIREITA */}
           <aside className="w-full lg:w-[300px]">
             <div className="sticky top-6 bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
               <div className="flex items-center gap-2 text-slate-800 font-bold text-[14px] mb-4 pb-3 border-b border-slate-100">
@@ -395,8 +446,8 @@ export default function CadastrarLicencaPage() {
                 <div className="pt-3 border-t border-slate-100">
                   <p className="text-slate-400 mb-0.5 text-[11px] uppercase tracking-wider font-semibold">Unidade Operacional</p>
                   <p className="font-bold text-slate-800 flex items-center gap-1">
-                    <Building2 size={13} className="text-slate-400"/> 
-                    {methods.watch('unidade') || 'Não selecionada'}
+                    <Building2 size={13} className="text-slate-400" />
+                    {unidadeSelecionadaObj ? unidadeSelecionadaObj.nome : 'Não selecionada'}
                   </p>
                 </div>
                 <div className="pt-3 border-t border-slate-100">
