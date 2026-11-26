@@ -1,7 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  listarPerfisSegurancaAction,
+  criarPerfilAcessoAction,
+} from "@/app/actions/seguranca";
 
 interface AccessProfile {
   id: string;
@@ -37,28 +41,80 @@ export default function SegurancaAcessoPage(): React.ReactElement {
   const [selected2FA, setSelected2FA] = useState<string>("Aplicativo");
   const [exigirMaiusculas, setExigirMaiusculas] = useState<boolean>(true);
   const [exigirSimbolos, setExigirSimbolos] = useState<boolean>(true);
-  
+
   const [profiles, setProfiles] = useState<AccessProfile[]>(initialProfiles);
   const [sessions, setSessions] = useState<ActiveSession[]>(initialSessions);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const carregarPerfis = async () => {
+    const res = await listarPerfisSegurancaAction();
+    if (res.ok && res.data && res.data.length > 0) {
+      const mapeados: AccessProfile[] = res.data.map((p) => {
+        const nomesPermissoes = p.permissoes
+          .map((pp) => pp.permissao?.nome)
+          .filter(Boolean)
+          .join(", ");
+
+        return {
+          id: p.id,
+          perfil: p.nome,
+          descricao: p.descricao ?? "Perfil de acesso",
+          permissoes: nomesPermissoes || "Padrão do sistema",
+          status: "Ativo",
+        };
+      });
+      setProfiles(mapeados);
+    }
+  };
+
+  useEffect(() => {
+    let ativo = true;
+    listarPerfisSegurancaAction().then((res) => {
+      if (!ativo || !res.ok || !res.data || res.data.length === 0) return;
+      const mapeados: AccessProfile[] = res.data.map((p) => {
+        const nomesPermissoes = p.permissoes
+          .map((pp) => pp.permissao?.nome)
+          .filter(Boolean)
+          .join(", ");
+
+        return {
+          id: p.id,
+          perfil: p.nome,
+          descricao: p.descricao ?? "Perfil de acesso",
+          permissoes: nomesPermissoes || "Padrão do sistema",
+          status: "Ativo",
+        };
+      });
+      setProfiles(mapeados);
+    });
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   const handleSalvar = () => {
     setStatusMessage("✅ Alterações de Segurança e Acesso salvas com sucesso!");
     setTimeout(() => setStatusMessage(null), 4000);
   };
 
-  const handleNovoPerfil = () => {
+  const handleNovoPerfil = async () => {
     const nome = prompt("Digite o nome do novo perfil de acesso:");
-    if (nome) {
-      const novo: AccessProfile = {
-        id: Date.now().toString(),
-        perfil: nome,
-        descricao: "Perfil personalizado",
-        permissoes: "Personalizada",
-        status: "Ativo",
-      };
-      setProfiles([...profiles, novo]);
+    if (!nome || !nome.trim()) return;
+
+    const res = await criarPerfilAcessoAction({
+      nome,
+      descricao: "Perfil personalizado",
+    });
+
+    if (!res.ok) {
+      setStatusMessage(`❌ ${res.error}`);
+      setTimeout(() => setStatusMessage(null), 4000);
+      return;
     }
+
+    await carregarPerfis();
+    setStatusMessage("✅ Novo perfil de acesso salvo no banco!");
+    setTimeout(() => setStatusMessage(null), 4000);
   };
 
   const handleEncerrarSessao = (id: string) => {
@@ -67,14 +123,14 @@ export default function SegurancaAcessoPage(): React.ReactElement {
 
   const handleEncerrarTodas = () => {
     if (confirm("Tem certeza que deseja encerrar todas as outras sessões ativas?")) {
-      setSessions(sessions.slice(0, 1)); // Mantém apenas a primeira
+      setSessions(sessions.slice(0, 1));
     }
   };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen text-gray-800 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
-        
+
         {/* Banner de Status */}
         {statusMessage && (
           <div className="p-4 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl text-sm font-medium transition-all">
@@ -103,7 +159,7 @@ export default function SegurancaAcessoPage(): React.ReactElement {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
+
           {/* Política de Segurança */}
           <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
             <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
@@ -131,7 +187,7 @@ export default function SegurancaAcessoPage(): React.ReactElement {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1">Exigir letras maiúsculas</label>
-                <button 
+                <button
                   type="button"
                   onClick={() => setExigirMaiusculas(!exigirMaiusculas)}
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 flex items-center justify-between cursor-pointer"
@@ -145,7 +201,7 @@ export default function SegurancaAcessoPage(): React.ReactElement {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1">Exigir números e símbolos</label>
-                <button 
+                <button
                   type="button"
                   onClick={() => setExigirSimbolos(!exigirSimbolos)}
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 flex items-center justify-between cursor-pointer"
@@ -217,7 +273,7 @@ export default function SegurancaAcessoPage(): React.ReactElement {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
+
           {/* Gerenciamento de Acessos */}
           <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
             <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
@@ -252,7 +308,7 @@ export default function SegurancaAcessoPage(): React.ReactElement {
               </table>
             </div>
 
-            <button 
+            <button
               type="button"
               onClick={handleNovoPerfil}
               className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer flex items-center gap-1"
@@ -270,7 +326,7 @@ export default function SegurancaAcessoPage(): React.ReactElement {
                 </h3>
                 <p className="text-xs text-gray-500">Monitore os dispositivos conectados à sua conta.</p>
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={handleEncerrarTodas}
                 className="text-xs text-gray-500 hover:text-gray-700 font-medium underline cursor-pointer"
@@ -296,7 +352,7 @@ export default function SegurancaAcessoPage(): React.ReactElement {
                       <td className="py-2.5 text-gray-500">📍 {session.localizacao}</td>
                       <td className="py-2.5 text-gray-500">{session.ultimoAcesso}</td>
                       <td className="py-2.5 text-right">
-                        <button 
+                        <button
                           type="button"
                           onClick={() => handleEncerrarSessao(session.id)}
                           className="text-[10px] text-rose-600 hover:underline font-medium cursor-pointer"
@@ -315,14 +371,14 @@ export default function SegurancaAcessoPage(): React.ReactElement {
 
         {/* Rodapé de Ações */}
         <div className="flex justify-start gap-3 pt-4 border-t border-gray-200">
-          <button 
+          <button
             type="button"
             onClick={() => router.back()}
             className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
           >
             ← Voltar
           </button>
-          <button 
+          <button
             type="button"
             onClick={handleSalvar}
             className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors cursor-pointer"
