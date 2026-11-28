@@ -14,8 +14,10 @@ export function useCreateTaskMutation() {
         ...(current ?? []),
       ]);
 
-      // Revalida apenas as consultas do domínio de tarefas.
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.overview() }),
+      ]);
     },
   });
 }

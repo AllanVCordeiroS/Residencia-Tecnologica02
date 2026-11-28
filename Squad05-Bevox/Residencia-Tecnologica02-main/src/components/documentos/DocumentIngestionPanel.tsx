@@ -5,13 +5,11 @@ import { useFormContext } from "react-hook-form";
 import {
   BadgeCheck,
   Check,
-  CheckCheck,
   CloudUpload,
   Copy,
   Eye,
   FileUp,
   Fingerprint,
-  LoaderCircle,
   Trash2,
 } from "lucide-react";
 
@@ -19,23 +17,10 @@ import { Card } from "@/components/ui/Card";
 import {
   EXTENSOES_ACEITAS,
   LIMITE_ARQUIVO_MB,
-  OCR_DEMONSTRATIVO,
 } from "@/data/documentFormOptions";
 import { formatarTamanho, type ArquivoCustodia } from "@/hooks/useDocumentFiles";
 import type { DocumentFormValues } from "./documentFormSchema";
 import { Caixa } from "./DocumentFormUi";
-
-function formatarDataBR(iso: string): string {
-  const [ano, mes, dia] = iso.split("-");
-  return `${dia}/${mes}/${ano}`;
-}
-
-const CAMPOS_OCR = [
-  { rotulo: "1. CNPJ Extraído", valor: OCR_DEMONSTRATIVO.cnpj, destaque: false },
-  { rotulo: "2. Razão Social", valor: OCR_DEMONSTRATIVO.razaoSocial, destaque: false },
-  { rotulo: "3. Vencimento Legal", valor: formatarDataBR(OCR_DEMONSTRATIVO.vencimentoIso), destaque: true },
-  { rotulo: "4. Protocolo Oficial", valor: OCR_DEMONSTRATIVO.protocolo, destaque: false },
-];
 
 function resumirHash(hash: string): string {
   return `${hash.slice(0, 11)}...${hash.slice(-11)}`;
@@ -50,7 +35,6 @@ interface Props {
   onAdicionar: (arquivos: File[]) => void;
   onRemover: (id: string) => void;
   onVisualizar: (id: string) => void;
-  onConfirmarOcr: (id: string) => void;
 }
 
 /** Coluna direita — Cockpit de Ingestão & OCR (OCR e assinatura são demonstrativos). */
@@ -61,7 +45,6 @@ export default function DocumentIngestionPanel({
   onAdicionar,
   onRemover,
   onVisualizar,
-  onConfirmarOcr,
 }: Props) {
   const { register } = useFormContext<DocumentFormValues>();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -114,15 +97,9 @@ export default function DocumentIngestionPanel({
             Cockpit de Ingestão &amp; OCR
           </h2>
           <p className="mt-0.5 text-[12px] text-slate-500 dark:text-foreground-muted">
-            Processamento forense e extração com inteligência artificial
+            Seleção local e conferência manual do documento
           </p>
         </div>
-        <span
-          title="O OCR, a assinatura digital e a indexação são simulados nesta versão (sem integração real)."
-          className="shrink-0 rounded border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-300"
-        >
-          Demo
-        </span>
       </header>
 
       <div className="space-y-5 px-6 py-5">
@@ -195,12 +172,11 @@ export default function DocumentIngestionPanel({
 
           {arquivos.length === 0 ? (
             <p className="rounded-lg border border-dashed border-slate-200 dark:border-line px-4 py-5 text-center text-[12.5px] text-slate-400 dark:text-foreground-muted">
-              Nenhum arquivo anexado. Envie o documento para habilitar a extração de metadados.
+              Nenhum arquivo anexado. Selecione um arquivo para conferir.
             </p>
           ) : (
             <ul className="space-y-3">
               {arquivos.map((arq) => {
-                const extraindo = arq.status === "extraindo";
                 return (
                   <li key={arq.id} className="rounded-xl border border-line bg-white dark:bg-surface-raised">
                     <div className="flex items-center gap-3 p-3.5">
@@ -219,17 +195,7 @@ export default function DocumentIngestionPanel({
                         <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[12px] text-slate-500 dark:text-foreground-muted">
                           {arq.extensao} • {formatarTamanho(arq.tamanho)}
                           <span aria-hidden="true">•</span>
-                          {extraindo ? (
-                            <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-300">
-                              <LoaderCircle className="size-3 animate-spin" aria-hidden="true" />
-                              Extraindo...
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-300">
-                              <Check className="size-3" aria-hidden="true" />
-                              Extração Concluída
-                            </span>
-                          )}
+                          <span className="text-blue-600 dark:text-blue-300">Selecionado neste navegador</span>
                         </p>
                       </div>
                       <div className="flex items-center gap-1 text-slate-400 dark:text-foreground-muted">
@@ -252,52 +218,7 @@ export default function DocumentIngestionPanel({
                       </div>
                     </div>
 
-                    <div className="border-t border-line px-3.5 pb-3.5 pt-3">
-                      <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-                        <h4 className="text-[10.5px] font-semibold uppercase tracking-wider text-slate-500 dark:text-foreground-muted">
-                          Metadados extraídos via OCR:
-                        </h4>
-                        {arq.ocrConfirmado ? (
-                          <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-emerald-600 dark:text-emerald-300">
-                            <Check className="size-3.5" aria-hidden="true" />
-                            Confirmado
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            disabled={extraindo}
-                            onClick={() => onConfirmarOcr(arq.id)}
-                            className="inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-300 disabled:cursor-not-allowed disabled:text-slate-300 dark:disabled:text-foreground-muted"
-                          >
-                            <CheckCheck className="size-3.5" aria-hidden="true" />
-                            Confirmar todos com 1 clique
-                          </button>
-                        )}
-                      </div>
-
-                      <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        {CAMPOS_OCR.map((campo) => (
-                          <div key={campo.rotulo} className="rounded-lg border border-line px-3 py-2">
-                            <dt className="text-[11px] text-slate-400 dark:text-foreground-muted">{campo.rotulo}</dt>
-                            <dd
-                              className={`mt-0.5 truncate font-mono text-[11.5px] font-bold ${
-                                extraindo
-                                  ? "text-slate-300 dark:text-foreground-muted"
-                                  : campo.destaque
-                                    ? "text-emerald-600 dark:text-emerald-300"
-                                    : "text-slate-900 dark:text-foreground"
-                              }`}
-                            >
-                              {extraindo ? "••••••••••" : campo.valor}
-                            </dd>
-                          </div>
-                        ))}
-                      </dl>
-                      <p className="mt-2 text-[11px] text-slate-400 dark:text-foreground-muted">
-                        Valores de demonstração: nenhuma leitura real do arquivo é feita. Ao confirmar, o
-                        vencimento e o protocolo são aplicados ao formulário.
-                      </p>
-                    </div>
+                    <p className="border-t border-line p-3 text-xs text-foreground-muted">OCR não integrado. Preencha e confira as informações complementares manualmente. O arquivo permanece disponível nesta sessão; reanexe após recarregar.</p>
                   </li>
                 );
               })}
@@ -319,10 +240,10 @@ export default function DocumentIngestionPanel({
               </span>
               <span>
                 <span className="block text-[13px] font-semibold text-slate-900 dark:text-foreground">
-                  Assinado via certificado e-CNPJ A1 da Matriz
+                  Solicitar assinatura com certificado e-CNPJ
                 </span>
                 <span className="block text-[11.5px] text-slate-400 dark:text-foreground-muted">
-                  Validade jurídica plena conforme MP 2.200-2/2001 e auditoria forense.
+                  Preferência registrada; assinatura digital ainda não integrada.
                 </span>
               </span>
             </label>
@@ -333,10 +254,10 @@ export default function DocumentIngestionPanel({
               </span>
               <span>
                 <span className="block text-[13px] font-semibold text-slate-900 dark:text-foreground">
-                  Carimbo de tempo homologado ACT Observatório
+                  Solicitar carimbo de tempo
                 </span>
                 <span className="block text-[11.5px] text-slate-400 dark:text-foreground-muted">
-                  Garante a imutabilidade cronológica e irretratabilidade do upload.
+                  Preferência registrada; serviço de carimbo de tempo não integrado.
                 </span>
               </span>
             </label>

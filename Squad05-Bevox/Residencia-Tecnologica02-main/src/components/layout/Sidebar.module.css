@@ -1,0 +1,115 @@
+.shell {
+  --sidebar-width: 72px;
+}
+
+.shell[data-sidebar-expanded="true"] {
+  --sidebar-width: 256px;
+}
+
+.desktopSidebar {
+  width: var(--sidebar-width);
+  transition: width 180ms ease-in-out;
+}
+
+.content {
+  transition: padding-left 180ms ease-in-out;
+}
+
+@media (min-width: 64rem) {
+  .content {
+    padding-left: var(--sidebar-width);
+  }
+}
+
+/* Hide only the scrollbar chrome; overflow-y-auto remains on the nav. */
+.navigation {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navigation::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Keep labels on one line while the available width animates. */
+.navLink {
+  min-height: 41px;
+}
+
+.navLink .expandedOnly,
+.brand .expandedOnly {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.brand .expandedOnly {
+  overflow: clip;
+}
+
+.sidebar[data-collapsed="true"] .expandedOnly {
+  display: none;
+}
+
+/* Keep icon targets in the same vertical position during hover expansion. */
+.groupLabel {
+  white-space: nowrap;
+}
+
+.sidebar[data-collapsed="true"] .groupLabel {
+  display: block;
+  visibility: hidden;
+}
+
+.sidebar[data-collapsed="true"] .brand,
+.sidebar[data-collapsed="true"] .pinRow {
+  padding-right: 14px;
+  padding-left: 14px;
+}
+
+.sidebar[data-collapsed="true"] .company {
+  margin-right: 14px;
+  margin-left: 14px;
+}
+
+.sidebar[data-collapsed="true"] .companyCard {
+  justify-content: center;
+  padding-right: 3px;
+  padding-left: 3px;
+}
+
+.sidebar[data-collapsed="true"] .navigation {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
+.sidebar[data-collapsed="true"] .navLink {
+  justify-content: center;
+}
+
+.sidebar[data-collapsed="true"] .userFooter {
+  flex-direction: column;
+  height: 73px;
+  gap: 4px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.sidebar[data-collapsed="true"] .userFooter > span:first-child {
+  width: 32px;
+  height: 32px;
+}
+
+.sidebar[data-collapsed="true"] .userFooter > button {
+  padding: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktopSidebar,
+  .content {
+    transition: none;
+  }
+}

@@ -50,7 +50,7 @@ export const navGroups: NavGroup[] = [
       { label: "Usuários e Permissões", href: "/usuarios", icon: UserRoundCog },
       {
         label: "Configurações",
-        href: "/configuracoes/parametros-financeiros",
+        href: "/configuracoes",
         icon: Settings,
       },
     ],
@@ -66,20 +66,36 @@ export const modulosPendentes: Record<string, { titulo: string; descricao: strin
   documentos: { titulo: "Documentos", descricao: "Emissão, cadastro e acompanhamento de documentos." },
   licencas: { titulo: "Licenças e Alvarás", descricao: "Controle de vigência e renovação de licenças e alvarás." },
   tarefas: { titulo: "Tarefas", descricao: "Rotinas operacionais, prazos e responsáveis." },
-  operacional: { titulo: "Gestão Operacional", descricao: "Estoque, rotas e operação de campo." },
   financeiro: { titulo: "Gestão Financeira", descricao: "Contas, crédito e conciliação." },
   relatorios: { titulo: "Relatórios e Indicadores", descricao: "Indicadores consolidados e relatórios gerenciais." },
   usuarios: { titulo: "Usuários e Permissões", descricao: "Equipe, perfis de acesso e permissões." },
   configuracoes: { titulo: "Configurações", descricao: "Preferências da empresa e da plataforma." },
-  notificacoes: { titulo: "Notificações", descricao: "Histórico completo de alertas e avisos." },
 };
 
 /** Rótulo do último item do breadcrumb para cada rota. */
 export function tituloDaRota(pathname: string): string {
-  if (pathname === "/dashboard") return "Visão Geral";
-  if (pathname === "/configuracoes/parametros-financeiros") {
-    return "Parâmetros Financeiros";
-  }
+  const rota = pathname.replace(/\/+$/, "") || "/";
+  const titulos: Record<string, string> = {
+    "/dashboard": "Visão Geral",
+    "/configuracoes": "Configurações",
+    "/configuracoes/empresa": "Dados da Empresa",
+    "/configuracoes/seguranca": "Segurança e Acesso",
+    "/configuracoes/notificacoes": "Notificações",
+    "/configuracoes/preferencias": "Preferências do Sistema",
+    "/configuracoes/parametros-financeiros": "Parâmetros Financeiros",
+    "/configuracoes/integracoes-auditoria": "Integrações e Auditoria",
+    "/notificacoes": "Notificações",
+    "/operacional": "Gestão Operacional",
+    "/operacional/registrar-ocorrencia": "Registrar Ocorrência",
+    "/usuarios/novo": "Novo Usuário",
+    "/unidades/nova": "Cadastrar Nova Unidade",
+    "/unidades/novo": "Cadastrar Nova Unidade",
+    "/licencas/cadastrar": "Cadastrar Licença ou Alvará",
+    "/documentos/new": "Novo Documento",
+  };
+  if (titulos[rota]) return titulos[rota];
+  if (/^\/(usuarios|users)\/[^/]+$/.test(rota)) return "Detalhes do Usuário";
+  if (/^\/unidades\/[^/]+\/editar$/.test(rota)) return "Editar Unidade";
   const slug = pathname.replace(/^\//, "").split("/")[0];
   return modulosPendentes[slug]?.titulo ?? "Página";
 }
@@ -88,7 +104,7 @@ export const ROTAS = {
   dashboard: "/dashboard",
   login: "/login",
   tarefas: "/tarefas",
-  notificacoes: "/notificacoes",
+  notificacoes: "/configuracoes/notificacoes",
   documentos: "/documentos",
   licencas: "/licencas",
   unidades: "/unidades",

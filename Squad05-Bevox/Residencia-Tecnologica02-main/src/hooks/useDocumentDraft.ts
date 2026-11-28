@@ -59,14 +59,14 @@ export function interpretarRascunho(bruto: string | null): Rascunho | null {
   return null;
 }
 
-export function salvarRascunho(valores: DocumentFormValues): Date {
+export function salvarRascunho(valores: DocumentFormValues): Date | null {
   const agora = new Date();
   try {
     const conteudo: Rascunho = { salvoEm: agora.toISOString(), valores };
     window.localStorage.setItem(CHAVE, JSON.stringify(conteudo));
     window.dispatchEvent(new Event(EVENTO));
   } catch {
-    /* armazenamento indisponível ou cheio: o formulário continua funcionando */
+    return null;
   }
   return agora;
 }
@@ -75,8 +75,9 @@ export function limparRascunho() {
   try {
     window.localStorage.removeItem(CHAVE);
     window.dispatchEvent(new Event(EVENTO));
+    return true;
   } catch {
-    /* sem ação */
+    return false;
   }
 }
 

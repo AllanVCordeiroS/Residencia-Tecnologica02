@@ -24,24 +24,30 @@ function mesmaUnidade(a: string, b: string): boolean {
   return normalizarNome(a) === normalizarNome(b);
 }
 
+export function mesmaIdentidade(value: string, unit: UnidadeOperacional): boolean {
+  return value === unit.id || mesmaUnidade(value, unit.nome);
+}
+
 export function verificarExclusaoUnidade(
   unidade: UnidadeOperacional,
   documentos: LegalDocument[],
   tarefas: Task[]
 ) {
   const documentosPendentes = documentos.filter(
-    (d) => mesmaUnidade(d.unit, unidade.nome) && STATUS_DOCUMENTO_BLOQUEANTE.includes(d.status)
+    (d) => mesmaIdentidade(d.unit, unidade) && STATUS_DOCUMENTO_BLOQUEANTE.includes(d.status)
   ).length;
 
   const tarefasEmAndamento = tarefas.filter(
-    (t) => mesmaUnidade(t.unit, unidade.nome) && STATUS_TAREFA_BLOQUEANTE.includes(t.status)
+    (t) => mesmaIdentidade(t.unit, unidade) && (STATUS_TAREFA_BLOQUEANTE.includes(t.status) || t.status === "A fazer")
   ).length;
 
-  const permitido = documentosPendentes === 0 && tarefasEmAndamento === 0;
+  const possuiVinculos = documentos.some((d) => mesmaIdentidade(d.unit, unidade)) || tarefas.some((t) => mesmaIdentidade(t.unit, unidade));
+  const possuiPendencias = unidade.documentosPendentes > 0 || unidade.tarefasAtrasadas > 0 || unidade.licencasVencendo > 0;
+  const permitido = documentosPendentes === 0 && tarefasEmAndamento === 0 && !possuiPendencias && !possuiVinculos;
 
   return {
     permitido,
-    mensagem: permitido ? null : MENSAGEM_BLOQUEIO,
+    mensagem: permitido ? null : possuiVinculos && documentosPendentes === 0 && tarefasEmAndamento === 0 && !possuiPendencias ? "Não é possível excluir uma unidade com documentos ou tarefas vinculados. Preserve o histórico desativando a unidade." : MENSAGEM_BLOQUEIO,
     documentosPendentes,
     tarefasEmAndamento,
   };

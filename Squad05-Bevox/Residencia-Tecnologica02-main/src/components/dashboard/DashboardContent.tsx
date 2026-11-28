@@ -47,7 +47,7 @@ export default function DashboardContent() {
       <DashboardMetrics data={data} />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-        <div className="min-w-0 *:h-full xl:col-span-8">
+        <div className="min-w-0 overflow-x-auto *:h-full xl:col-span-8" role="region" aria-label="Gráfico de visão geral da empresa" tabIndex={0}>
           <CompanyOverviewChart data={data} />
         </div>
         <div className="min-w-0 *:h-full xl:col-span-4">
@@ -57,7 +57,7 @@ export default function DashboardContent() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <div className="min-w-0 *:h-full xl:col-span-7">
-          <RecentTasks tarefas={data.tarefasRecentes} />
+          <RecentTasks />
         </div>
         <div className="min-w-0 *:h-full xl:col-span-5">
           <AlertsNotifications alertas={data.alertas} dataReferencia={data.dataReferencia} />

@@ -1,38 +1,52 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import Image from "next/image";
+import { useId } from "react";
+import { usePathname } from "next/navigation";
+import { ChevronsUpDown, LogOut, Pin, PinOff } from "lucide-react";
 
-import { BeerIcon } from "@/components/login/icons";
 import { navGroups } from "@/config/navigation";
 import { useSessionUser } from "@/hooks/useSessionUser";
 import { empresaDemo } from "@/data/mockData";
-import { clearSessionCookie } from "@/lib/auth-cookie";
+import { useAuth } from "@/providers/AuthProvider";
+import styles from "./Sidebar.module.css";
 
 export default function Sidebar({
   onNavigate,
+  collapsed = false,
+  pinned = false,
+  onTogglePin,
 }: {
   onNavigate?: () => void;
+  collapsed?: boolean;
+  pinned?: boolean;
+  onTogglePin?: () => void;
 }) {
+  const navigationId = useId();
   const pathname = usePathname();
-  const router = useRouter();
+  const { logout, loggingOut, error: logoutError } = useAuth();
   const usuario = useSessionUser();
 
   function handleLogout() {
-    clearSessionCookie();
-    router.replace("/login");
+    void logout();
   }
 
   return (
-    <div className="flex h-full flex-col bg-navy-950 text-slate-300">
+    <div data-collapsed={collapsed} className={`${styles.sidebar} flex h-full min-h-0 flex-col bg-navy-950 text-slate-300`}>
       {/* Marca -> Adicionar a foto da Bevox. Ass: Breno */}
-      <div className="flex items-center gap-3 px-5 pt-5">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-blue-700">
-          <BeerIcon className="h-6 w-6" />
+      <div aria-label="BEVOX Backoffice ERP" title="BEVOX Backoffice ERP" className={`${styles.brand} flex shrink-0 items-center gap-3 px-5 pt-5`}>
+        <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-white/15">
+          <Image
+            src="/bevox-logo-oficial.png"
+            alt=""
+            fill
+            sizes="44px"
+            className="object-contain p-0.5"
+          />
         </span>
 
-        <div className="leading-tight">
+        <div className={`${styles.expandedOnly} leading-tight`}>
           <p className="text-[17px] font-extrabold tracking-wide text-white">
             BEVOX
           </p>
@@ -42,17 +56,42 @@ export default function Sidebar({
         </div>
       </div>
 
+      {onTogglePin && (
+        <div className={`${styles.pinRow} mt-2 shrink-0 px-5`}>
+          <button
+            type="button"
+            onClick={onTogglePin}
+            aria-label={pinned ? "Desafixar menu lateral" : "Fixar menu lateral"}
+            title={pinned ? "Desafixar menu lateral" : "Fixar menu lateral"}
+            aria-pressed={pinned}
+            aria-expanded={!collapsed}
+            aria-controls={navigationId}
+            className={`flex h-8 w-full items-center justify-center gap-2 rounded-lg text-xs font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 ${pinned ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-white/10 hover:text-white"}`}
+          >
+            {pinned ? <PinOff className="h-4 w-4 shrink-0" aria-hidden="true" /> : <Pin className="h-4 w-4 shrink-0" aria-hidden="true" />}
+            <span className={styles.expandedOnly}>{pinned ? "Menu fixado" : "Fixar menu"}</span>
+          </button>
+        </div>
+      )}
+
       {/* Empresa: apenas visual, Colocar uma interação de menu e adicionar a imagem da Adega. Ass: Breno */}
-      <div className="mx-4 mt-5">
+      <div className={`${styles.company} mx-4 mt-5 shrink-0`}>
         <div
           aria-label={`Empresa ${empresaDemo.nome}`}
-          className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-left"
+          title={`Empresa ${empresaDemo.nome}`}
+          className={`${styles.companyCard} flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-left`}
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-800 text-[11px] font-bold text-amber-300 ring-1 ring-white/10">
-            AD
+          <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#101c31] ring-1 ring-white/10">
+            <Image
+              src="/adega-distribution.jpg"
+              alt=""
+              fill
+              sizes="36px"
+              className="object-cover"
+            />
           </span>
 
-          <span className="min-w-0 flex-1 leading-tight">
+          <span className={`${styles.expandedOnly} min-w-0 flex-1 leading-tight`}>
             <span className="block truncate text-[13px] font-semibold text-white">
               {empresaDemo.nome}
             </span>
@@ -63,7 +102,7 @@ export default function Sidebar({
           </span>
 
           <ChevronsUpDown
-            className="h-4 w-4 shrink-0 text-slate-400"
+            className={`${styles.expandedOnly} h-4 w-4 shrink-0 text-slate-400`}
             aria-hidden="true"
           />
         </div>
@@ -71,12 +110,13 @@ export default function Sidebar({
 
       {/* Navegação */}
       <nav
+        id={navigationId}
         aria-label="Menu principal"
-        className="mt-4 flex-1 overflow-y-auto px-4 pb-4"
+        className={`${styles.navigation} mt-4 min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 pb-4`}
       >
         {navGroups.map((grupo) => (
           <div key={grupo.label} className="mb-4">
-            <p className="px-3 pb-2 pt-3 text-[11px] font-semibold uppercase tracking-wider text-blue-400">
+            <p className={`${styles.expandedOnly} ${styles.groupLabel} px-3 pb-2 pt-3 text-[11px] font-semibold uppercase tracking-wider text-blue-400`}>
               {grupo.label}
             </p>
 
@@ -91,8 +131,10 @@ export default function Sidebar({
                     <Link
                       href={href}
                       onClick={onNavigate}
+                      aria-label={label}
+                      title={label}
                       aria-current={ativo ? "page" : undefined}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 ${
+                      className={`${styles.navLink} flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 ${
                         ativo
                           ? "bg-blue-600 text-white shadow-lg shadow-blue-900/30"
                           : "text-slate-300 hover:bg-white/[0.06] hover:text-white"
@@ -102,7 +144,7 @@ export default function Sidebar({
                         className="h-[18px] w-[18px] shrink-0"
                         aria-hidden="true"
                       />
-                      {label}
+                      <span className={styles.expandedOnly}>{label}</span>
                     </Link>
                   </li>
                 );
@@ -113,7 +155,7 @@ export default function Sidebar({
       </nav>
 
       {/* Usuário */}
-      <div className="flex items-center gap-3 border-t border-white/10 px-5 py-4">
+      <div aria-label={`Usuário ${usuario.nome}, ${usuario.perfil}`} title={`${usuario.nome} • ${usuario.perfil}`} className={`${styles.userFooter} flex shrink-0 items-center gap-3 border-t border-white/10 px-5 py-4`}>
         <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-800 text-[12px] font-bold text-white ring-1 ring-white/15">
           {usuario.iniciais}
 
@@ -123,7 +165,7 @@ export default function Sidebar({
           />
         </span>
 
-        <span className="min-w-0 flex-1 leading-tight">
+        <span className={`${styles.expandedOnly} min-w-0 flex-1 leading-tight`}>
           <span className="block truncate text-[13px] font-semibold text-white">
             {usuario.nome}
           </span>
@@ -136,13 +178,16 @@ export default function Sidebar({
         <button
           type="button"
           onClick={handleLogout}
-          title="Sair"
+          disabled={loggingOut}
+          aria-busy={loggingOut}
+          title={loggingOut ? "Encerrando sessão..." : "Sair"}
           aria-label="Sair da plataforma"
-          className="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+          className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors motion-reduce:transition-none hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
+      {logoutError && <p role="alert" className="px-3 pb-3 text-xs text-red-300">{logoutError}</p>}
     </div>
   );
 }

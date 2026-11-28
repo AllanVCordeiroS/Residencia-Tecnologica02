@@ -1,19 +1,25 @@
+﻿import type { ReportRecord } from "./reportData";
+
+import { unitPerformance } from "./reportData";
+
 export type ReportFilters = {
   period: string;
   unit: string;
   category: string;
   comparison: string;
+  search?: string;
+  basis?: string;
 };
 
 export type ReportExportUnit = {
   name: string;
-  tasks: number;
-  docs: number;
+  tasks: number | null;
+  docs: number | null;
   occurrences: number;
 };
 
 export type ReportExportCost = { name: string; value: number; amount: string };
-export type ReportExportMetric = { label: string; value: string; category: string };
+export type ReportExportMetric = { label: string; value: string; category: string; note?: string };
 export type ReportExportFormat = "pdf" | "xlsx" | "zip";
 export type ReportExportTemplate = { id: string; title: string; eyebrow: string; description: string };
 
@@ -25,12 +31,16 @@ type ExportInput = {
   metrics: ReportExportMetric[];
   units: ReportExportUnit[];
   costs: ReportExportCost[];
+  records?: ReportRecord[];
 };
 
 const htmlEntities: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 const escapeHtml = (value: string | number) => String(value).replace(/[&<>"']/g, (char) => htmlEntities[char] ?? char);
 const xmlEscape = (value: string | number) => escapeHtml(value).replaceAll("&#39;", "&apos;");
-const csvCell = (value: string | number) => `"${String(value).replaceAll('"', '""')}"`;
+const csvCell = (value: string | number) => {
+  const text = String(value);
+  return `"${(/^[\s]*[=+@-]/.test(text) ? "'" + text : text).replaceAll('"', '""')}"`;
+};
 const bytesFromText = (text: string) => new TextEncoder().encode(text);
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -115,7 +125,7 @@ function xlsx(sheets: { name: string; rows: (string | number)[][] }[]) {
     { name: "xl/workbook.xml", content: `<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheetTags}</sheets></workbook>` },
     { name: "xl/_rels/workbook.xml.rels", content: `<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationTags}</Relationships>` },
     ...sheets.map((sheet, i) => ({ name: `xl/worksheets/sheet${i + 1}.xml`, content: worksheet(sheet.rows) })),
-  ]);
+  ]).slice(0, undefined, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 }
 
 function sha256(text: string) {
@@ -127,36 +137,42 @@ function sha256(text: string) {
 
 function buildRows({ template, formatTitle, filters, metrics, units, costs }: Omit<ExportInput, "format">) {
   const date = new Date().toLocaleDateString("pt-BR");
-  const metricRows: (string | number)[][] = [["Indicador", "Valor", "Categoria"], ...metrics.map(({ label, value, category }) => [label, value, category])];
-  const unitRows: (string | number)[][] = [["Unidade", "Tarefas concluídas (%)", "Documentos regularizados (%)", "Ocorrências abertas"], ...units.map((u) => [u.name === "Matriz" ? "Matriz — Recife" : u.name, u.tasks, u.docs, u.occurrences])];
-  const costRows: (string | number)[][] = [["Categoria de despesa", "Participação (%)", "Valor demonstrativo"], ...costs.map((c) => [c.name, c.value, c.amount])];
-  const filterRows: (string | number)[][] = [["Parâmetro", "Valor selecionado"], ["Modelo de compilação", template.title], ["Formato", formatTitle], ["Período", filters.period], ["Unidade", filters.unit], ["Categoria", filters.category], ["Comparação", filters.comparison], ["Data de geração", date]];
+  const metricRows: (string | number)[][] = [["Indicador", "Valor", "Categoria", "Base / comparação"], ...metrics.map(({ label, value, category, note }) => [label, value, category, note ?? ""])];
+  const unitRows: (string | number)[][] = [["Unidade", "Tarefas concluídas (%)", "Documentos regularizados (%)", "Ocorrências abertas"], ...units.map((u) => [u.name, u.tasks ?? "Sem registros", u.docs ?? "Sem registros", u.occurrences])];
+  const costRows: (string | number)[][] = [["Categoria de despesa", "Participação (%)", "Valor"], ...costs.map((c) => [c.name, c.value, c.amount])];
+  const filterRows: (string | number)[][] = [["Parâmetro", "Valor selecionado"], ["Modelo de compilação", template.title], ["Formato", formatTitle], ["Período", filters.period], ["Unidade", filters.unit], ["Categoria", filters.category], ["Comparação", filters.comparison], ["Pesquisa", filters.search ?? ""], ["Base dos indicadores", filters.basis ?? "Registros disponíveis no aplicativo"], ["Data de geração", date]];
   const csv = [["Dossiê Bevox — Relatórios e Indicadores"], ...filterRows, [], ["Indicadores"], ...metricRows, [], ["Desempenho por unidade"], ...unitRows, [], ["Despesas por categoria"], ...costRows].map((row) => row.map(csvCell).join(";")).join("\r\n");
   return { date, filterRows, metricRows, unitRows, costRows, csv };
 }
 
 export async function exportReportFile(input: ExportInput) {
-  const { format, template, filters, metrics, units, costs } = input;
+  // Each template narrows the existing filtered data, without synthesizing records.
+  const categories = input.template.id === "compliance" ? ["Documentos", "Operacional"] : input.template.id === "productivity" ? ["Tarefas", "Operacional"] : null;
+  input = { ...input, metrics: input.metrics.filter(item => !categories || categories.includes(item.category)), records: input.records?.filter(item => !categories || categories.includes(item.category)), costs: categories ? [] : input.costs };
+  if (input.records) input.units = unitPerformance(input.records);
+  const { format, template, filters, metrics, units, costs, records = [] } = input;
   const { date, filterRows, metricRows, unitRows, costRows, csv } = buildRows(input);
+  const recordRows: (string | number)[][] = [["Registro", "Unidade", "Categoria", "Data", "Base da data", "Situação atual", "Valor BRL", "Categoria financeira", "Origem"], ...records.map(record => [record.title, record.unit, record.category, record.date ?? "Não informada", record.dateBasis, record.status, record.amount ?? "", record.expenseCategory ?? "", record.source ?? "Fonte operacional do aplicativo"] )];
+  const detailedCsv = csv + "\r\n\r\nRegistros\r\n" + recordRows.map(row => row.map(csvCell).join(";")).join("\r\n");
   const filename = `bevox-dossie-${template.id}-${new Date().toISOString().slice(0, 10)}`;
   if (format === "pdf") {
     const popup = window.open("", "_blank", "width=1000,height=750");
     if (!popup) throw new Error("O navegador bloqueou a nova janela. Permita pop-ups para preparar o PDF.");
     const rows = (data: (string | number)[][]) => data.slice(1).map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
     const filtersHtml = filterRows.slice(1).map(([key, value]) => `<li><strong>${escapeHtml(key)}:</strong> ${escapeHtml(value)}</li>`).join("");
-    popup.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${escapeHtml(template.title)} — Bevox</title><style>@page{size:A4;margin:16mm}body{font:11px Arial;color:#182337;line-height:1.45}header{border-bottom:3px solid #2864f0;padding-bottom:16px;margin-bottom:20px}.brand{font-size:10px;letter-spacing:2px;font-weight:bold;color:#2864f0}h1{font-size:23px}h2{font-size:14px;margin:22px 0 8px}table{width:100%;border-collapse:collapse;margin-bottom:15px}th,td{border:1px solid #dbe3ee;padding:7px;text-align:left}th{background:#eef4ff}.callout{padding:10px;background:#f4f7fc}small{color:#66758b}</style></head><body><header><div class="brand">BEVOX · ADEGA DISTRIBUTION</div><h1>${escapeHtml(template.title)}</h1><p>${escapeHtml(template.eyebrow)} · Gerado em ${date}</p></header><p>${escapeHtml(template.description)}</p><div class="callout"><strong>Parâmetros do relatório</strong><ul>${filtersHtml}</ul></div><h2>Resumo de indicadores</h2><table><thead><tr><th>Indicador</th><th>Valor</th><th>Categoria</th></tr></thead><tbody>${rows(metricRows)}</tbody></table><h2>Desempenho por unidade</h2><table><thead><tr><th>Unidade</th><th>Tarefas</th><th>Documentos</th><th>Ocorrências</th></tr></thead><tbody>${rows(unitRows)}</tbody></table><h2>Despesas por categoria</h2><table><thead><tr><th>Categoria</th><th>Participação</th><th>Valor demonstrativo</th></tr></thead><tbody>${rows(costRows)}</tbody></table><small>Valores demonstrativos para fins de prototipação.</small><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),250))<\/script></body></html>`);
+    popup.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${escapeHtml(template.title)} — Bevox</title><style>@page{size:A4;margin:16mm}body{font:11px Arial;color:#182337;line-height:1.45}header{border-bottom:3px solid #2864f0;padding-bottom:16px;margin-bottom:20px}.brand{font-size:10px;letter-spacing:2px;font-weight:bold;color:#2864f0}h1{font-size:23px}h2{font-size:14px;margin:22px 0 8px}table{width:100%;border-collapse:collapse;margin-bottom:15px}th,td{border:1px solid #dbe3ee;padding:7px;text-align:left}th{background:#eef4ff}.callout{padding:10px;background:#f4f7fc}small{color:#66758b}</style></head><body><header><div class="brand">BEVOX · ADEGA DISTRIBUTION</div><h1>${escapeHtml(template.title)}</h1><p>${escapeHtml(template.eyebrow)} · Gerado em ${date}</p></header><p>${escapeHtml(template.description)}</p><div class="callout"><strong>Parâmetros do relatório</strong><ul>${filtersHtml}</ul></div><h2>Resumo de indicadores</h2><table><thead><tr><th>Indicador</th><th>Valor</th><th>Categoria</th><th>Base / comparação</th></tr></thead><tbody>${rows(metricRows)}</tbody></table><h2>Desempenho por unidade</h2><table><thead><tr><th>Unidade</th><th>Tarefas</th><th>Documentos</th><th>Ocorrências</th></tr></thead><tbody>${rows(unitRows)}</tbody></table><h2>Despesas por categoria</h2><table><thead><tr><th>Categoria</th><th>Participação</th><th>Valor</th></tr></thead><tbody>${rows(costRows)}</tbody></table><h2>Registros filtrados</h2><table><thead><tr><th>Registro</th><th>Unidade</th><th>Categoria</th><th>Data</th><th>Base da data</th><th>Situação atual</th><th>Valor BRL</th><th>Categoria financeira</th><th>Origem</th></tr></thead><tbody>${rows(recordRows)}</tbody></table><small>Dados das fontes disponíveis no aplicativo, que incluem registros de demonstração e armazenamento local ou em memória. Não constituem comprovação financeira.</small><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),250))<\/script></body></html>`);
     popup.document.close();
     return "Dossiê preparado para impressão. Na janela aberta, selecione “Salvar como PDF” para baixar o arquivo.";
   }
   if (format === "xlsx") {
-    downloadBlob(xlsx([{ name: "Resumo", rows: [...filterRows, [], ...metricRows] }, { name: "Unidades", rows: unitRows }, { name: "Despesas", rows: costRows }]), `${filename}.xlsx`);
-    return "Planilha XLSX gerada com as abas Resumo, Unidades e Despesas.";
+    downloadBlob(xlsx([{ name: "Resumo", rows: [...filterRows, [], ...metricRows] }, { name: "Unidades", rows: unitRows }, { name: "Despesas", rows: costRows }, { name: "Registros", rows: recordRows }]), `${filename}.xlsx`);
+    return "Planilha XLSX gerada com os indicadores e registros filtrados.";
   }
 
   const files = [
-    { name: "relatorio-indicadores.csv", content: `\uFEFF${csv}` },
-    { name: "resumo-dossie.json", content: JSON.stringify({ empresa: "Adega Distribution", produto: "Bevox", modelo: template.title, geradoEm: new Date().toISOString(), filtros: filters, observacao: "Dados demonstrativos; não representam informações financeiras reais.", indicadores: metrics, unidades: units, despesas: costs }, null, 2) },
-    { name: "LEIA-ME.txt", content: "BEVOX — PACOTE DE DOSSIÊ\n\nDados demonstrativos exportados localmente. Os hashes verificam a integridade, mas não constituem assinatura digital nem autenticação corporativa.\n" },
+    { name: "relatorio-indicadores.csv", content: `\uFEFF${detailedCsv}` },
+    { name: "resumo-dossie.json", content: JSON.stringify({ empresa: "Adega Distribution", produto: "Bevox", modelo: template.title, geradoEm: new Date().toISOString(), filtros: filters, observacao: "Fontes atuais do aplicativo, incluindo demonstração e armazenamento local ou em memória; sem comprovação financeira.", indicadores: metrics, unidades: units, despesas: costs, registros: records }, null, 2) },
+    { name: "LEIA-ME.txt", content: "BEVOX — PACOTE DE DOSSIÊ\n\nRegistros disponíveis no aplicativo exportados localmente, incluindo fontes demonstrativas. Consulte a base e os filtros no relatório. Os hashes verificam a integridade, mas não constituem assinatura digital nem autenticação corporativa.\n" },
   ];
   const hashes = await Promise.all(files.map(async (file) => ({ arquivo: file.name, sha256: await sha256(file.content) })));
   const manifest = JSON.stringify({ algoritmo: "SHA-256", geradoEm: new Date().toISOString(), observacao: "Manifesto de integridade; não constitui assinatura digital ou autenticação corporativa.", arquivos: hashes }, null, 2);
@@ -179,3 +195,6 @@ export function downloadScheduleConfig(input: {
   };
   downloadBlob(new Blob([JSON.stringify(config, null, 2)], { type: "application/json;charset=utf-8" }), `bevox-configuracao-entrega-${stamp}.json`);
 }
+
+
+

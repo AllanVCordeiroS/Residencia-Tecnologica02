@@ -1,6 +1,7 @@
+import NextLink from "next/link";
 import HeroPanel from "@/components/login/HeroPanel";
+import LanguageSelector from "@/components/login/LanguageSelector";
 import LoginForm from "@/components/LoginForm";
-//!!OS LINKS COM HREF="#" SÃO SÓ VISUAIS PQ N TEM CAMINHO PRA ELES AINDA!!
 
 export default function LoginPage() {
   return (
@@ -11,15 +12,8 @@ export default function LoginPage() {
         
          <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[420px] flex-col">
         {/* Cabeçalho */}
-        <header className="flex items-center justify-between border-b border-slate-200 dark:border-line pb-6 text-xs text-slate-600 dark:text-foreground-muted">
-          <span className="rounded-md border border-slate-200 dark:border-line bg-white dark:bg-surface-raised px-3 py-2 shadow-sm">
-            <span className="mr-2 text-emerald-600 dark:text-emerald-300">♧</span>
-            Conexão Segura SSL 256-bit
-          </span>
-
-          <button type="button" className="text-slate-600 dark:text-foreground-muted">
-            Português (BR)⌄
-          </button>
+        <header className="flex items-center justify-end border-b border-slate-200 dark:border-line pb-6 text-xs text-slate-600 dark:text-foreground-muted">
+          <LanguageSelector />
         </header>
 
         {/* Conteúdo principal */}
@@ -53,10 +47,14 @@ export default function LoginPage() {
           {}
           <LoginForm />
 
-          {/*Segurança*/}
-          <p className="mt-7 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-foreground-muted">
-            <span className="text-slate-400 dark:text-foreground-muted">♢</span>
-            Acesso unificado com 2FA e perfil RBAC ativo
+          <p className="mt-7 text-center text-xs text-slate-500 dark:text-foreground-muted">
+            Não possui uma conta?{" "}
+            <NextLink
+              href="/cadastro"
+              className="font-medium text-blue-700 dark:text-blue-300 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+            >
+              Criar conta na BEVOX
+            </NextLink>
           </p>
 
           {/*Ajuda*/}
@@ -79,13 +77,13 @@ export default function LoginPage() {
             </p>
 
             <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 text-slate-500 dark:text-foreground-muted">
-              <a href="#" className="hover:text-blue-700 dark:hover:text-blue-300">
+              <NextLink href="/termos" className="hover:text-blue-700 dark:hover:text-blue-300">
                 Termos de Uso
-              </a>
+              </NextLink>
               <span>•</span>
-              <a href="#" className="hover:text-blue-700 dark:hover:text-blue-300">
+              <NextLink href="/privacidade" className="hover:text-blue-700 dark:hover:text-blue-300">
                 Privacidade
-              </a>
+              </NextLink>
               <span>•</span>
               <a href="#" className="hover:text-blue-700 dark:hover:text-blue-300">
                 Suporte Técnico

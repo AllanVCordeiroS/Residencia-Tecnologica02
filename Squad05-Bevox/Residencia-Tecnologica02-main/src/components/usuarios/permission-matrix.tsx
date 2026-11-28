@@ -57,7 +57,8 @@ export function PermissionMatrix({ perfil, onPerfilChange, permissoes, onToggle 
         <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-foreground-muted" />
       </div>
 
-      <div className="mt-5">
+      <div className="mt-5 overflow-x-auto">
+        <div className="min-w-[320px]">
         <div className={`${grid} border-b border-slate-100 dark:border-line pb-2 text-[11px] font-semibold text-slate-500 dark:text-foreground-muted`}>
           <span>Módulo</span>
           {ACOES.map((a) => (
@@ -86,6 +87,7 @@ export function PermissionMatrix({ perfil, onPerfilChange, permissoes, onToggle 
             </div>
           );
         })}
+        </div>
       </div>
 
       <div className="mt-4 flex items-start gap-2 rounded-lg bg-slate-50 dark:bg-surface-muted p-3 text-xs text-slate-600 dark:text-foreground-muted">

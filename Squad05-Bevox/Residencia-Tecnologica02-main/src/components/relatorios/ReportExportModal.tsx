@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReportRecord } from "./reportData";
 import {
-  Archive, BarChart3, CalendarClock, CalendarDays, Check, ChevronDown, CircleAlert,
-  Download, FileChartColumn, FileSpreadsheet, FileText, LockKeyhole, Mail, X,
+  Archive, BarChart3, CalendarClock, CalendarDays, ChevronDown, CircleAlert,
+  Download, FileChartColumn, FileSpreadsheet, FileText, LockKeyhole, X,
 } from "lucide-react";
 import {
   downloadScheduleConfig, exportReportFile,
@@ -26,15 +27,15 @@ interface ReportExportModalProps {
   metrics: ReportExportMetric[];
   units: ReportExportUnit[];
   costs: ReportExportCost[];
+  records?: ReportRecord[];
 }
 
-const templates: (ReportExportTemplate & { id: TemplateId; pages: number; icon: typeof FileChartColumn; iconClass: string; tag: string })[] = [
+const templates: (ReportExportTemplate & { id: TemplateId; icon: typeof FileChartColumn; iconClass: string; tag: string })[] = [
   {
     id: "executive",
     title: "Dossiê Executivo C-Level",
     eyebrow: "Conselho & Diretoria Geral",
-    description: "Resumo consolidado com indicadores gerenciais, SLA operacional e regularidade documental das unidades.",
-    pages: 16,
+    description: "Resumo consolidado dos registros operacionais, financeiros e documentais disponíveis.",
     icon: FileChartColumn,
     iconClass: "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
     tag: "Completo",
@@ -44,7 +45,6 @@ const templates: (ReportExportTemplate & { id: TemplateId; pages: number; icon: 
     title: "Relatório Forense de Conformidade",
     eyebrow: "Auditoria Jurídica & Fiscal",
     description: "Ênfase em licenças, documentos pendentes, ocorrências operacionais e pontos que exigem acompanhamento.",
-    pages: 9,
     icon: LockKeyhole,
     iconClass: "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300",
     tag: "Risco legal",
@@ -54,7 +54,6 @@ const templates: (ReportExportTemplate & { id: TemplateId; pages: number; icon: 
     title: "Balanço Multipolar de Produtividade",
     eyebrow: "Operações & Supply Chain",
     description: "Comparativo de produtividade, rotinas concluídas e indicadores entre as unidades de distribuição.",
-    pages: 12,
     icon: BarChart3,
     iconClass: "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300",
     tag: "Operações",
@@ -75,7 +74,7 @@ const formats: {
     description: "Relatório preparado para impressão ou salvamento em PDF pelo navegador.",
     icon: FileText,
     iconClass: "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
-    size: "2,4 MB",
+    size: "Tamanho definido na impressão",
   },
   {
     id: "xlsx",
@@ -83,21 +82,16 @@ const formats: {
     description: "Planilha Excel com abas de resumo, unidades e despesas.",
     icon: FileSpreadsheet,
     iconClass: "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300",
-    size: "148 KB",
+    size: "Tamanho conforme os registros",
   },
   {
     id: "zip",
-    title: "Pacote ZIP Autenticado",
+    title: "Pacote ZIP com manifesto",
     description: "Arquivos de dados e manifesto de integridade com hashes SHA-256.",
     icon: Archive,
     iconClass: "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300",
     size: "Variável",
   },
-];
-
-const configuredRecipients = [
-  { email: "ricardo.silveira@adegadist.com.br", label: "Diretoria" },
-  { email: "conselho.fiscal@adegadist.com.br", label: "Conselho Fiscal" },
 ];
 
 const frequencyOptions: { id: FrequencyId; label: string; description: string }[] = [
@@ -131,15 +125,17 @@ export default function ReportExportModal({
   metrics,
   units,
   costs,
+  records,
 }: ReportExportModalProps) {
   const [template, setTemplate] = useState<TemplateId>("executive");
   const [format, setFormat] = useState<FormatId>("pdf");
   const [delivery, setDelivery] = useState<DeliveryMode>("immediate");
   const [frequency, setFrequency] = useState<FrequencyId>("first-business-day");
   const [scheduledAt, setScheduledAt] = useState(defaultScheduleDate);
-  const [recipients, setRecipients] = useState<string[]>(configuredRecipients.map((recipient) => recipient.email));
+  const [recipients, setRecipients] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const selectedTemplate = templates.find((item) => item.id === template) ?? templates[0];
   const selectedFormat = formats.find((item) => item.id === format) ?? formats[0];
@@ -148,23 +144,29 @@ export default function ReportExportModal({
 
   useEffect(() => {
     if (!isOpen) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    modalRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
     const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isGenerating) onClose();
+      if (event.key === "Tab") {
+        const elements = modalRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex="0"]');
+        if (!elements?.length) return;
+        const first = elements[0], last = elements[elements.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
     };
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus();
     };
   }, [isOpen, isGenerating, onClose]);
 
   if (!isOpen) return null;
-
-  const toggleRecipient = (email: string) => {
-    setRecipients((current) => current.includes(email) ? current.filter((item) => item !== email) : [...current, email]);
-  };
 
   const handleGenerate = async () => {
     setError("");
@@ -174,8 +176,8 @@ export default function ReportExportModal({
         setError("Informe uma data e hora futuras para a configuração de entrega.");
         return;
       }
-      if (recipients.length === 0) {
-        setError("Selecione ao menos um destinatário corporativo.");
+      if (!recipients.length || recipients.some(email => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+        setError("Informe e-mails válidos, separados por vírgula.");
         return;
       }
       try {
@@ -206,6 +208,7 @@ export default function ReportExportModal({
         metrics,
         units,
         costs,
+        records,
       });
       onFeedback(message);
       onClose();
@@ -218,6 +221,7 @@ export default function ReportExportModal({
 
   return (
     <div
+      ref={modalRef}
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/60 p-2 backdrop-blur-sm sm:p-4 lg:p-6"
       role="dialog"
       aria-modal="true"
@@ -232,7 +236,7 @@ export default function ReportExportModal({
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-400/40 bg-blue-500/20 text-blue-200"><FileChartColumn size={20} /></span>
             <div className="min-w-0">
               <h2 id="report-export-title" className="text-sm font-bold tracking-tight sm:text-base">Central de Compilação &amp; Exportação de Dossiês</h2>
-              <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-slate-300 dark:text-foreground-muted sm:text-xs"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Adega Distribution <span className="text-slate-500 dark:text-foreground-muted">•</span> Matriz &amp; Filiais <span className="text-slate-500 dark:text-foreground-muted">(8 CDDs conectados)</span></p>
+              <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-slate-300 dark:text-foreground-muted sm:text-xs"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> BEVOX <span className="text-slate-500 dark:text-foreground-muted">•</span> Matriz &amp; Filiais <span className="text-slate-500 dark:text-foreground-muted">({units.length} unidade(s) no recorte)</span></p>
             </div>
           </div>
           <button type="button" onClick={onClose} disabled={isGenerating} aria-label="Fechar modal de exportação" className="shrink-0 rounded-lg p-2 text-slate-400 dark:text-foreground-muted transition hover:bg-white/10 hover:text-white disabled:opacity-50"><X size={19} /></button>
@@ -242,7 +246,7 @@ export default function ReportExportModal({
           <section aria-labelledby="template-heading">
             <div className="mb-2.5">
               <h3 id="template-heading" className="text-[11px] font-bold uppercase tracking-wide text-slate-600 dark:text-foreground-muted">Selecione o modelo de compilação</h3>
-              <p className="text-[10px] text-slate-400 dark:text-foreground-muted">Estruturas modulares pré-certificadas pela governança BEVOX.</p>
+              <p className="text-[10px] text-slate-400 dark:text-foreground-muted">Modelos organizados a partir dos registros filtrados disponíveis.</p>
             </div>
             <div role="group" aria-labelledby="template-heading" className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
               {templates.map((item) => {
@@ -262,7 +266,7 @@ export default function ReportExportModal({
                     </span>
                     <span className="mt-2.5 block text-[10px] leading-[1.5] text-slate-500 dark:text-foreground-muted">{item.description}</span>
                     <span className="mt-auto flex w-full items-center justify-between gap-2 border-t border-slate-100 dark:border-line pt-2.5 text-[9px]">
-                      <span className={`rounded px-1.5 py-1 font-medium ${selected ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" : "bg-slate-100 dark:bg-surface-muted text-slate-500 dark:text-foreground-muted"}`}>{item.pages} páginas • {item.tag}</span>
+                      <span className={`rounded px-1.5 py-1 font-medium ${selected ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" : "bg-slate-100 dark:bg-surface-muted text-slate-500 dark:text-foreground-muted"}`}>{item.tag}</span>
                       <span className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border ${selected ? "border-blue-600" : "border-slate-300 dark:border-line"}`}>{selected && <span className="h-2 w-2 rounded-full bg-blue-600" />}</span>
                     </span>
                   </button>
@@ -318,16 +322,8 @@ export default function ReportExportModal({
                 <div className="flex min-h-9 items-center gap-2 rounded-lg border border-slate-200 dark:border-line bg-slate-50 dark:bg-surface-muted px-2.5 py-2 text-[9px] text-slate-600 dark:text-foreground-muted"><CalendarDays size={13} className="shrink-0 text-blue-600 dark:text-blue-300" /><span>{delivery === "scheduled" ? `${selectedFrequency.label} • ${scheduledAt ? new Date(scheduledAt).toLocaleString("pt-BR") : "Selecione a data"}` : "Arquivo preparado localmente para download imediato"}</span></div>
               </div>
               <div>
-                <p className="mb-2 text-[10px] font-semibold text-slate-600 dark:text-foreground-muted">Destinatários corporativos pré-configurados</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {configuredRecipients.map((recipient) => {
-                    const checked = recipients.includes(recipient.email);
-                    return <label key={recipient.email} className={`inline-flex max-w-full cursor-pointer items-center gap-1.5 rounded-lg border px-2 py-1.5 text-[9px] transition ${checked ? "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" : "border-slate-200 dark:border-line bg-white dark:bg-surface-raised text-slate-500 dark:text-foreground-muted"} focus-within:ring-2 focus-within:ring-blue-500`}>
-                      <input type="checkbox" checked={checked} onChange={() => toggleRecipient(recipient.email)} aria-label={`Incluir ${recipient.email}`} className="sr-only" />
-                      {checked ? <Check size={11} /> : <Mail size={11} />}
-                      <span className="break-all">{recipient.email}</span>
-                    </label>;
-                  })}
+                <p className="mb-2 text-[10px] font-semibold text-slate-600 dark:text-foreground-muted">Destinatários da configuração (sem envio automático)</p>
+                <div className="flex flex-wrap gap-1.5"><input aria-label="E-mails para a configuração, separados por vírgula" value={recipients.join(", ")} onChange={event => setRecipients(event.target.value.split(",").map(value => value.trim()))} placeholder="email@empresa.com" className="w-full rounded-lg border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-2 text-xs" />
                 </div>
               </div>
             </div>
@@ -339,7 +335,7 @@ export default function ReportExportModal({
         </div>
 
         <footer className="flex shrink-0 flex-col gap-3 border-t border-slate-200 dark:border-line bg-white dark:bg-surface-raised px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-foreground-muted"><FileText size={13} className="shrink-0 text-slate-400 dark:text-foreground-muted" /><span>Estimativa: <strong className="font-semibold text-slate-700 dark:text-foreground">{selectedTemplate.pages} páginas</strong> • {selectedFormat.size}</span></p>
+          <p className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-foreground-muted"><FileText size={13} className="shrink-0 text-slate-400 dark:text-foreground-muted" /><span><strong className="font-semibold text-slate-700 dark:text-foreground">{records?.filter(record => template === "executive" || (template === "compliance" ? ["Documentos", "Operacional"] : ["Tarefas", "Operacional"]).includes(record.category)).length ?? 0} registro(s) do modelo</strong> • {selectedFormat.size}</span></p>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
             <button type="button" onClick={onClose} disabled={isGenerating} className="rounded-lg border border-slate-300 dark:border-line bg-white dark:bg-surface-raised px-4 py-2.5 text-[11px] font-semibold text-slate-700 dark:text-foreground transition hover:bg-slate-50 dark:hover:bg-surface-muted disabled:opacity-50">Cancelar</button>
             <button type="button" onClick={handleGenerate} disabled={isGenerating} className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-[11px] font-semibold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-wait disabled:opacity-70">
@@ -352,3 +348,5 @@ export default function ReportExportModal({
     </div>
   );
 }
+
+

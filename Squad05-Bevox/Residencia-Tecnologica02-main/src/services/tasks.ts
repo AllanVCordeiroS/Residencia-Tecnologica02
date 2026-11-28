@@ -12,30 +12,49 @@ let tasksDemo: Task[] = mockTasks.map((task) => ({
   attachments: task.attachments?.map((item) => ({ ...item })) ?? [],
 }));
 
-export async function getTasks(): Promise<Task[]> {
-  return tasksDemo.map((task) => ({
+function localDate(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+// Os registros antigos têm apenas o prazo formatado; não inventamos datas de
+// início ou conclusão ausentes. "Hoje" é resolvido ao carregar a demonstração.
+const demoToday = localDate(new Date());
+tasksDemo = tasksDemo.map((task) => ({
+  ...task,
+  unit: task.unit === "Matriz — Recife" ? "Unidade Matriz — Recife" : task.unit,
+  dueDate: task.dueDate || (task.due === "Hoje" ? demoToday : task.due.split("/").reverse().join("-")),
+}));
+
+function presentTask(task: Task): Task {
+  const today = localDate(new Date());
+  const open = task.status !== "Concluída";
+  return {
     ...task,
-    subtasks: task.subtasks?.map((item) => ({ ...item })) ?? [],
-    checklist: task.checklist?.map((item) => ({ ...item })) ?? [],
-    attachments: task.attachments?.map((item) => ({ ...item })) ?? [],
-  }));
+    due: task.dueDate === today ? "Hoje" : task.dueDate.split("-").reverse().join("/") || "Não informado",
+    dueToday: open && task.dueDate === today,
+    late: open && !!task.dueDate && task.dueDate < today,
+    subtasks: task.subtasks.map((item) => ({ ...item })),
+    checklist: task.checklist.map((item) => ({ ...item })),
+    attachments: task.attachments.map((item) => ({ ...item })),
+  };
+}
+
+export async function getTasks(): Promise<Task[]> {
+  return tasksDemo.map(presentTask);
 }
 
 export async function createTaskDemo(input: CreateTaskInput): Promise<Task> {
-  const now = new Date();
-  const todayISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  const dueToday = input.dueDate === todayISO;
+  const total = input.subtasks.length + input.checklist.length;
+  const done = input.subtasks.filter((item) => item.done).length + input.checklist.filter((item) => item.done).length;
   const task: Task = {
     ...input,
     id: tasksDemo.reduce((max, current) => Math.max(max, current.id), 0) + 1,
-    due: dueToday ? "Hoje" : input.dueDate.split("-").reverse().join("/"),
+    due: input.dueDate.split("-").reverse().join("/"),
     status: "A fazer",
-    progress: 0,
+    progress: total ? Math.round(done / total * 100) : 0,
     isNew: true,
-    late: input.dueDate < todayISO,
-    dueToday,
   };
 
-  tasksDemo = [task, ...tasksDemo];
-  return task;
+  tasksDemo = [presentTask(task), ...tasksDemo];
+  return presentTask(task);
 }

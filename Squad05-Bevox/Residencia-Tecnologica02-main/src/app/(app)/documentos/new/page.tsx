@@ -17,8 +17,7 @@ export default function CadastrarDocumentoPage() {
             Homologação &amp; Registro de Documento
           </h1>
           <p className="mt-1 text-[13px] text-slate-500 dark:text-foreground-muted">
-            Envie documentos regulatórios, contratos, licenças ou alvarás com classificação automática e
-            assinatura digital.
+            Cadastre documentos regulatórios, contratos, licenças ou alvarás e confira suas informações.
           </p>
         </div>
 

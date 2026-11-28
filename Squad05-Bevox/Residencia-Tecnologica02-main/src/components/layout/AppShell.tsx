@@ -4,9 +4,14 @@ import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import styles from "./Sidebar.module.css";
 
 export default function AppShell({ children, footer }: { children: ReactNode; footer: ReactNode }) {
   const [menuAberto, setMenuAberto] = useState(false);
+  const [sidebarFixada, setSidebarFixada] = useState(false);
+  const [mouseNaSidebar, setMouseNaSidebar] = useState(false);
+  const [focoNaSidebar, setFocoNaSidebar] = useState(false);
+  const sidebarExpandida = sidebarFixada || mouseNaSidebar || focoNaSidebar;
   const pathname = usePathname();
 
   // Fecha o menu móvel ao trocar de rota (ajuste de estado durante a renderização).
@@ -24,10 +29,27 @@ export default function AppShell({ children, footer }: { children: ReactNode; fo
   }, [menuAberto]);
 
   return (
-    <div className="min-h-screen bg-surface text-slate-900 dark:text-foreground">
+    <div data-sidebar-expanded={sidebarExpandida} className={`${styles.shell} min-h-screen bg-surface text-slate-900 dark:text-foreground`}>
       {/* Sidebar fixa (desktop) */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 lg:block">
-        <Sidebar />
+      <aside
+        aria-label="Navegação lateral"
+        className={`${styles.desktopSidebar} fixed inset-y-0 left-0 z-40 hidden lg:block`}
+        onPointerEnter={(event) => {
+          if (event.pointerType === "mouse") setMouseNaSidebar(true);
+        }}
+        onPointerLeave={() => setMouseNaSidebar(false)}
+        onPointerDownCapture={() => setFocoNaSidebar(false)}
+        onFocusCapture={(event) => setFocoNaSidebar(event.target.matches(":focus-visible"))}
+        onKeyDownCapture={() => setFocoNaSidebar(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setFocoNaSidebar(false);
+        }}
+      >
+        <Sidebar
+          collapsed={!sidebarExpandida}
+          pinned={sidebarFixada}
+          onTogglePin={() => setSidebarFixada((fixada) => !fixada)}
+        />
       </aside>
 
       {/* Sidebar móvel */}
@@ -45,9 +67,9 @@ export default function AppShell({ children, footer }: { children: ReactNode; fo
         </div>
       )}
 
-      <div className="flex min-h-screen min-w-0 flex-col lg:pl-64">
+      <div className={`${styles.content} flex min-h-screen min-w-0 flex-col`}>
         <Header onAbrirMenu={() => setMenuAberto(true)} />
-        <main className="flex-1 px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-8 sm:py-8">{children}</main>
         {footer}
       </div>
     </div>

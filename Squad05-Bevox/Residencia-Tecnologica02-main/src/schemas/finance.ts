@@ -1,5 +1,24 @@
 import * as z from "zod";
 
+/** BRL em reais; arredondamento e somas usam centavos no serviço. */
+export const financeEntrySchema = z.object({
+  tipo: z.enum(["Receita", "Despesa"]),
+  descricao: z.string().trim().min(1, "Informe a descrição.").max(200),
+  valor: z.number().finite().positive("Informe um valor maior que zero.")
+    .max(999999999.99).refine((value) => Math.abs(value * 100 - Math.round(value * 100)) < 0.0001, "Use no máximo duas casas decimais."),
+  categoria: z.string().trim().min(1, "Informe a categoria.").max(100),
+  unidade: z.string().min(1, "Selecione a unidade."),
+  contraparte: z.string().trim().min(1, "Informe a contraparte.").max(200),
+  dataLancamento: z.iso.date("Informe uma data válida."),
+  dataVencimento: z.iso.date("Informe um vencimento válido."),
+  status: z.enum(["Pendente", "Realizado"]),
+  formaPagamento: z.enum(["PIX", "Boleto", "Transferência", "Cartão", "Dinheiro", "Não informado"]),
+  subcategoria: z.string().trim().max(100).default(""),
+  observacao: z.string().trim().max(500).default(""),
+});
+
+export type FinanceEntryFormValues = z.infer<typeof financeEntrySchema>;
+
 export const codigoMoedaSchema = z.enum(["BRL", "USD", "EUR"]);
 
 export const moedaConversaoSchema = z.object({

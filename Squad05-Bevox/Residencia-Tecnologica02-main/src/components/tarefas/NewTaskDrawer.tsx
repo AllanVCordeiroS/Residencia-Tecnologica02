@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
+import { useUnitsQuery } from "@/hooks/queries/useUnitsQuery";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,14 +14,19 @@ import { usuarioDemo } from "@/data/mockData";
 import type { CreateTaskInput } from "@/types/task";
 import {
   ATTACHMENT_ACCEPT, ATTACHMENT_EXTENSIONS, ATTACHMENT_MAX_BYTES, ATTACHMENT_MAX_FILES,
-  TASK_CATEGORIES, TASK_OWNERS, TASK_PRIORITIES, TASK_UNITS, type NewTaskPriority,
+  TASK_CATEGORIES, TASK_OWNERS, TASK_PRIORITIES, type NewTaskPriority,
 } from "./taskOptions";
 
 export type NewTaskData = CreateTaskInput;
 
 /* ---------- Validação ---------- */
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
-const req = (m: string) => z.string().min(1, m);
+const req = (m: string) => z.string().trim().min(1, m);
+const date = (message: string) => req(message).refine((value) => {
+  if (!ISO.test(value)) return false;
+  const parsed = new Date(`${value}T12:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}, "Informe uma data válida.");
 const text = (m: string, max: number, label: string) =>
   z.string().trim().min(1, m).max(max, `${label} deve ter no máximo ${max} caracteres.`);
 
@@ -31,10 +38,10 @@ const schema = z
     responsavel: req("Selecione o responsável."),
     categoria: req("Selecione a categoria."),
     prioridade: req("Selecione a prioridade."),
-    dataInicio: req("Informe a data de início.").regex(ISO, "Data de início inválida."),
-    prazo: req("Informe o prazo.").regex(ISO, "Prazo inválido."),
+    dataInicio: date("Informe a data de início."),
+    prazo: date("Informe o prazo."),
     subtarefas: z.array(z.object({ titulo: text("Informe o título da subtarefa ou remova-a.", 100, "A subtarefa") })),
-    checklist: z.array(z.object({ texto: z.string().max(150, "O item deve ter no máximo 150 caracteres."), feito: z.boolean() })),
+    checklist: z.array(z.object({ texto: text("Preencha o item do checklist ou remova-o.", 150, "O item"), feito: z.boolean() })),
   })
   .refine((v) => !ISO.test(v.dataInicio) || !ISO.test(v.prazo) || v.prazo >= v.dataInicio, {
     path: ["prazo"],
@@ -44,7 +51,7 @@ type FormValues = z.infer<typeof schema>;
 
 /* ---------- Configuração dos campos ---------- */
 const SELECTS = [
-  { name: "unidade", label: "Unidade", icon: Building2, ph: "Selecione a unidade", opts: TASK_UNITS },
+  { name: "unidade", label: "Unidade", icon: Building2, ph: "Selecione a unidade", opts: [] as readonly string[] },
   { name: "responsavel", label: "Responsável", icon: CircleUser, ph: "Selecione o responsável", opts: TASK_OWNERS.map((o) => o.name), lead: CircleUser },
   { name: "categoria", label: "Categoria", icon: Tag, ph: "Selecione a categoria", opts: TASK_CATEGORIES },
   { name: "prioridade", label: "Prioridade", icon: Flag, ph: "Selecione a prioridade", opts: TASK_PRIORITIES, lead: CircleAlert },
@@ -127,7 +134,8 @@ const Counter = ({ n, max }: { n: number; max: number }) => (
 );
 
 /* ---------- Drawer ---------- */
-export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => void; onCreate: (t: NewTaskData) => void }) {
+export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => void; onCreate: (t: NewTaskData) => Promise<unknown> }) {
+  const units = useUnitsQuery();
   const [now] = useState(() => new Date());
   const [defaults] = useState<FormValues>(() => {
     const due = new Date();
@@ -138,7 +146,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
       checklist: ["Criar/atualizar documentação necessária", "Revisar informações com o responsável", "Enviar para aprovação"].map((texto) => ({ texto, feito: false })),
     };
   });
-  const { register, control, handleSubmit, setFocus, trigger, formState: { errors, isDirty, submitCount } } = useForm<FormValues>({
+  const { register, control, handleSubmit, setFocus, trigger, formState: { errors, isDirty, isSubmitting, submitCount } } = useForm<FormValues>({
     resolver: zodResolver(schema), defaultValues: defaults, mode: "onTouched", reValidateMode: "onChange",
   });
   const subs = useFieldArray({ control, name: "subtarefas" });
@@ -151,6 +159,16 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
   const [step, setStep] = useState<StepId>("dados");
   const panel = useRef<HTMLDivElement>(null);
   const picker = useRef<HTMLInputElement>(null);
+  const submitting = useRef(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const guard = useUnsavedChanges({
+    dirty: isDirty || files.length > 0,
+    description: "Existem informações da tarefa que ainda não foram salvas. Ao sair, os dados preenchidos serão descartados.",
+  });
+  const { requestDiscard, allowNavigation } = guard;
+  const close = useCallback(() => {
+    if (!submitting.current) requestDiscard(() => onClose());
+  }, [requestDiscard, onClose]);
 
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
@@ -158,7 +176,8 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
     document.body.style.overflow = "hidden";
     setFocus("titulo");
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") return onClose();
+      if (document.activeElement?.closest("dialog[open]")) return;
+      if (e.key === "Escape") { e.preventDefault(); close(); return; }
       if (e.key !== "Tab" || !panel.current) return;
       const items = [...panel.current.querySelectorAll<HTMLElement>('button, input:not([tabindex="-1"]), select, textarea, [tabindex="0"]')].filter((el) => el.offsetParent);
       const [first, last] = [items[0], items[items.length - 1]];
@@ -174,7 +193,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
       document.body.style.overflow = overflow;
       opener?.focus?.();
     };
-  }, [onClose, setFocus]);
+  }, [close, setFocus]);
 
   // Revalida o prazo sempre que as datas mudam
   useEffect(() => {
@@ -198,34 +217,45 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
     setFiles(next);
   }
 
-  function submit(d: FormValues) {
-    const stamp = now.getTime();
-    onCreate({
-      title: d.titulo.trim(), description: d.descricao.trim(), unit: d.unidade, owner: d.responsavel,
-      initials: TASK_OWNERS.find((o) => o.name === d.responsavel)?.initials ?? d.responsavel.slice(0, 2).toUpperCase(),
-      category: d.categoria, priority: d.prioridade as NewTaskPriority, startDate: d.dataInicio, dueDate: d.prazo,
-      subtasks: d.subtarefas.map((s, i) => ({ id: `sub-${stamp}-${i}`, title: s.titulo.trim(), done: false })),
-      checklist: d.checklist.filter((c) => c.texto.trim()).map((c, i) => ({ id: `chk-${stamp}-${i}`, text: c.texto.trim(), done: c.feito })),
-      attachments: files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
-      createdBy: usuarioDemo.nome, createdAt: now.toISOString(),
-    });
-    onClose();
+  async function submit(d: FormValues) {
+    if (submitting.current) return;
+    submitting.current = true;
+    setSubmitError(null);
+    const created = new Date();
+    const stamp = created.getTime();
+    try {
+      await onCreate({
+        title: d.titulo.trim(), description: d.descricao.trim(), unit: d.unidade, owner: d.responsavel,
+        initials: TASK_OWNERS.find((o) => o.name === d.responsavel)?.initials ?? d.responsavel.slice(0, 2).toUpperCase(),
+        category: d.categoria, priority: d.prioridade as NewTaskPriority, startDate: d.dataInicio, dueDate: d.prazo,
+        subtasks: d.subtarefas.map((s, i) => ({ id: `sub-${stamp}-${i}`, title: s.titulo.trim(), done: false })),
+        checklist: d.checklist.map((c, i) => ({ id: `chk-${stamp}-${i}`, text: c.texto.trim(), done: c.feito })),
+        attachments: files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+        createdBy: usuarioDemo.nome, createdAt: created.toISOString(),
+      });
+      allowNavigation();
+      onClose();
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Não foi possível criar a tarefa. Tente novamente.");
+    } finally {
+      submitting.current = false;
+    }
   }
 
-  const dirty = isDirty || files.length > 0;
   const priority = v.prioridade ?? "";
 
   return (
     <div className="fixed inset-0 z-[60] flex justify-end">
-      <div aria-hidden="true" onClick={() => !dirty && onClose()} className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]" />
+      {guard.dialog}
+      <div aria-hidden="true" onClick={close} className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]" />
       <div
         ref={panel} role="dialog" aria-modal="true" aria-labelledby="new-task-title"
         className="relative flex h-full w-full max-w-[564px] flex-col bg-white dark:bg-surface-raised shadow-2xl transition-transform duration-300 ease-out starting:translate-x-full"
       >
-        <form noValidate onSubmit={handleSubmit(submit)} className="flex min-h-0 flex-1 flex-col">
+        <form noValidate onSubmit={(event) => { void handleSubmit(submit)(event); }} className="flex min-h-0 flex-1 flex-col">
           <header className="flex items-center justify-between px-6 pb-4 pt-5">
             <h2 id="new-task-title" className="text-[20px] font-semibold tracking-tight text-slate-900 dark:text-foreground">Nova Tarefa</h2>
-            <button type="button" onClick={onClose} aria-label="Fechar" className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-foreground-muted hover:bg-slate-100 dark:hover:bg-surface-muted">
+            <button type="button" onClick={close} disabled={isSubmitting} aria-label="Fechar" className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-foreground-muted hover:bg-slate-100 dark:hover:bg-surface-muted disabled:opacity-50">
               <X size={20} />
             </button>
           </header>
@@ -244,8 +274,8 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
             </ol>
           </nav>
 
-          <div className="relative min-h-0 flex-1 space-y-6 overflow-y-auto overscroll-contain px-6 py-5">
-            <div id="nt-sec-dados" className="space-y-4">
+          <fieldset disabled={isSubmitting} className="relative min-h-0 flex-1 space-y-6 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6">
+            <div id="nt-sec-dados" onFocusCapture={() => setStep("dados")} className="space-y-4">
               <Field label="Título" icon={TextCursorInput} htmlFor="nt-titulo" error={errors.titulo?.message} counter={<Counter n={v.titulo?.length ?? 0} max={100} />}>
                 <input id="nt-titulo" autoComplete="off" placeholder="Ex.: Renovar licença ambiental" aria-invalid={!!errors.titulo} {...register("titulo")} className={`${field(!!errors.titulo)} h-10 px-3`} />
               </Field>
@@ -260,12 +290,13 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                     <Field key={name} label={label} icon={icon} htmlFor={`nt-${name}`} error={errors[name]?.message}>
                       <div className="relative">
                         {Lead && <Lead size={16} className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${name === "prioridade" ? PRIORITY_COLOR[priority] ?? "text-slate-400 dark:text-foreground-muted" : "text-slate-500 dark:text-foreground-muted"}`} />}
-                        <select id={`nt-${name}`} aria-invalid={!!errors[name]} {...register(name)} className={`${field(!!errors[name])} h-10 cursor-pointer appearance-none truncate pr-9 ${Lead ? "pl-9" : "pl-3"} ${v[name] ? "" : "text-slate-400 dark:text-foreground-muted"}`}>
+                        <select id={`nt-${name}`} disabled={name === "unidade" && units.isPending} aria-invalid={!!errors[name]} {...register(name)} className={`${field(!!errors[name])} h-10 cursor-pointer appearance-none truncate pr-9 ${Lead ? "pl-9" : "pl-3"} ${v[name] ? "" : "text-slate-400 dark:text-foreground-muted"}`}>
                           <option value="">{ph}</option>
-                          {opts.map((o) => <option key={o} className="text-slate-800 dark:text-foreground">{o}</option>)}
+                          {(name === "unidade" ? (units.data ?? []).map((unit) => unit.nome) : opts).map((o) => <option key={o} className="text-slate-800 dark:text-foreground">{o}</option>)}
                         </select>
                         <ChevronsDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-foreground-muted" />
                       </div>
+                      {name === "unidade" && units.isError && <p role="alert" className="mt-1 text-xs text-red-600 dark:text-red-300">Não foi possível carregar as unidades. <button type="button" onClick={() => void units.refetch()} className="underline">Tentar novamente</button></p>}
                     </Field>
                   );
                 })}
@@ -303,7 +334,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
               </div>
             </div>
 
-            <section id="nt-sec-checklist" aria-label="Checklist">
+            <section id="nt-sec-checklist" onFocusCapture={() => setStep("checklist")} aria-label="Checklist">
               <div className="mb-2"><Label icon={ListChecks} optional>Checklist</Label></div>
               <ul className="space-y-1.5">
                 {checks.fields.map((f, i) => (
@@ -327,7 +358,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
               </button>
             </section>
 
-            <section id="nt-sec-anexos" aria-label="Anexos">
+            <section id="nt-sec-anexos" onFocusCapture={() => setStep("anexos")} aria-label="Anexos">
               <div className="mb-2"><Label icon={Paperclip} optional>Anexos</Label></div>
               <div
                 role="button" tabIndex={0} aria-label="Selecionar arquivos para anexar"
@@ -361,7 +392,7 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                 ))}
               </ul>
             </section>
-          </div>
+          </fieldset>
 
           <footer className="border-t border-slate-200 dark:border-line px-6 pb-4 pt-3">
             <div className="flex items-end justify-between gap-3">
@@ -373,16 +404,13 @@ export default function NewTaskDrawer({ onClose, onCreate }: { onClose: () => vo
                   <p className="text-[10px] text-slate-500 dark:text-foreground-muted">{iso(now).split("-").reverse().join("/")} às {pad(now.getHours())}:{pad(now.getMinutes())}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-slate-500 dark:text-foreground-muted">Status inicial</p>
-                <span className="mt-1 inline-block rounded bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white">A fazer</span>
-              </div>
             </div>
             {submitCount > 0 && Object.keys(errors).length > 0 && <Err className="mt-3 font-medium">Corrija os campos destacados para criar a tarefa.</Err>}
+            <Err className="mt-3 font-medium">{submitError ?? undefined}</Err>
             <div className="mt-3 flex justify-end gap-3">
-              <button type="button" onClick={onClose} className="h-9 rounded-md border border-slate-200 dark:border-line px-5 text-[12px] font-medium text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted">Cancelar</button>
-              <button type="submit" className="inline-flex h-9 items-center gap-2 rounded-md bg-blue-600 px-5 text-[12px] font-semibold text-white shadow-sm hover:bg-blue-700">
-                <Check size={15} /> Criar Tarefa
+              <button type="button" onClick={close} disabled={isSubmitting} className="h-9 rounded-md border border-slate-200 dark:border-line px-5 text-[12px] font-medium text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted disabled:opacity-50">Cancelar</button>
+              <button type="submit" disabled={isSubmitting} className="inline-flex h-9 items-center gap-2 rounded-md bg-blue-600 px-5 text-[12px] font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">
+                <Check size={15} /> {isSubmitting ? "Salvando..." : "Criar Tarefa"}
               </button>
             </div>
           </footer>

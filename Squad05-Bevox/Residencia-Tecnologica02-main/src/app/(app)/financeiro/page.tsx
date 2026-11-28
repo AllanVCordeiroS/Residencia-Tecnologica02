@@ -1,419 +1,80 @@
-"use client";
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { 
-  Download, X, FileText, FileSpreadsheet, Archive, CheckCircle2, 
-  Scale, Calendar, CheckSquare
-} from 'lucide-react';
+﻿"use client";
 
-interface FinancialAccount {
-  id: string; description: string; subDescription: string; unit: string;
-  category: string; amount: string; dueDate: string; status: 'A vencer' | 'Atrasada' | 'Em dia';
+import { useState, type ReactNode } from "react";
+import Link from "next/link";
+import { ArrowDownLeft, ArrowUpRight, Wallet, CalendarClock, Download, Plus } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line } from "recharts";
+import { useUnitsQuery } from "@/hooks/queries/useUnitsQuery";
+import { useFinanceQuery } from "@/components/financeiro/useFinanceQuery";
+import { dateISO, dateLabel, entryStatus, filterFinance, financeCSV, forecastFinance, money, monthlyFinance, periodRange, previousRange, sumFinance, variation } from "@/components/financeiro/financeMath";
+import DocumentDialog from "@/components/documentos/DocumentDialog";
+import type { FinancePeriod } from "@/types/finance";
+
+const card = "rounded-xl border border-line bg-surface-raised p-5 shadow-sm min-w-0";
+const button = "rounded-lg border border-line px-4 py-2.5 text-sm font-semibold hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-blue-600";
+const colors = ["#2563eb", "#f59e0b", "#10b981", "#a855f7", "#f43f5e", "#06b6d4"];
+function Panel({ title, children, className = "" }: { title: string; children: ReactNode; className?: string }) { return <section className={card + " " + className}><h2 className="mb-4 font-bold">{title}</h2>{children}</section>; }
+function Empty() { return <p className="py-8 text-center text-sm text-foreground-muted">Nenhum lançamento no período e unidade selecionados.</p>; }
+const tooltipStyle = { background: "var(--surface-raised, #fff)", color: "var(--foreground, #111827)", border: "1px solid var(--line, #cbd5e1)", borderRadius: 8 };
+
+export default function GestaoFinanceiraPage() {
+  const query = useFinanceQuery();
+  const units = useUnitsQuery();
+  const [period, setPeriod] = useState<FinancePeriod>("month");
+  const [unit, setUnit] = useState("");
+  const [tab, setTab] = useState<"Despesa" | "Receita">("Despesa");
+  const [exportOpen, setExportOpen] = useState(false);
+  const [format, setFormat] = useState("csv");
+  const [exportError, setExportError] = useState("");
+  const all = query.data ?? [];
+  const range = periodRange(period);
+  const entries = filterFinance(all, range, unit);
+  const before = filterFinance(all, previousRange(range), unit);
+  const revenues = entries.filter((e) => e.tipo === "Receita");
+  const expenses = entries.filter((e) => e.tipo === "Despesa");
+  const pending = entries.filter((e) => e.status === "Pendente");
+  const revenue = sumFinance(revenues), expense = sumFinance(expenses);
+  const today = dateISO(new Date());
+  const weekEnd = new Date(today + "T12:00:00"); weekEnd.setDate(weekEnd.getDate() + 7);
+  const week = dateISO(weekEnd);
+  const summary = (["Despesa", "Receita"] as const).flatMap((type) => [
+    { label: type === "Despesa" ? "Contas a pagar vencidas" : "Contas a receber vencidas", rows: pending.filter((e) => e.tipo === type && e.dataVencimento < today) },
+    { label: type === "Despesa" ? "A pagar nos próximos 7 dias" : "A receber nos próximos 7 dias", rows: pending.filter((e) => e.tipo === type && e.dataVencimento >= today && e.dataVencimento <= week) },
+  ]);
+  const categories = [...new Set(expenses.map((e) => e.categoria))].map((name) => ({ name, value: sumFinance(expenses.filter((e) => e.categoria === name)) }));
+  const monthly = monthlyFinance(entries, range);
+  const forecast = forecastFinance(entries, today);
+  const accounts = entries.filter((e) => e.tipo === tab).sort((a, b) => a.dataVencimento.localeCompare(b.dataVencimento));
+  const unitNames = new Map((units.data ?? []).map((u) => [u.id, u.nome]));
+  const allUnitIds = [...new Set([...(units.data ?? []).map((u) => u.id), ...all.map((e) => e.unidade)])];
+  const unitIds = allUnitIds.filter((id) => !unit || id === unit);
+  const nameOf = (id: string) => unitNames.get(id) ?? all.find((e) => e.unidade === id)?.unidadeNome ?? id;
+  function download() {
+    setExportError("");
+    try {
+      const url = URL.createObjectURL(new Blob([financeCSV(entries)], { type: "text/csv;charset=utf-8" }));
+      const anchor = document.createElement("a"); anchor.href = url; anchor.download = `financeiro-${range.start}-${range.end}.csv`;
+      document.body.appendChild(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setExportOpen(false);
+    } catch { setExportError("Não foi possível gerar o CSV. Tente novamente."); }
+  }
+  return <div className="min-h-screen bg-surface-muted p-4 text-foreground sm:p-6"><div className="mx-auto max-w-7xl space-y-6">
+    <header className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center"><div><h1 className="text-2xl font-bold">Gestão Financeira</h1><p className="mt-1 text-sm text-foreground-muted">Acompanhe receitas, despesas, fluxo de caixa e desempenho financeiro de todas as unidades.</p></div><div className="flex flex-wrap gap-2"><Link href="/financeiro/novo" className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"><Plus size={16}/>Novo lançamento</Link><button onClick={() => setExportOpen(true)} disabled={query.isPending || query.isError} className={button + " inline-flex items-center gap-2 disabled:opacity-50"}><Download size={16}/>Exportar relatório</button></div></header>
+    <div className={card + " flex flex-wrap gap-4"}><label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold">Período<select value={period} onChange={(e) => setPeriod(e.target.value as FinancePeriod)} className="rounded-lg border border-line bg-surface-raised p-2"><option value="month">Este mês</option><option value="previous">Mês anterior</option><option value="3months">Últimos 3 meses</option><option value="6months">Últimos 6 meses</option><option value="year">Este ano</option></select></label><label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold">Unidade<select disabled={units.isPending} value={unit} onChange={(e) => setUnit(e.target.value)} className="rounded-lg border border-line bg-surface-raised p-2"><option value="">Todas as unidades</option>{allUnitIds.map((id) => <option key={id} value={id}>{nameOf(id)}</option>)}</select></label><p className="self-end py-2 text-xs text-foreground-muted">{dateLabel(range.start)} a {dateLabel(range.end)}</p></div>
+    {units.isError && <p role="alert" className="text-red-600">Falha ao carregar unidades. <button onClick={() => units.refetch()} className="underline">Tentar novamente</button></p>}
+    {query.isPending ? <p role="status">Carregando lançamentos…</p> : query.isError ? <div role="alert">Não foi possível carregar os lançamentos. <button className={button} onClick={() => query.refetch()}>Tentar novamente</button></div> : <>
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[
+      { title: "Receitas totais", value: revenue, detail: variation(revenue, sumFinance(before.filter((e) => e.tipo === "Receita"))), Icon: ArrowUpRight, color: "text-emerald-600 dark:text-emerald-300" },
+      { title: "Despesas totais", value: expense, detail: variation(expense, sumFinance(before.filter((e) => e.tipo === "Despesa"))), Icon: ArrowDownLeft, color: "text-rose-600 dark:text-rose-300" },
+      { title: "Saldo de caixa", value: sumFinance(revenues.filter((e) => e.status === "Realizado")) - sumFinance(expenses.filter((e) => e.status === "Realizado")), detail: "Saldo realizado no período; sem saldo inicial.", Icon: Wallet, color: "text-blue-600 dark:text-blue-300" },
+      { title: "Contas a pagar", value: sumFinance(pending.filter((e) => e.tipo === "Despesa")), detail: `${summary[0].rows.length} conta(s) vencida(s) no recorte`, Icon: CalendarClock, color: "text-amber-600 dark:text-amber-300" },
+    ].map(({ title, value, detail, Icon, color }) => <section key={title} className={card}><div className="flex items-center justify-between gap-2 text-sm text-foreground-muted">{title}<Icon size={22} className={color}/></div><p className="mt-3 break-words text-2xl font-bold">{money(value)}</p><p className="mt-2 text-xs text-foreground-muted">{detail}</p></section>)}</div>
+    <div className="grid grid-cols-1 gap-4 xl:grid-cols-12"><Panel className="xl:col-span-6" title="Fluxo financeiro mensal"><p className="mb-4 text-xs text-foreground-muted">Receitas e despesas por data de lançamento, incluindo pendências.</p>{!entries.length ? <Empty/> : <div className="h-72 w-full"><ResponsiveContainer><LineChart data={monthly}><CartesianGrid strokeDasharray="3 3" stroke="var(--line, #cbd5e1)"/><XAxis dataKey="label"/><YAxis width={65} tickFormatter={(v: number) => `${v / 1000} mil`}/><Tooltip contentStyle={tooltipStyle} formatter={(v) => money(Number(v))}/><Legend/><Line type="monotone" dataKey="Receitas" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }}/><Line type="monotone" dataKey="Despesas" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }}/></LineChart></ResponsiveContainer></div>}</Panel><Panel className="xl:col-span-3" title="Distribuição de despesas">{!categories.length ? <Empty/> : <><div className="h-48"><ResponsiveContainer><PieChart><Pie data={categories} dataKey="value" nameKey="name" innerRadius="55%" outerRadius="85%">{categories.map((c, i) => <Cell key={c.name} fill={colors[i % colors.length]}/>)}</Pie><Tooltip contentStyle={tooltipStyle} formatter={(v) => money(Number(v))}/></PieChart></ResponsiveContainer></div><p className="mb-3 text-center font-bold">{money(expense)}</p><ul className="space-y-2">{categories.map((c, i) => <li key={c.name} className="flex flex-wrap justify-between gap-1 text-xs"><span><span className="mr-2 inline-block h-2 w-2 rounded-full" style={{ background: colors[i % colors.length] }}/>{c.name}</span><span>{money(c.value)} · {(c.value / expense * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</span></li>)}</ul></>}</Panel>
+    <Panel className="xl:col-span-3" title="Desempenho por unidade"><p className="mb-3 text-xs text-foreground-muted">Margem = (receita − despesa) / receita. Sem receita, margem não calculável.</p><div className="overflow-x-auto"><table className="w-full min-w-[280px] text-left text-[11px]"><thead className="bg-surface-muted text-xs text-foreground-muted"><tr>{["Unidade", "Receita", "Despesa", "Margem"].map((h) => <th key={h} className="px-1.5 py-3">{h}</th>)}</tr></thead><tbody>{unitIds.map((id) => { const rows = entries.filter((e) => e.unidade === id); const r = sumFinance(rows.filter((e) => e.tipo === "Receita")), x = sumFinance(rows.filter((e) => e.tipo === "Despesa")); return <tr key={id} className="border-t border-line"><td className="px-1.5 py-3">{nameOf(id)}</td><td className="px-1.5 py-3">{money(r)}</td><td className="px-1.5 py-3">{money(x)}</td><td className="px-1.5 py-3">{r ? ((r - x) / r * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%" : "—"}</td></tr>; })}</tbody></table></div></Panel>
+    </div><div className="grid grid-cols-1 gap-4 xl:grid-cols-12"><Panel className="xl:col-span-6" title="Contas Financeiras"><div role="tablist" aria-label="Contas financeiras" className="mb-4 flex gap-2">{(["Despesa", "Receita"] as const).map((type) => <button key={type} role="tab" aria-selected={tab === type} id={`tab-${type}`} aria-controls="finance-accounts" onClick={() => setTab(type)} className={button + (tab === type ? " bg-blue-600 text-white hover:bg-blue-700" : "")}>{type === "Despesa" ? "Contas a Pagar" : "Contas a Receber"}</button>)}</div><div role="tabpanel" id="finance-accounts" aria-labelledby={`tab-${tab}`} className="overflow-x-auto">{!accounts.length ? <Empty/> : <table className="w-full min-w-[560px] text-left text-xs"><thead className="bg-surface-muted text-xs text-foreground-muted"><tr>{["Descrição", "Unidade", "Categoria", "Valor", "Vencimento", "Status"].map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{accounts.map((e) => <tr key={e.id} className="border-t border-line"><td className="p-3"><p className="font-semibold">{e.contraparte}</p><p className="text-xs text-foreground-muted">{e.descricao}</p>{e.demonstrativo && <span className="text-[10px] text-foreground-muted">Exemplo demonstrativo</span>}</td><td className="p-3">{nameOf(e.unidade)}</td><td className="p-3">{e.categoria}</td><td className="whitespace-nowrap p-3 font-semibold">{money(e.valor)}</td><td className="p-3">{dateLabel(e.dataVencimento)}</td><td className="p-3"><span className={"whitespace-nowrap rounded-full px-2 py-1 text-xs " + (entryStatus(e, today) === "Em atraso" ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300" : "bg-surface-muted text-foreground")}>{entryStatus(e, today)}</span></td></tr>)}</tbody></table>}</div></Panel>
+    <Panel className="xl:col-span-3" title="Fluxo de caixa previsto · próximos 30 dias"><p className="mb-4 text-xs text-foreground-muted">{dateLabel(forecast[0].date)} a {dateLabel(forecast[29].date)}. Pendências do período e unidade selecionados; vencidas não são projetadas. Não representa valores confirmados.</p><div className="mb-3 flex flex-wrap gap-4 text-sm"><span>Entradas: <b>{money(forecast.reduce((s, r) => s + r.Entradas, 0))}</b></span><span>Saídas: <b>{money(forecast.reduce((s, r) => s + r.Saídas, 0))}</b></span></div><div className="h-64"><ResponsiveContainer><BarChart data={forecast}><CartesianGrid strokeDasharray="3 3" stroke="var(--line, #cbd5e1)"/><XAxis dataKey="label" minTickGap={45}/><YAxis width={65}/><Tooltip contentStyle={tooltipStyle} formatter={(v) => money(Number(v))}/><Legend/><Bar dataKey="Entradas" fill="#2563eb" radius={[3,3,0,0]}/><Bar dataKey="Saídas" fill="#f59e0b" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></div>{!forecast.some((r) => r.Entradas || r.Saídas) && <p className="text-sm text-foreground-muted">Sem vencimentos previstos nos próximos 30 dias neste recorte.</p>}</Panel><Panel className="xl:col-span-3" title="Resumo Financeiro"><p className="mb-4 text-xs text-foreground-muted">Pendências no período e unidade selecionados.</p><dl className="space-y-5">{summary.map((s) => <div key={s.label} className="border-b border-line pb-4"><dt className="text-sm text-foreground-muted">{s.label}</dt><dd className="mt-1 text-xl font-bold">{money(sumFinance(s.rows))}</dd><dd className="text-xs text-foreground-muted">{s.rows.length} registro(s)</dd></div>)}</dl></Panel></div>
+    </>}
+    {exportOpen && <DocumentDialog title="Exportar relatório financeiro" onClose={() => setExportOpen(false)}><p className="mb-4 text-foreground-muted">{entries.length} registros · {dateLabel(range.start)} a {dateLabel(range.end)} · {unit ? nameOf(unit) : "Todas as unidades"}. Base em memória; CSV identifica a origem de cada registro.</p><fieldset className="space-y-2"><legend className="mb-2 font-semibold">Formato de saída</legend>{[["csv", "Planilha consolidada CSV", "Dados tabulares disponíveis"], ["pdf", "Relatório executivo PDF", "Integração indisponível"], ["zip", "Pacote completo ZIP", "Integração indisponível"]].map(([value, title, text]) => <label key={value} className={"flex cursor-pointer items-start gap-3 rounded-xl border p-4 focus-within:outline-2 focus-within:outline-blue-600 " + (format === value ? "border-blue-600 bg-blue-50 dark:bg-blue-950/30" : "border-line")}><input type="radio" name="finance-format" value={value} checked={format === value} onChange={() => setFormat(value)} className="mt-1"/><span><span className="block font-semibold">{title}</span><span className="text-xs text-foreground-muted">{text}</span></span></label>)}</fieldset>{format !== "csv" && <p role="status" className="mt-4 text-amber-700 dark:text-amber-300">Este formato ainda não possui geração disponível. Selecione CSV para baixar os registros.</p>}{exportError && <p role="alert" className="mt-4 text-red-600">{exportError}</p>}<div className="mt-5 flex flex-wrap justify-end gap-2"><button className={button} onClick={() => setExportOpen(false)}>Cancelar</button><button className="rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white disabled:opacity-50" disabled={format !== "csv" || !entries.length} onClick={download}>Baixar CSV</button></div>{!entries.length && <p className="mt-3 text-xs text-foreground-muted">Não há registros para exportar neste recorte.</p>}</DocumentDialog>}
+  </div></div>;
 }
 
-interface UnitPerformance {
-  unit: string; revenue: string; expense: string; margin: string;
-}
-
-const accountsData: FinancialAccount[] = [
-  { id: '1', description: 'Ambev Brasil', subDescription: 'Compra de Chopp & Bebidas NF-e #90214', unit: 'Matriz - Recife', category: 'Estoque e Mercadorias', amount: 'R$ 24.800,00', dueDate: 'Hoje (24/10/2026)', status: 'A vencer' },
-  { id: '2', description: 'Copergás PE', subDescription: 'Gás Industrial & Caldeiras', unit: 'CDD Jaboatão', category: 'Infraestrutura', amount: 'R$ 3.420,00', dueDate: '21/10/2026', status: 'Atrasada' },
-  { id: '3', description: 'Transportadora Rapidão Cometa', subDescription: 'Frete e Distribuição Regional Lote 14', unit: 'Filial Olinda', category: 'Logística', amount: 'R$ 6.150,00', dueDate: '28/10/2026', status: 'Em dia' },
-  { id: '4', description: 'Distribuidora Petrobras', subDescription: 'Combustível · Abastecimento Frota de Caminhões', unit: 'Paulista', category: 'Logística', amount: 'R$ 8.900,00', dueDate: '02/11/2026', status: 'A vencer' },
-  { id: '5', description: 'Enel Distribuição Energia', subDescription: 'Fatura de Energia Elétrica Matriz', unit: 'Cabo', category: 'Infraestrutura', amount: 'R$ 5.730,00', dueDate: '05/11/2026', status: 'Em dia' },
-];
-
-const unitPerformanceData: UnitPerformance[] = [
-  { unit: 'Matriz - Recife', revenue: 'R$ 92.500', expense: 'R$ 61.200', margin: '33,8%' },
-  { unit: 'Paulista', revenue: 'R$ 54.200', expense: 'R$ 38.700', margin: '28,6%' },
-  { unit: 'Jaboatão', revenue: 'R$ 42.800', expense: 'R$ 32.400', margin: '24,2%' },
-  { unit: 'Olinda', revenue: 'R$ 34.600', expense: 'R$ 24.800', margin: '22,3%' },
-  { unit: 'Cabo', revenue: 'R$ 24.400', expense: 'R$ 17.200', margin: '18,4%' },
-];
-
-function ExportFinanceModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [format, setFormat] = useState('pdf');
-  const [regime, setRegime] = useState('competencia');
-  const [period, setPeriod] = useState('ano_2026');
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-      <div className="bg-white dark:bg-surface-raised rounded-[14px] shadow-2xl w-full max-w-[850px] max-h-[90vh] overflow-y-auto flex flex-col font-sans">
-        
-        <div className="px-6 py-5 border-b border-slate-100 dark:border-line flex justify-between items-start">
-          <div className="flex gap-4 items-center">
-            <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 flex items-center justify-center shrink-0">
-              <Download size={20} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-foreground tracking-tight">Exportar Relatório Financeiro</h2>
-              <p className="text-[12px] text-slate-500 dark:text-foreground-muted">
-                Adega Distribution • Matriz & Filiais • Configure o escopo, formato e granularidade contábil para controladoria e diretoria.
-              </p>
-            </div>
-          </div>
-          <button onClick={onClose} className="text-slate-400 dark:text-foreground-muted hover:text-slate-700 dark:hover:text-foreground transition-colors">
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="p-6 flex flex-col gap-8">
-          {/* Seção 1: Formato */}
-          <section>
-            <div className="flex justify-between items-end mb-4">
-              <h3 className="text-[13px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 1. FORMATO DE SAÍDA & LAYOUT DO RELATÓRIO
-              </h3>
-              <span className="text-[11px] text-slate-400 dark:text-foreground-muted">Escolha a apresentação final dos dados</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* PDF */}
-              <label className="relative cursor-pointer">
-                <input type="radio" value="pdf" checked={format === 'pdf'} onChange={(e) => setFormat(e.target.value)} className="peer sr-only" />
-                <div className="h-full p-4 rounded-xl border-2 border-slate-200 dark:border-line bg-white dark:bg-surface-raised hover:border-blue-300 dark:hover:border-blue-800 peer-checked:border-blue-600 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-950/40 transition-all">
-                  <div className="flex items-center gap-3 mb-2">
-                    <FileText size={24} className={format === 'pdf' ? "text-blue-600 dark:text-blue-300" : "text-rose-500 dark:text-rose-300"} />
-                    <div>
-                      <h4 className="font-bold text-[13px] text-slate-900 dark:text-foreground leading-tight">Relatório Executivo PDF</h4>
-                      <span className="text-[10px] text-blue-600 dark:text-blue-300 font-medium">Com DRE & Gráficos</span>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-foreground-muted mb-3 leading-relaxed">Inclui sumário executivo, DRE consolidado, aging de recebíveis, gráficos de tendências e fluxo de caixa diagramado.</p>
-                  <div className="flex items-center justify-between text-[11px] text-blue-700 dark:text-blue-300 font-bold border-t border-slate-100 dark:border-line pt-2 opacity-0 peer-checked:opacity-100">
-                    <span className="flex items-center gap-1"><span className="w-1 h-1 bg-blue-600 rounded-full"></span> Pronto para impressão / board</span>
-                    <CheckCircle2 size={14} />
-                  </div>
-                </div>
-              </label>
-
-              {/* XLSX */}
-              <label className="relative cursor-pointer">
-                <input type="radio" value="xlsx" checked={format === 'xlsx'} onChange={(e) => setFormat(e.target.value)} className="peer sr-only" />
-                <div className="h-full p-4 rounded-xl border-2 border-slate-200 dark:border-line bg-white dark:bg-surface-raised hover:border-emerald-300 dark:hover:border-emerald-800 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-950/40 transition-all">
-                  <div className="flex items-center gap-3 mb-2">
-                    <FileSpreadsheet size={24} className={format === 'xlsx' ? "text-emerald-600 dark:text-emerald-300" : "text-emerald-500 dark:text-emerald-300"} />
-                    <div>
-                      <h4 className="font-bold text-[13px] text-slate-900 dark:text-foreground leading-tight">Planilha Analítica</h4>
-                      <span className="text-[10px] text-emerald-600 dark:text-emerald-300 font-medium">XLSX / CSV Dinâmico</span>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-foreground-muted mb-3 leading-relaxed">Base completa de lançamentos com plano de contas gerencial, centro de custo, alíquotas ST, CNPJ e fórmulas abertas.</p>
-                  <div className="flex items-center justify-between text-[11px] text-emerald-700 dark:text-emerald-300 font-bold border-t border-slate-100 dark:border-line pt-2 opacity-0 peer-checked:opacity-100">
-                    <span className="flex items-center gap-1"><span className="w-1 h-1 bg-emerald-600 rounded-full"></span> Auditoria e BI</span>
-                    <CheckCircle2 size={14} />
-                  </div>
-                </div>
-              </label>
-
-              {/* ZIP */}
-              <label className="relative cursor-pointer">
-                <input type="radio" value="zip" checked={format === 'zip'} onChange={(e) => setFormat(e.target.value)} className="peer sr-only" />
-                <div className="h-full p-4 rounded-xl border-2 border-slate-200 dark:border-line bg-white dark:bg-surface-raised hover:border-amber-300 dark:hover:border-amber-800 peer-checked:border-amber-600 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-950/40 transition-all">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Archive size={24} className={format === 'zip' ? "text-amber-600 dark:text-amber-300" : "text-amber-500 dark:text-amber-300"} />
-                    <div>
-                      <h4 className="font-bold text-[13px] text-slate-900 dark:text-foreground leading-tight">Fechamento Contábil</h4>
-                      <span className="text-[10px] text-amber-600 dark:text-amber-300 font-medium">Pacote ZIP Consolidado</span>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-foreground-muted mb-3 leading-relaxed">Balancete analítico, extrato de conciliação bancária OFX/PDF, notas de remessa e espelhos fiscais por unidade.</p>
-                  <div className="flex items-center justify-between text-[11px] text-amber-700 dark:text-amber-300 font-bold border-t border-slate-100 dark:border-line pt-2 opacity-0 peer-checked:opacity-100">
-                    <span className="flex items-center gap-1"><span className="w-1 h-1 bg-amber-600 rounded-full"></span> Escrituração Externa</span>
-                    <CheckCircle2 size={14} />
-                  </div>
-                </div>
-              </label>
-            </div>
-          </section>
-
-          {/* Seção 2: Unidades */}
-          <section>
-            <div className="flex justify-between items-end mb-4">
-              <h3 className="text-[13px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 2. ESCOPO E CENTROS DE DISTRIBUIÇÃO (CDDS)
-              </h3>
-              <button className="text-[11px] text-blue-600 dark:text-blue-300 font-bold hover:underline">Selecionar todas</button>
-            </div>
-            <div className="border border-slate-200 dark:border-line rounded-xl overflow-hidden">
-              <div className="bg-slate-50 dark:bg-surface-muted p-3 flex justify-between items-center border-b border-slate-200 dark:border-line">
-                <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 dark:text-foreground cursor-pointer">
-                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-blue-600 dark:text-blue-300 focus:ring-blue-500" /> Todas as Unidades (6 selecionadas)
-                </label>
-                <span className="text-[11px] text-slate-500 dark:text-foreground-muted border border-slate-200 dark:border-line bg-white dark:bg-surface-raised px-2 py-1 rounded">Consolidado Adega Distribution PE</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 bg-white dark:bg-surface-raised">
-                {[
-                  { n: 'Matriz — Recife (PE)', d: 'Hub Central & DRE Geral' },
-                  { n: 'CDD Paulista', d: 'Operação Litoral Norte' },
-                  { n: 'CDD Jaboatão', d: 'Armazenagem Pesada' },
-                  { n: 'CDD Olinda', d: 'Rotas Expressas Bar/Rest' },
-                  { n: 'CDD Cabo', d: 'Corredor Suape / Litoral Sul' },
-                  { n: 'CDD Caruaru', d: 'Distribuição Agreste' }
-                ].map(unit => (
-                  <label key={unit.n} className="flex items-start gap-2 p-3 border-b border-r border-slate-100 dark:border-line hover:bg-slate-50 dark:hover:bg-surface-muted cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 mt-0.5 rounded text-blue-600 dark:text-blue-300 focus:ring-blue-500" />
-                    <div>
-                      <div className="text-[12px] font-bold text-slate-800 dark:text-foreground">{unit.n}</div>
-                      <div className="text-[10px] text-slate-500 dark:text-foreground-muted">{unit.d}</div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Seção 3: Parâmetros */}
-          <section>
-            <h3 className="text-[13px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide flex items-center gap-2 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 3. TIPO DE VISÃO & PARÂMETROS FINANCEIROS
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <span className="block text-[11px] font-medium text-slate-500 dark:text-foreground-muted mb-2">Critério Contábil</span>
-                <div className="flex bg-slate-100 dark:bg-surface-muted p-1 rounded-lg">
-                  <button onClick={() => setRegime('competencia')} className={`flex-1 flex justify-center items-center gap-2 py-2 text-[12px] font-bold rounded-md transition-all ${regime === 'competencia' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-foreground-muted hover:bg-slate-200 dark:hover:bg-surface-muted'}`}>
-                    <Scale size={14} /> Regime de Competência
-                  </button>
-                  <button onClick={() => setRegime('caixa')} className={`flex-1 flex justify-center items-center gap-2 py-2 text-[12px] font-bold rounded-md transition-all ${regime === 'caixa' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 dark:text-foreground-muted hover:bg-slate-200 dark:hover:bg-surface-muted'}`}>
-                    <CheckSquare size={14} /> Regime de Caixa
-                  </button>
-                </div>
-              </div>
-              <div>
-                <span className="block text-[11px] font-medium text-slate-500 dark:text-foreground-muted mb-2">Período de Apuração</span>
-                <div className="flex gap-2">
-                  {['Mês Atual', 'Q3 2026', 'Ano 2026', 'Personal.'].map(btn => {
-                    const val = btn.toLowerCase().replace(' ', '_');
-                    return (
-                      <button key={btn} onClick={() => setPeriod(val)} className={`flex-1 py-2 text-[12px] font-bold rounded-lg border transition-colors ${period === val ? 'border-blue-600 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40' : 'border-slate-200 dark:border-line text-slate-600 dark:text-foreground-muted hover:bg-slate-50 dark:hover:bg-surface-muted'}`}>
-                        {btn === 'Personal.' ? <Calendar size={14} className="mx-auto" /> : btn}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-            <div className="mt-5">
-              <span className="block text-[11px] font-medium text-slate-500 dark:text-foreground-muted mb-2">Composição dos Lançamentos</span>
-              <div className="flex flex-wrap gap-4">
-                {['Receitas Operacionais', 'Despesas & CMV', 'Contas Pagar/Receber', 'Atrasos & Inadimplência'].map(item => (
-                  <label key={item} className="flex items-center gap-2 text-[12px] font-medium text-slate-700 dark:text-foreground cursor-pointer">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-blue-600 dark:text-blue-300 focus:ring-blue-500" /> {item}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </section>
-
-        </div>
-
-        <div className="bg-slate-50 dark:bg-surface-muted px-6 py-4 rounded-b-[14px] border-t border-slate-200 dark:border-line flex justify-end gap-3 mt-auto">
-          <button onClick={onClose} className="px-5 py-2.5 bg-white dark:bg-surface-raised border border-slate-300 dark:border-line text-slate-700 dark:text-foreground text-[13px] font-bold rounded-lg hover:bg-slate-100 dark:hover:bg-surface-muted transition-colors">
-            Cancelar
-          </button>
-          <button className="px-6 py-2.5 bg-blue-700 text-white text-[13px] font-bold rounded-lg hover:bg-blue-800 transition-colors flex items-center gap-2 shadow-sm">
-            <Download size={16} /> Gerar e Baixar Relatório Financeiro ({format.toUpperCase()})
-          </button>
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-export default function GestaoFinanceiraPage(): React.ReactElement {
-  const [isExportOpen, setIsExportOpen] = useState(false);
-
-  return (
-    <div className="p-6 bg-gray-50 dark:bg-surface-muted min-h-screen text-gray-800 dark:text-foreground font-sans">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Cabeçalho */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
-              <span className="p-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 rounded-lg">📊</span>
-              Gestão Financeira
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-foreground-muted">
-              Acompanhe receitas, despesas, fluxo de caixa e desempenho financeiro de todas as unidades.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            {/* LIGAÇÃO PARA A NOVA PÁGINA DE LANÇAMENTO */}
-            <Link href="/financeiro/novo" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">
-              + Novo lançamento
-            </Link>
-            <button onClick={() => setIsExportOpen(true)} className="bg-white dark:bg-surface-raised border border-gray-300 dark:border-line hover:bg-gray-50 dark:hover:bg-surface-muted text-gray-700 dark:text-foreground px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors cursor-pointer">
-              Exportar relatório
-            </button>
-          </div>
-        </div>
-
-        {/* ... Restante do código original da página (Filtros, KPIs, Gráficos, Tabelas) permanece igual ... */}
-        
-        {/* Filtros */}
-        <div className="flex flex-wrap gap-4 bg-white dark:bg-surface-raised p-4 rounded-xl border border-gray-200 dark:border-line shadow-sm items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-500 dark:text-foreground-muted uppercase tracking-wider">Período</span>
-            <div className="bg-gray-50 dark:bg-surface-muted border border-gray-200 dark:border-line rounded-lg px-3 py-1.5 text-sm text-gray-700 dark:text-foreground font-medium">📅 Este mês</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-500 dark:text-foreground-muted uppercase tracking-wider">Unidade</span>
-            <div className="bg-gray-50 dark:bg-surface-muted border border-gray-200 dark:border-line rounded-lg px-3 py-1.5 text-sm text-gray-700 dark:text-foreground font-medium">🏢 Todas as unidades</div>
-          </div>
-        </div>
-
-        {/* Cartões KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs font-medium text-gray-500 dark:text-foreground-muted uppercase">Receita total</span>
-              <div className="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-xs">↑</div>
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-foreground mb-1">R$ 248.500,00</div>
-            <div className="text-xs text-emerald-600 dark:text-emerald-300 font-medium">+12,5% vs. mês anterior</div>
-          </div>
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs font-medium text-gray-500 dark:text-foreground-muted uppercase">Despesas totais</span>
-              <div className="w-7 h-7 rounded-full bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-300 font-bold text-xs">↓</div>
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-foreground mb-1">R$ 162.300,00</div>
-            <div className="text-xs text-rose-600 dark:text-rose-300 font-medium">+8,3% vs. mês anterior</div>
-          </div>
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs font-medium text-gray-500 dark:text-foreground-muted uppercase">Saldo de caixa</span>
-              <div className="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-300 font-bold text-xs">▣</div>
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-foreground mb-1">R$ 86.200,00</div>
-            <div className="text-xs text-emerald-600 dark:text-emerald-300 font-medium">+18,7% vs. mês anterior</div>
-          </div>
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs font-medium text-gray-500 dark:text-foreground-muted uppercase">Contas a pagar</span>
-              <div className="w-7 h-7 rounded-full bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-600 dark:text-amber-300 font-bold text-xs">⏱</div>
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-foreground mb-1">R$ 24.800,00</div>
-            <div className="text-xs text-rose-600 dark:text-rose-300 font-medium">-5,2% vs. mês anterior</div>
-          </div>
-        </div>
-
-        {/* Seção Intermediária */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm flex flex-col justify-between">
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-foreground text-sm">Fluxo financeiro</h3>
-              <p className="text-xs text-gray-500 dark:text-foreground-muted mb-3">Comparativo de receitas e despesas nos últimos 6 meses.</p>
-              <div className="flex items-center gap-4 text-xs mb-2">
-                <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-300 font-medium"><span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span> Receitas</span>
-                <span className="flex items-center gap-1.5 text-amber-500 dark:text-amber-300 font-medium"><span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Despesas</span>
-              </div>
-            </div>
-            <div className="relative h-40 w-full pt-2">
-              <svg className="w-full h-full" viewBox="0 0 300 100">
-                <line x1="0" y1="20" x2="300" y2="20" stroke="var(--chart-grid)" strokeWidth="1" />
-                <line x1="0" y1="50" x2="300" y2="50" stroke="var(--chart-grid)" strokeWidth="1" />
-                <line x1="0" y1="80" x2="300" y2="80" stroke="var(--chart-grid)" strokeWidth="1" />
-                <path d="M 10 75 Q 60 65, 120 55 T 230 40 T 290 35" fill="none" stroke="#f59e0b" strokeWidth="2.5" />
-                <path d="M 10 55 Q 60 45, 120 35 T 230 20 T 290 10" fill="none" stroke="#2563eb" strokeWidth="2.5" />
-                <circle cx="290" cy="10" r="3.5" fill="#2563eb" />
-                <circle cx="290" cy="35" r="3.5" fill="#f59e0b" />
-              </svg>
-              <div className="flex justify-between text-[10px] text-gray-400 dark:text-foreground-muted mt-1">
-                <span>Mai</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Set</span><span>Out</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm flex flex-col justify-between">
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-1">Distribuição de despesas</h3>
-              <p className="text-xs text-gray-500 dark:text-foreground-muted mb-2">Categorias que mais consomem recursos.</p>
-            </div>
-            <div className="flex items-center justify-center my-1 relative">
-              <svg className="w-28 h-28" viewBox="0 0 36 36">
-                <path className="text-blue-600 dark:text-blue-300" strokeDasharray="44, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeWidth="4.5" stroke="currentColor" />
-                <path className="text-cyan-400" strokeDasharray="19, 100" strokeDashoffset="-44" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeWidth="4.5" stroke="currentColor" />
-                <path className="text-indigo-600 dark:text-indigo-300" strokeDasharray="17, 100" strokeDashoffset="-63" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeWidth="4.5" stroke="currentColor" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                <span className="text-xs font-bold text-gray-900 dark:text-foreground">R$ 162.300</span>
-                <span className="text-[8px] text-gray-400 dark:text-foreground-muted uppercase font-semibold">TOTAL</span>
-              </div>
-            </div>
-            <div className="space-y-1 text-[11px]">
-              <div className="flex justify-between"><span><span className="inline-block w-2 h-2 rounded-full bg-blue-600 mr-1"></span>Estoque e mercadorias</span><span className="font-semibold">44%</span></div>
-              <div className="flex justify-between"><span><span className="inline-block w-2 h-2 rounded-full bg-cyan-400 mr-1"></span>Logística</span><span className="font-semibold">19%</span></div>
-              <div className="flex justify-between"><span><span className="inline-block w-2 h-2 rounded-full bg-indigo-600 mr-1"></span>Folha de pagamento</span><span className="font-semibold">17%</span></div>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm">
-            <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-1">Desempenho por unidade</h3>
-            <p className="text-xs text-gray-500 dark:text-foreground-muted mb-3">Receita x Despesa x Margem</p>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="text-gray-400 dark:text-foreground-muted border-b border-gray-100 dark:border-line">
-                    <th className="pb-2 font-medium">Unidade</th><th className="pb-2 font-medium">Receita</th><th className="pb-2 font-medium text-right">Margem</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50 dark:divide-line">
-                  {unitPerformanceData.map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2 font-medium">{item.unit}</td><td>{item.revenue}</td><td className="text-right font-bold text-emerald-600 dark:text-emerald-300">{item.margin}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Seção Inferior */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm lg:col-span-2">
-            <h3 className="font-bold text-gray-900 dark:text-foreground text-sm mb-4">Contas financeiras</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="text-gray-400 dark:text-foreground-muted border-b border-gray-100 dark:border-line">
-                    <th className="pb-2 font-medium">DESCRIÇÃO</th><th className="pb-2 font-medium">UNIDADE</th><th className="pb-2 font-medium">VALOR</th><th className="pb-2 font-medium text-right">STATUS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50 dark:divide-line">
-                  {accountsData.map((acc) => (
-                    <tr key={acc.id}>
-                      <td className="py-2.5">
-                        <div className="font-medium text-gray-900 dark:text-foreground">{acc.description}</div>
-                        <div className="text-[10px] text-gray-400 dark:text-foreground-muted">{acc.subDescription}</div>
-                      </td>
-                      <td className="py-2.5 text-gray-600 dark:text-foreground-muted">{acc.unit}</td>
-                      <td className="py-2.5 font-semibold text-gray-900 dark:text-foreground">{acc.amount}</td>
-                      <td className="py-2.5 text-right">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${acc.status === 'Atrasada' ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300' : acc.status === 'A vencer' ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300' : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-300'}`}>{acc.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-surface-raised p-5 rounded-xl border border-gray-200 dark:border-line shadow-sm space-y-4">
-            <h3 className="font-bold text-gray-900 dark:text-foreground text-sm">Resumo financeiro</h3>
-            <div className="space-y-3 text-xs">
-              <div className="flex justify-between pb-2 border-b border-gray-100 dark:border-line"><span className="text-gray-500 dark:text-foreground-muted">Contas a pagar (vencidas)</span><span className="font-bold text-gray-900 dark:text-foreground">R$ 8.400,00</span></div>
-              <div className="flex justify-between pb-2 border-b border-gray-100 dark:border-line"><span className="text-gray-500 dark:text-foreground-muted">Contas a pagar (até 7 dias)</span><span className="font-bold text-gray-900 dark:text-foreground">R$ 16.400,00</span></div>
-              <div className="flex justify-between pb-2 border-b border-gray-100 dark:border-line"><span className="text-gray-500 dark:text-foreground-muted">Contas a receber (vencidas)</span><span className="font-bold text-gray-900 dark:text-foreground">R$ 5.200,00</span></div>
-              <div className="flex justify-between"><span className="text-gray-500 dark:text-foreground-muted">Contas a receber (até 7 dias)</span><span className="font-bold text-gray-900 dark:text-foreground">R$ 12.800,00</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <ExportFinanceModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
-    </div>
-  );
-}

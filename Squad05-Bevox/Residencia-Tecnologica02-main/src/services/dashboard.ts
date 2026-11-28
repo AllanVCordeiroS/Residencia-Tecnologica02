@@ -4,11 +4,11 @@ import {
   empresaDemo,
   historicoDemo,
   resumoDemo,
-  tarefasRecentesDemo,
   unidadesDemo,
   usuarioDemo,
 } from "@/data/mockData";
 import type { DashboardData } from "@/types";
+import { getTasks } from "@/services/tasks";
 
 /**
  * Ponto único de acesso aos dados do dashboard.
@@ -16,6 +16,7 @@ import type { DashboardData } from "@/types";
  * desta função mantendo o contrato `DashboardData`.
  */
 export async function getDashboardData(): Promise<DashboardData> {
+  const tasks = await getTasks();
   return {
     demonstrativo: true,
     dataReferencia: DATA_REFERENCIA_DEMO,
@@ -24,7 +25,15 @@ export async function getDashboardData(): Promise<DashboardData> {
     unidades: unidadesDemo,
     resumo: resumoDemo,
     historico: historicoDemo,
-    tarefasRecentes: tarefasRecentesDemo,
+    tarefasRecentes: tasks.slice(0, 5).map((task) => ({
+      id: String(task.id),
+      titulo: task.title,
+      unidade: task.unit,
+      categoria: task.category,
+      status: task.status === "Concluída" ? "concluida" : task.status === "A fazer" ? "pendente" : "andamento",
+      prazo: task.dueDate,
+      icone: "documento",
+    })),
     alertas: alertasDemo,
     ultimaSincronizacao: null,
   };

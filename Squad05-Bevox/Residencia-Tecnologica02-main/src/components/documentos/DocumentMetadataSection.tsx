@@ -4,12 +4,13 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { CircleCheck, FileText, Hash, Landmark } from "lucide-react";
 
 import { categoryNames } from "@/data/mockDocuments";
-import { UNIDADES_DOCUMENTO } from "@/data/documentFormOptions";
+import { useUnitsQuery } from "@/hooks/queries/useUnitsQuery";
 import type { DocumentFormValues } from "./documentFormSchema";
 import { atributosDeErro, Campo, EntradaTexto, Selecao, SecaoCard } from "./DocumentFormUi";
 
 /** Seção 1 — Metadados Fiscais & Regulatórios. */
 export default function DocumentMetadataSection() {
+  const { data: units = [], isPending, isError } = useUnitsQuery();
   const {
     register,
     control,
@@ -24,7 +25,7 @@ export default function DocumentMetadataSection() {
       numero={1}
       tile="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300"
       icone={<FileText className="size-[18px]" aria-hidden="true" />}
-      titulo="Metadados Fiscais & Regulatórios"
+      titulo="Informações Complementares"
       subtitulo="Identificação legal, categorização do acervo e órgãos expedidores"
     >
       <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
@@ -62,12 +63,14 @@ export default function DocumentMetadataSection() {
         <Campo id="unidade" rotulo="Filial / Unidade Vinculada" obrigatorio erro={errors.unidade?.message}>
           <Selecao {...register("unidade")} {...atributosDeErro("unidade", errors.unidade?.message)}>
             <option value="">Selecione a unidade</option>
-            {UNIDADES_DOCUMENTO.map((nome) => (
-              <option key={nome} value={nome}>
-                {nome}
+            {units.map((unit) => (
+              <option key={unit.id} value={unit.nome}>
+                {unit.nome}
               </option>
             ))}
           </Selecao>
+          {isPending && <p role="status" className="text-xs text-foreground-muted">Carregando unidades...</p>}
+          {isError && <p role="alert" className="text-xs text-red-600">Não foi possível carregar as unidades.</p>}
         </Campo>
 
         <Campo

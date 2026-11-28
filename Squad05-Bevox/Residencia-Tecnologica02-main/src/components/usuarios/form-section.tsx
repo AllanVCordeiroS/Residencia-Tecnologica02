@@ -40,7 +40,7 @@ export function Field({ label, htmlFor, required, error, children }: FieldProps)
       </label>
       {children}
       {error && (
-        <p role="alert" className="mt-1 text-xs text-red-600 dark:text-red-300">
+        <p id={`${htmlFor}-error`} role="alert" className="mt-1 text-xs text-red-600 dark:text-red-300">
           {error}
         </p>
       )}

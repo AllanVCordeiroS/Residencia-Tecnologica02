@@ -37,3 +37,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Arquivos locais de ferramentas de IA
+**/AGENTS.md
+**/CLAUDE.md
+**/.claude/
+**/.codex/
+**/.agents/
+
+# Prompts internos de desenvolvimento - nao publicar
+/AJUSTES-FUNCIONAIS-BEVOX.md
+/APERFEICOAMENTO-MODULOS-BEVOX.md
+/CORRECAO-AUTENTICACAO-BEVOX.md
+/FINANCEIRO-RELATORIOS-CONFIGURACOES-BEVOX.md
+/INTEGRACAO-BEVOX.md
+/LOGIN-CADASTRO-COLABORADOR-BEVOX.md
+/NAVEGACAO-LICENCAS-NOTIFICACOES-BEVOX.md
+/SEGURANCA-NOTIFICACOES-EVOLUCAO-BEVOX.md

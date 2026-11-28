@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { ACOES, MODULOS } from "@/types/usuarios";
+import { Avatar } from "@/components/usuarios/avatar";
 import {
   Activity,
   Building2,
@@ -24,7 +26,7 @@ import {
 } from "lucide-react";
 
 import type {
-  User,
+  UserDetail as User,
   UserActivity,
   UserStatus,
 } from "../../types/user";
@@ -37,6 +39,7 @@ type UserTab =
 
 interface UserDetailsProps {
   user: User;
+  actionsPending?: boolean;
   onEdit?: (user: User) => void;
   onDeactivate?: (user: User) => void;
   onDelete?: (user: User) => void;
@@ -91,20 +94,6 @@ const statusStyles: Record<UserStatus, string> = {
   "Convite pendente": "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 ring-amber-200",
   Inativo: "bg-slate-100 dark:bg-surface-muted text-slate-600 dark:text-foreground-muted ring-slate-200",
 };
-
-function getInitials(name: string): string {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-
-  if (words.length === 0) {
-    return "U";
-  }
-
-  if (words.length === 1) {
-    return words[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
-}
 
 function getUnits(units: string[] | string): string[] {
   if (Array.isArray(units)) {
@@ -206,7 +195,8 @@ function ActionButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${variants[variant]}`}
+      disabled={!onClick}
+      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${variants[variant]}`}
     >
       {icon}
       <span>{children}</span>
@@ -219,6 +209,7 @@ function QuickAction({ label, icon, onClick }: QuickActionProps) {
     <button
       type="button"
       onClick={onClick}
+      disabled={!onClick}
       className="group flex w-full items-center gap-3 rounded-xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised px-3.5 py-3 text-left transition-colors hover:border-slate-300 dark:hover:border-line hover:bg-slate-50 dark:hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-surface-muted text-slate-700 dark:text-foreground transition-colors group-hover:bg-blue-50 dark:group-hover:bg-blue-950/40 group-hover:text-blue-700 dark:group-hover:text-blue-300">
@@ -303,7 +294,7 @@ function OrganizationCard({ user }: { user: User }) {
         />
         <InfoRow
           label="Data de fim"
-          value={user.endDate ?? "Sem data de término"}
+          value={user.endDate ?? "Não informada"}
         />
       </dl>
     </SectionCard>
@@ -311,7 +302,7 @@ function OrganizationCard({ user }: { user: User }) {
 }
 
 function PermissionsCard({ user }: { user: User }) {
-  const modules = user.authorizedModules ?? [];
+  const permissions = user.permissions;
 
   return (
     <SectionCard
@@ -350,27 +341,28 @@ function PermissionsCard({ user }: { user: User }) {
         </div>
       </div>
 
-      {modules.length > 0 ? (
-        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {modules.map((moduleName) => (
-            <div
-              key={moduleName}
-              className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 dark:border-line px-3.5 py-3"
-            >
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
-                <Check size={13} strokeWidth={2.5} aria-hidden="true" />
-              </span>
-              <span className="text-sm leading-5 text-slate-700 dark:text-foreground">
-                {moduleName}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-5 rounded-xl bg-slate-50 dark:bg-surface-muted px-4 py-3 text-sm text-slate-500 dark:text-foreground-muted">
-          Não há módulos cadastrados no conjunto demonstrativo de permissões.
-        </p>
-      )}
+      <div className="mt-5 overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <caption className="sr-only">Permissões do perfil {user.role}</caption>
+          <thead className="text-slate-500 dark:text-foreground-muted">
+            <tr><th scope="col" className="p-3">Módulo</th>{ACOES.map((acao) => <th scope="col" key={acao} className="p-3 capitalize">{acao}</th>)}</tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-line">
+            {MODULOS.map((modulo) => (
+              <tr key={modulo}>
+                <th scope="row" className="p-3 font-medium text-foreground">{modulo}</th>
+                {ACOES.map((acao) => (
+                  <td key={acao} className="p-3">
+                    <span className={permissions[modulo][acao] ? "text-emerald-700 dark:text-emerald-300" : "text-slate-500 dark:text-foreground-muted"}>
+                      {permissions[modulo][acao] ? "Permitido" : "Não permitido"}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </SectionCard>
   );
 }
@@ -425,7 +417,7 @@ function ActivityTimeline({
   if (!activities || activities.length === 0) {
     return (
       <p className="rounded-xl bg-slate-50 dark:bg-surface-muted px-4 py-3 text-sm text-slate-500 dark:text-foreground-muted">
-        Nenhuma atividade registrada para exibição.
+        Nenhuma atividade registrada.
       </p>
     );
   }
@@ -485,7 +477,7 @@ function ActiveUserCard({ user }: { user: User }) {
 
   return (
     <SectionCard
-      title="Usuário ativo"
+      title="Status da conta"
       icon={
         isActive ? (
           <CheckCircle2 size={19} aria-hidden="true" />
@@ -521,7 +513,9 @@ function ActiveUserCard({ user }: { user: User }) {
           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-foreground-muted">
             {isActive
               ? "O status atual deste usuário é ativo."
-              : "O status atual não indica uma conta ativa."}
+              : user.status === "Convite pendente"
+                ? "Cadastro com status de convite pendente. O envio por e-mail não está disponível nesta versão."
+                : "A conta está inativa. As permissões do perfil não liberam o acesso."}
           </p>
         </div>
       </div>
@@ -552,22 +546,22 @@ function QuickActionsCard({
         <QuickAction
           label="Alterar perfil"
           icon={<UserCog size={17} aria-hidden="true" />}
-          onClick={() => onChangeRole?.(user)}
+          onClick={onChangeRole ? () => onChangeRole(user) : undefined}
         />
         <QuickAction
           label="Gerenciar unidades"
           icon={<Building2 size={17} aria-hidden="true" />}
-          onClick={() => onManageUnits?.(user)}
+          onClick={onManageUnits ? () => onManageUnits(user) : undefined}
         />
         <QuickAction
           label="Resetar senha"
           icon={<KeyRound size={17} aria-hidden="true" />}
-          onClick={() => onResetPassword?.(user)}
+          onClick={onResetPassword ? () => onResetPassword(user) : undefined}
         />
         <QuickAction
           label="Enviar novo convite"
           icon={<MailPlus size={17} aria-hidden="true" />}
-          onClick={() => onResendInvite?.(user)}
+          onClick={onResendInvite ? () => onResendInvite(user) : undefined}
         />
       </div>
     </SectionCard>
@@ -582,7 +576,7 @@ function SecurityCard() {
           <ShieldCheck size={19} aria-hidden="true" />
         </span>
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-blue-950">
+          <h2 className="text-sm font-semibold text-blue-950 dark:text-blue-200">
             Segurança e rastreabilidade
           </h2>
           <p className="mt-2 text-xs leading-5 text-blue-900/80 dark:text-blue-300">
@@ -599,6 +593,7 @@ function SecurityCard() {
 
 export default function UserDetails({
   user,
+  actionsPending = false,
   onEdit,
   onDeactivate,
   onDelete,
@@ -608,7 +603,6 @@ export default function UserDetails({
   onResendInvite,
 }: UserDetailsProps) {
   const [activeTab, setActiveTab] = useState<UserTab>("Informações");
-  const initials = getInitials(user.name);
   const primaryUnit =
     user.primaryUnit ??
     (typeof user.units === "string" ? user.units : user.units.join(", "));
@@ -618,12 +612,7 @@ export default function UserDetails({
       <section className="rounded-2xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex min-w-0 items-center gap-4">
-            <div
-              className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-2xl font-bold text-blue-800 dark:text-blue-300 ring-1 ring-blue-200"
-              aria-label={`Iniciais de ${user.name}: ${initials}`}
-            >
-              {initials}
-            </div>
+            <Avatar nome={user.name} tone={user.avatarTone} className="h-20 w-20 rounded-2xl text-2xl" />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
                 <h2 className="break-words text-xl font-bold tracking-tight text-slate-900 dark:text-foreground sm:text-2xl">
@@ -643,32 +632,32 @@ export default function UserDetails({
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          {(onEdit || onDeactivate || onDelete) && <div className="flex flex-wrap gap-2">
             <ActionButton
               icon={<Pencil size={15} aria-hidden="true" />}
-              onClick={() => onEdit?.(user)}
+              onClick={onEdit && !actionsPending ? () => onEdit(user) : undefined}
             >
               Editar
             </ActionButton>
             <ActionButton
               icon={<LockKeyhole size={15} aria-hidden="true" />}
-              onClick={() => onDeactivate?.(user)}
+              onClick={onDeactivate && !actionsPending ? () => onDeactivate(user) : undefined}
             >
-              Desativar
+              {user.status === "Inativo" ? "Reativar" : "Desativar"}
             </ActionButton>
             <ActionButton
               variant="danger"
               icon={<Trash2 size={15} aria-hidden="true" />}
-              onClick={() => onDelete?.(user)}
+              onClick={onDelete && !actionsPending ? () => onDelete(user) : undefined}
             >
               Excluir
             </ActionButton>
-          </div>
+          </div>}
         </div>
       </section>
 
       <section
-        className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
         aria-label="Resumo do usuário"
       >
         <SummaryCard
@@ -690,7 +679,7 @@ export default function UserDetails({
         <SummaryCard
           title="Último acesso"
           value={user.lastAccess || "Sem registro"}
-          detail={user.isOnline ? "Online" : "Último acesso registrado"}
+          detail={user.lastAccess ? "Último acesso registrado" : "Nenhum acesso informado"}
           icon={<Clock3 size={19} aria-hidden="true" />}
           online={user.isOnline}
         />
@@ -719,8 +708,20 @@ export default function UserDetails({
                 role="tab"
                 aria-selected={isActive}
                 aria-controls="user-tab-panel"
+                tabIndex={isActive ? 0 : -1}
+                onKeyDown={(event) => {
+                  let next = index;
+                  if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+                  else if (event.key === "ArrowLeft") next = (index + tabs.length - 1) % tabs.length;
+                  else if (event.key === "Home") next = 0;
+                  else if (event.key === "End") next = tabs.length - 1;
+                  else return;
+                  event.preventDefault();
+                  setActiveTab(tabs[next]);
+                  event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+                }}
                 onClick={() => setActiveTab(tab)}
-                className={`relative whitespace-nowrap rounded-t-lg px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 sm:px-4 ${
+                className={`relative whitespace-nowrap rounded-t-lg px-3 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 sm:px-4 ${
                   isActive
                     ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
                     : "text-slate-500 dark:text-foreground-muted hover:bg-slate-50 dark:hover:bg-surface-muted hover:text-slate-800 dark:hover:text-foreground"
@@ -745,8 +746,10 @@ export default function UserDetails({
         >
           {activeTab === "Informações" ? (
             <>
-              <PersonalInfoCard user={user} />
-              <OrganizationCard user={user} />
+              <div className="grid gap-4 2xl:grid-cols-2">
+                <PersonalInfoCard user={user} />
+                <OrganizationCard user={user} />
+              </div>
               <PermissionsCard user={user} />
               <UnitsCard user={user} />
             </>
@@ -758,7 +761,7 @@ export default function UserDetails({
           {activeTab === "Histórico de atividades" ? (
             <SectionCard
               title="Histórico de atividades"
-              description="Registros demonstrativos de acessos e alterações relacionados ao usuário."
+              description="Registros de acessos e alterações relacionados ao usuário."
               icon={<Activity size={19} aria-hidden="true" />}
             >
               <ActivityTimeline activities={user.activities} />
@@ -768,13 +771,13 @@ export default function UserDetails({
 
         <aside className="min-w-0 space-y-6">
           <ActiveUserCard user={user} />
-          <QuickActionsCard
+          {(onChangeRole || onManageUnits || onResetPassword || onResendInvite) && <QuickActionsCard
             user={user}
             onChangeRole={onChangeRole}
             onManageUnits={onManageUnits}
             onResetPassword={onResetPassword}
             onResendInvite={onResendInvite}
-          />
+          />}
           <SectionCard
             title="Últimas atividades"
             description="Ações recentes associadas ao perfil."

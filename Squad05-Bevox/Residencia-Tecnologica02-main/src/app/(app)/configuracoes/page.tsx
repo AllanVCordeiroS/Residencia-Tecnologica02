@@ -6,9 +6,16 @@ import {
   Settings,
   ShieldCheck,
   SlidersHorizontal,
+  Plug,
 } from "lucide-react";
 
 const configurationLinks = [
+  {
+    href: "/configuracoes/integracoes-auditoria",
+    label: "Integrações e Auditoria",
+    description: "Serviços externos e histórico administrativo.",
+    icon: Plug,
+  },
   {
     href: "/configuracoes/empresa",
     label: "Empresa",

@@ -87,7 +87,7 @@ export const documentStatusSchema = z.enum([
   "Em análise",
   "Pendente",
 ]);
-export const documentFileTypeSchema = z.enum(["PDF", "XLSX"]);
+export const documentFileTypeSchema = z.enum(["PDF", "XLSX", "XML", "PNG", "JPG", "JPEG", "TIF", "TIFF"]);
 export const unitTypeSchema = z.enum(["Filial", "Matriz"]);
 export const dueLevelSchema = z.enum(["critical", "warning"]);
 
@@ -104,6 +104,9 @@ export const legalDocumentSchema = z.object({
   status: documentStatusSchema,
   fileSize: z.string(),
   fileType: documentFileTypeSchema,
+  fileUrl: z.string().optional(),
+  unitId: z.string().optional(),
+  formValues: documentSchema.optional(),
 });
 
 export type DocumentStatus = z.infer<typeof documentStatusSchema>;

@@ -1,22 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import DocumentActions from "./DocumentActions";
 import {
-  ArrowDown,
   ArrowUp,
   ArrowUpDown,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   CircleAlert,
   Clock,
-  EllipsisVertical,
-  Eye,
   Search,
-  SlidersHorizontal,
   type LucideIcon,
 } from "lucide-react";
-import { categoryNames, totalDocuments } from "@/data/mockDocuments";
+import { categoryNames } from "@/data/mockDocuments";
 import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import type { DocumentStatus, DueLevel, LegalDocument } from "@/types/document";
 
@@ -176,7 +171,6 @@ interface DocumentRowProps {
 
 function DocumentRow({ doc, selected, onToggle }: DocumentRowProps) {
   const status = STATUS_STYLES[doc.status];
-  const actionButton = `flex items-center justify-center rounded-[4px] text-foreground-muted ${FOCUS}`;
 
   return (
     <tr className="border-t border-line first:border-t-0">
@@ -240,73 +234,9 @@ function DocumentRow({ doc, selected, onToggle }: DocumentRowProps) {
       </td>
 
       <td className="py-[12.5px] pl-[16px] pr-[42px] align-middle">
-        <div className="flex items-center justify-end gap-[8px]">
-          <button type="button" aria-label={`Visualizar ${doc.title}`} className={`${actionButton} p-[4px]`}>
-            <Eye aria-hidden="true" className="size-[14px]" strokeWidth={1.75} />
-          </button>
-          <button type="button" aria-label={`Baixar ${doc.title}`} className={`${actionButton} p-[4px]`}>
-            <ArrowDown aria-hidden="true" className="size-[14px]" strokeWidth={1.75} />
-          </button>
-          <button type="button" aria-label={`Mais opções para ${doc.title}`} className={`${actionButton} p-[4px]`}>
-            <EllipsisVertical aria-hidden="true" className="size-[14px]" strokeWidth={2} />
-          </button>
-        </div>
+        <DocumentActions doc={doc} />
       </td>
     </tr>
-  );
-}
-
-function Pagination({ range, total }: { range: string; total: number }) {
-  const pageButton = `flex size-[28px] items-center justify-center rounded-[4px] border border-line text-[12px] leading-[16px] text-foreground-muted ${FOCUS}`;
-
-  return (
-    <nav
-      aria-label="Paginação"
-      className="flex items-center justify-between gap-[12px] border-t border-line pb-[16px] pl-[16px] pr-[16px] pt-[17px] max-[768px]:flex-col max-[768px]:items-start"
-    >
-      <p className="whitespace-nowrap text-[12px] leading-[16px] text-foreground-muted">
-        Mostrando <span className="font-semibold text-foreground">{range}</span> de{" "}
-        <span className="font-semibold text-foreground">{total}</span> documentos
-      </p>
-
-      <ul className="flex items-center gap-[4px]">
-        <li>
-          <button type="button" disabled aria-label="Página anterior" className={`${pageButton} opacity-50`}>
-            <ChevronLeft aria-hidden="true" className="size-[12px]" />
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            aria-current="page"
-            aria-label="Página 1"
-            className={`flex size-[28px] items-center justify-center rounded-[4px] bg-[#1d4ed8] text-[12px] font-bold leading-[16px] text-white ${FOCUS}`}
-          >
-            1
-          </button>
-        </li>
-        {[2, 3, 4, 5].map((page) => (
-          <li key={page}>
-            <button type="button" aria-label={`Página ${page}`} className={pageButton}>
-              {page}
-            </button>
-          </li>
-        ))}
-        <li aria-hidden="true" className="px-[4px]">
-          <span className="text-[12px] leading-[16px] text-foreground-muted">...</span>
-        </li>
-        <li>
-          <button type="button" aria-label="Página 16" className={pageButton}>
-            16
-          </button>
-        </li>
-        <li>
-          <button type="button" aria-label="Próxima página" className={pageButton}>
-            <ChevronRight aria-hidden="true" className="size-[12px]" />
-          </button>
-        </li>
-      </ul>
-    </nav>
   );
 }
 
@@ -333,7 +263,6 @@ export default function DocumentsTable() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
 
   const term = search.trim().toLowerCase();
-  const isFiltering = term !== "" || unit !== ALL || category !== ALL || status !== ALL;
 
   const documents = useMemo(
     () =>
@@ -367,7 +296,7 @@ export default function DocumentsTable() {
 
   return (
     <section aria-label="Lista de documentos" className={`overflow-clip pb-[24px] ${CARD}`}>
-      <div className="flex flex-wrap items-center gap-x-[100.5px] gap-y-[12px] border-b border-[rgba(226,232,240,0.8)] px-[16px] pb-[17px] pt-[16px] max-[1024px]:gap-x-[12px]">
+      <div className="flex flex-wrap items-center gap-x-[100.5px] gap-y-[12px] border-b border-[rgba(226,232,240,0.8)] dark:border-line px-[16px] pb-[17px] pt-[16px] max-[1024px]:gap-x-[12px]">
         <div className="relative min-w-[240px] max-w-[448px] flex-1 max-[768px]:max-w-none">
           <Search
             aria-hidden="true"
@@ -387,13 +316,6 @@ export default function DocumentsTable() {
           <FilterSelect label="Filtrar por unidade" value={unit} options={unitOptions} onChange={setUnit} />
           <FilterSelect label="Filtrar por categoria" value={category} options={CATEGORY_OPTIONS} onChange={setCategory} />
           <FilterSelect label="Filtrar por status" value={status} options={STATUS_OPTIONS} onChange={setStatus} />
-          <button
-            type="button"
-            className={`flex items-center gap-[6px] rounded-[8px] border border-line bg-surface-muted px-[13px] py-[7px] text-[12px] font-medium leading-[16px] text-foreground ${FOCUS}`}
-          >
-            <SlidersHorizontal aria-hidden="true" className="size-[11px]" />
-            Filtros
-          </button>
         </div>
       </div>
 
@@ -405,7 +327,7 @@ export default function DocumentsTable() {
               <col key={width} className={width} />
             ))}
           </colgroup>
-          <thead className="bg-[rgba(248,250,252,0.7)]">
+          <thead className="bg-[rgba(248,250,252,0.7)] dark:bg-surface-muted">
             <tr className="border-b border-line">
               <th scope="col" className="py-[15px] pl-[46px] pr-[14px] text-left align-middle">
                 <input
@@ -469,10 +391,7 @@ export default function DocumentsTable() {
         </table>
       </div>
 
-      <Pagination
-        range={documents.length === 0 ? "0" : `1 - ${documents.length}`}
-        total={isFiltering ? documents.length : totalDocuments}
-      />
+      <p className="border-t border-line px-4 py-4 text-xs text-foreground-muted">Mostrando {documents.length} de {allDocuments.length} documentos cadastrados.</p>
     </section>
   );
 }

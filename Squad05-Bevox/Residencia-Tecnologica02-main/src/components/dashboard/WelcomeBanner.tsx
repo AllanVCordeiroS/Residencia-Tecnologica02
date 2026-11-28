@@ -1,10 +1,11 @@
 import { CalendarDays } from "lucide-react";
+import Image from "next/image";
 import { formatarDataBR, formatarDataExtensa } from "@/lib/dashboard";
 import type { DashboardData } from "@/types";
 import TodayDate from "./TodayDate";
 
 export default function WelcomeBanner({ data }: { data: DashboardData }) {
-  const { usuario, empresa, unidades, dataReferencia, demonstrativo } = data;
+  const { usuario, empresa, unidades, dataReferencia } = data;
   const ativas = unidades.filter((u) => u.ativa).length;
   const todasAtivas = ativas === unidades.length;
 
@@ -29,7 +30,7 @@ export default function WelcomeBanner({ data }: { data: DashboardData }) {
               ? `As ${unidades.length} unidades da ${empresa.nome} estão ativas.`
               : `${ativas} de ${unidades.length} unidades da ${empresa.nome} estão ativas.`}
           </p>
-          {demonstrativo && (
+          {false && (
             <p className="mt-3 inline-block rounded-md bg-amber-400/15 px-2.5 py-1 text-[12px] font-medium text-amber-200">
               Dados demonstrativos — referência {formatarDataBR(dataReferencia)}
             </p>
@@ -38,8 +39,14 @@ export default function WelcomeBanner({ data }: { data: DashboardData }) {
 
         <div className="w-full max-w-sm shrink-0 rounded-xl border border-white/15 bg-white/[0.06] p-4 backdrop-blur lg:w-[22rem]">
           <div className="flex items-center gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-navy-950 text-[12px] font-bold text-amber-300 ring-1 ring-white/15">
-              AD
+            <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#101c31] ring-1 ring-white/15">
+              <Image
+                src="/adega-distribution.jpg"
+                alt=""
+                fill
+                sizes="48px"
+                className="object-cover"
+              />
             </span>
             <div className="min-w-0">
               <p className="flex flex-wrap items-center gap-2 text-[14px] font-semibold">

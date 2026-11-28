@@ -130,9 +130,11 @@ export function TabelaConversaoMoedas({
 }: TabelaConversaoMoedasProps) {
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [rascunho, setRascunho] = useState('');
+  const [erro, setErro] = useState('');
   const ignorarProximoBlur = useRef(false);
 
   function iniciarEdicao(moeda: MoedaConversao) {
+    setErro('');
     ignorarProximoBlur.current = false;
     setEditandoId(moeda.id);
     setRascunho(moeda.taxaConversao.toFixed(2));
@@ -140,6 +142,11 @@ export function TabelaConversaoMoedas({
 
   function confirmarEdicao() {
     const taxa = Number(rascunho.replace(',', '.'));
+    if (!Number.isFinite(taxa) || taxa <= 0) {
+      setErro('Informe uma taxa de conversão maior que zero.');
+      return;
+    }
+    setErro('');
 
     if (editandoId && Number.isFinite(taxa) && taxa > 0) {
       onChange(
@@ -162,8 +169,9 @@ export function TabelaConversaoMoedas({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-line">
-      <table className="w-full text-left text-sm">
+    <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-line">
+      {erro && <p role="alert" className="p-3 text-xs text-red-600 dark:text-red-300">{erro}</p>}
+      <table className="w-full min-w-[500px] text-left text-sm">
         <caption className="sr-only">
           Taxas de conversão das moedas alternativas
         </caption>

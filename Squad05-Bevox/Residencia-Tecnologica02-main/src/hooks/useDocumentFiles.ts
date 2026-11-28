@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import {
   EXTENSOES_ACEITAS,
   LIMITE_ARQUIVO_MB,
-  OCR_DEMONSTRATIVO,
 } from "@/data/documentFormOptions";
 
 export interface ArquivoCustodia {
@@ -14,9 +13,8 @@ export interface ArquivoCustodia {
   nome: string;
   tamanho: number;
   extensao: string;
-  /** Extração OCR simulada. */
-  status: "extraindo" | "concluida";
-  ocrConfirmado: boolean;
+  /** Local file selection only; no OCR processing occurs. */
+  status: "selecionado";
   /** Hash real calculado no navegador; "indisponivel" quando o contexto não é seguro. */
   sha256: string | null | "indisponivel";
 }
@@ -38,18 +36,11 @@ async function calcularSha256(arquivo: File): Promise<string | "indisponivel"> {
   }
 }
 
-/** Arquivos em custódia: validação, extração OCR simulada e hash SHA-256 real. */
+/** Local selection, extension/size validation and actual SHA-256 computation. */
 export function useDocumentFiles() {
   const [arquivos, setArquivos] = useState<ArquivoCustodia[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const proximoId = useRef(1);
-  const temporizadores = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
-
-  useEffect(() => {
-    const ativos = temporizadores.current;
-    return () => ativos.forEach(clearTimeout);
-  }, []);
-
   const adicionar = useCallback((lista: File[]) => {
     const mensagens: string[] = [];
     const novos: ArquivoCustodia[] = [];
@@ -70,8 +61,7 @@ export function useDocumentFiles() {
         nome: file.name,
         tamanho: file.size,
         extensao: extensao.toUpperCase(),
-        status: "extraindo",
-        ocrConfirmado: false,
+        status: "selecionado",
         sha256: null,
       });
     }
@@ -88,14 +78,6 @@ export function useDocumentFiles() {
     });
 
     for (const novo of novos) {
-      const timer = setTimeout(() => {
-        temporizadores.current.delete(timer);
-        setArquivos((atual) =>
-          atual.map((a) => (a.id === novo.id ? { ...a, status: "concluida" } : a)),
-        );
-      }, OCR_DEMONSTRATIVO.duracaoMs);
-      temporizadores.current.add(timer);
-
       void calcularSha256(novo.file).then((hash) =>
         setArquivos((atual) => atual.map((a) => (a.id === novo.id ? { ...a, sha256: hash } : a))),
       );
@@ -105,10 +87,6 @@ export function useDocumentFiles() {
   const remover = useCallback((id: string) => {
     setArquivos((atual) => atual.filter((a) => a.id !== id));
     setErro(null);
-  }, []);
-
-  const confirmarOcr = useCallback((id: string) => {
-    setArquivos((atual) => atual.map((a) => (a.id === id ? { ...a, ocrConfirmado: true } : a)));
   }, []);
 
   const limpar = useCallback(() => {
@@ -124,5 +102,5 @@ export function useDocumentFiles() {
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }, [arquivos]);
 
-  return { arquivos, erro, adicionar, remover, confirmarOcr, limpar, visualizar };
+  return { arquivos, erro, adicionar, remover, limpar, visualizar };
 }

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 
 import { salvarParametrosFinanceiros } from '@/lib/configuracoes-mock';
+import { useSettingsForm } from '@/hooks/useSettingsForm';
+import { financialSettingsSchema } from '@/services/settingsSchemas';
 import type {
   ErrosParametrosFinanceiros,
   ParametrosFinanceiros,
@@ -53,7 +55,9 @@ export function ParametrosFinanceirosForm({
 }: ParametrosFinanceirosFormProps) {
   const router = useRouter();
 
-  const [dados, setDados] = useState<ParametrosFinanceiros>(valoresIniciais);
+  const settings = useSettingsForm('bevox.settings.financial', financialSettingsSchema, valoresIniciais);
+  const dados = settings.data;
+  const setDados = settings.setData;
   const [erros, setErros] = useState<ErrosParametrosFinanceiros>({});
   const [status, setStatus] = useState<StatusEnvio>({ tipo: 'ocioso' });
 
@@ -69,7 +73,7 @@ export function ParametrosFinanceirosForm({
 
   async function aoEnviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
-    if (salvando) return;
+    if (salvando || !settings.ready) return;
 
     const novosErros = validar(dados);
     setErros(novosErros);
@@ -82,11 +86,21 @@ export function ParametrosFinanceirosForm({
       return;
     }
 
+    const validated = financialSettingsSchema.safeParse(dados);
+    if (!validated.success) {
+      setStatus({ tipo: 'erro', mensagem: validated.error.issues[0].message });
+      return;
+    }
+
     setStatus({ tipo: 'salvando' });
 
     try {
-      await salvarParametrosFinanceiros(dados);
-      setStatus({ tipo: 'sucesso', mensagem: 'Alterações salvas.' });
+      const result = await salvarParametrosFinanceiros(validated.data);
+      if (!settings.save(result.dados)) {
+        setStatus({ tipo: 'erro', mensagem: 'Não foi possível gravar no navegador. Verifique o armazenamento local.' });
+        return;
+      }
+      setStatus({ tipo: 'sucesso', mensagem: 'Alterações salvas neste navegador.' });
     } catch (erro: unknown) {
       console.error('Erro ao salvar parâmetros financeiros:', erro);
       setStatus({
@@ -98,7 +112,8 @@ export function ParametrosFinanceirosForm({
 
   return (
     <form onSubmit={aoEnviar} noValidate className="space-y-6">
-      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
+      <p role="status" className="text-xs text-foreground-muted">{!settings.ready ? settings.message || 'Carregando parâmetros...' : 'Parâmetros locais. Conversão automática por API e vínculos entre módulos dependem de integração ainda indisponível; nenhuma sincronização é executada.'}</p>
+      <fieldset disabled={!settings.ready || salvando} className="grid min-w-0 grid-cols-1 items-start gap-6 xl:grid-cols-2">
         <ConfiguracoesGeraisFinancas
           valor={dados.configuracaoGeral}
           erros={erros}
@@ -120,12 +135,12 @@ export function ParametrosFinanceirosForm({
           valor={dados.integracoes}
           onChange={(valor) => atualizar('integracoes', valor)}
         />
-      </div>
+      </fieldset>
 
       <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 dark:border-line bg-white dark:bg-surface-raised p-3 shadow-sm">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => router.push('/configuracoes')}
           disabled={salvando}
           className="inline-flex h-10 items-center gap-2 rounded-lg bg-slate-50 dark:bg-surface-muted px-4 text-sm font-medium text-slate-700 dark:text-foreground transition-colors hover:bg-slate-100 dark:hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:opacity-60"
         >
@@ -135,7 +150,7 @@ export function ParametrosFinanceirosForm({
 
         <button
           type="submit"
-          disabled={salvando}
+          disabled={salvando || !settings.ready}
           className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {salvando ? (

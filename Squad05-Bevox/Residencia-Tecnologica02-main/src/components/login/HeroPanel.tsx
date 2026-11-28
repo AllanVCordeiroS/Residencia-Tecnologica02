@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BuildingIcon, CheckCircleIcon, ShieldCheckIcon, TruckIcon } from "./icons";
+import { BuildingIcon, ShieldCheckIcon, TruckIcon } from "./icons";
 import Logo from "./Logo";
 
 type Feature = {
@@ -55,10 +55,6 @@ export default function HeroPanel() {
 
       <header className="relative flex items-start justify-between gap-4">
         <Logo />
-        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 dark:text-foreground-muted">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          Ambiente Enterprise v4.8
-        </span>
       </header>
 
       <div className="relative max-w-xl py-10">
@@ -120,11 +116,6 @@ export default function HeroPanel() {
             <p className="text-slate-400 dark:text-foreground-muted">Ex: Adega Distribution Nordeste, Primor Log</p>
           </div>
         </div>
-
-        <p className="flex shrink-0 items-center gap-1.5 text-xs text-slate-300 dark:text-foreground-muted">
-          <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
-          Disponibilidade SLA 99,98%
-        </p>
       </footer>
     </section>
   );

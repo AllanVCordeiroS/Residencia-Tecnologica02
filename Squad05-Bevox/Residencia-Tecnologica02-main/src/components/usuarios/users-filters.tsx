@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PERFIS, type Perfil, type StatusUsuario } from "@/types/usuarios";
 import { UNIDADES } from "@/lib/usuarios-mock";
@@ -63,6 +63,7 @@ export function UsersFilters({ filtros, onChange, contagem }: Props) {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-foreground-muted" />
           <input
             type="search"
+            aria-label="Buscar usu?rios"
             value={filtros.busca}
             onChange={(e) => set("busca", e.target.value)}
             placeholder="Buscar por nome, e-mail ou unidade..."
@@ -91,13 +92,6 @@ export function UsersFilters({ filtros, onChange, contagem }: Props) {
           <option value="inativo">Inativo</option>
         </Select>
 
-        <button
-          type="button"
-          className="flex h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          Filtros
-        </button>
       </div>
 
       <div role="tablist" className="mt-4 flex gap-6 overflow-x-auto border-b border-transparent">

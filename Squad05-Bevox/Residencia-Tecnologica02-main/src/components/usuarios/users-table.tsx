@@ -11,12 +11,13 @@ interface Props {
   usuarios: Usuario[];
   onDelete: (id: string) => void;
   onToggleStatus: (id: string) => void;
+  actionsPending?: boolean;
 }
 
 const iconBtn =
   "flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-foreground-muted transition-colors hover:bg-slate-100 dark:hover:bg-surface-muted hover:text-slate-800 dark:hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500";
 
-function RowMenu({ usuario, onDelete, onToggleStatus }: { usuario: Usuario; onDelete: () => void; onToggleStatus: () => void }) {
+function RowMenu({ usuario, onDelete, onToggleStatus, actionsPending }: { usuario: Usuario; onDelete: () => void; onToggleStatus: () => void; actionsPending: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -38,6 +39,7 @@ function RowMenu({ usuario, onDelete, onToggleStatus }: { usuario: Usuario; onDe
           <button
             role="menuitem"
             type="button"
+            disabled={actionsPending}
             onClick={() => { onToggleStatus(); setOpen(false); }}
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 dark:text-foreground hover:bg-slate-50 dark:hover:bg-surface-muted"
           >
@@ -47,6 +49,7 @@ function RowMenu({ usuario, onDelete, onToggleStatus }: { usuario: Usuario; onDe
           <button
             role="menuitem"
             type="button"
+            disabled={actionsPending}
             onClick={() => { onDelete(); setOpen(false); }}
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40"
           >
@@ -59,7 +62,7 @@ function RowMenu({ usuario, onDelete, onToggleStatus }: { usuario: Usuario; onDe
   );
 }
 
-export function UsersTable({ usuarios, onDelete, onToggleStatus }: Props) {
+export function UsersTable({ usuarios, onDelete, onToggleStatus, actionsPending = false }: Props) {
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const todos = usuarios.length > 0 && usuarios.every((u) => selecionados.has(u.id));
 
@@ -67,7 +70,8 @@ export function UsersTable({ usuarios, onDelete, onToggleStatus }: Props) {
   const toggleUm = (id: string) =>
     setSelecionados((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
 
@@ -117,7 +121,7 @@ export function UsersTable({ usuarios, onDelete, onToggleStatus }: Props) {
                 <div className="flex items-center gap-3">
                   <Avatar nome={u.nome} tone={u.avatarTone} />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">{u.nome}</p>
+                    <Link href={`/usuarios/${u.id}`} className="block truncate rounded text-sm font-semibold text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">{u.nome}</Link>
                     <p className="truncate text-xs text-slate-500 dark:text-foreground-muted">{u.email}</p>
                   </div>
                 </div>
@@ -144,19 +148,22 @@ export function UsersTable({ usuarios, onDelete, onToggleStatus }: Props) {
 
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-1">
-                  {u.status === "convite_pendente" ? (
-                    <button type="button" aria-label="Reenviar convite" title="Reenviar convite" className={iconBtn}>
+                  <Link href={`/usuarios/${u.id}`} aria-label={`Ver ${u.nome}`} title="Ver detalhes" className={iconBtn}>
+                    <Eye className="h-4 w-4" />
+                  </Link>
+                  <Link href={`/usuarios/${u.id}/editar`} aria-label={`Editar ${u.nome}`} title="Editar usuário" className={iconBtn}>
+                    <Pencil className="h-4 w-4" />
+                  </Link>
+                  {u.status === "convite_pendente" && (
+                    <button type="button" disabled aria-label="Reenviar convite indisponível na demonstração" title="Envio de convite não implementado" className={iconBtn + " cursor-not-allowed opacity-50"}>
                       <Mail className="h-4 w-4" />
                     </button>
-                  ) : (
-                    <Link href={`/usuarios/${u.id}`} aria-label={`Ver ${u.nome}`} title="Ver detalhes" className={iconBtn}>
-                      <Eye className="h-4 w-4" />
-                    </Link>
                   )}
 
                   {u.status === "inativo" ? (
                     <button
                       type="button"
+                      disabled={actionsPending}
                       aria-label="Reativar usuário"
                       title="Reativar"
                       onClick={() => onToggleStatus(u.id)}
@@ -164,13 +171,9 @@ export function UsersTable({ usuarios, onDelete, onToggleStatus }: Props) {
                     >
                       <RotateCcw className="h-4 w-4" />
                     </button>
-                  ) : (
-                    <Link href={`/usuarios/${u.id}/editar`} aria-label={`Editar ${u.nome}`} title="Editar" className={iconBtn}>
-                      <Pencil className="h-4 w-4" />
-                    </Link>
-                  )}
+                  ) : null}
 
-                  <RowMenu usuario={u} onDelete={() => onDelete(u.id)} onToggleStatus={() => onToggleStatus(u.id)} />
+                  <RowMenu usuario={u} onDelete={() => onDelete(u.id)} onToggleStatus={() => onToggleStatus(u.id)} actionsPending={actionsPending} />
                 </div>
               </td>
             </tr>

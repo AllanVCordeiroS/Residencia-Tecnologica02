@@ -52,7 +52,38 @@ export const usuarioSchema = z.object({
   status: statusUsuarioSchema,
   ultimoAcesso: z.string().nullable(),
   avatarTone: avatarToneSchema,
+  telefone: z.string().optional(),
+  unidadesAutorizadas: z.array(z.string()).optional(),
+  permissoes: permissoesSchema.optional(),
+  enviarConvite: z.boolean().optional(),
+  exigirMfa: z.boolean().optional(),
+  criadoEm: z.string().optional(),
+  unidadeId: z.string().optional(),
+  departamento: z.string().optional(),
+  cadastroPendente: z.boolean().optional(),
+  aceitesCadastro: z.object({ acessoCorporativo: z.boolean(), privacidade: z.boolean(), registradoEm: z.string() }).optional(),
 });
+
+export const userFormSchema = z.object({
+  nome: z.string().trim().min(1, "Informe o nome completo."),
+  email: z.string().trim().email("Informe um e-mail corporativo válido."),
+  cargo: z.string().trim().min(1, "Informe o cargo ou função."),
+  telefone: z.string().trim(),
+  unidade: z.string().min(1, "Selecione a unidade vinculada."),
+  perfil: perfilSchema,
+  unidadesAutorizadas: z.array(z.string()),
+  permissoes: permissoesSchema.superRefine((permissions, ctx) => {
+    for (const modulo of MODULOS) {
+      const permission = permissions[modulo];
+      if (!permission.visualizar && (permission.criar || permission.editar || permission.excluir)) {
+        ctx.addIssue({ code: "custom", message: "Ações exigem permissão de visualização.", path: [modulo] });
+      }
+    }
+  }),
+  enviarConvite: z.boolean(),
+  exigirMfa: z.boolean(),
+});
+export type UserFormValues = z.infer<typeof userFormSchema>;
 
 export const userRoleSchema = perfilSchema;
 export const userStatusSchema = z.enum([

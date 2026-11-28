@@ -7,7 +7,7 @@ const TONES: Record<AvatarTone, string> = {
   blueLight: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300",
   yellow: "bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300",
   red: "bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300",
-  mint: "bg-emerald-300 text-emerald-900 dark:text-emerald-300",
+  mint: "bg-emerald-300 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-300",
   lavender: "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
   blue: "bg-blue-600 text-white",
 };

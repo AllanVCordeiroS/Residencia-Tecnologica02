@@ -4,11 +4,14 @@ export const themePreferenceSchema = z.enum(["light", "dark", "system"]);
 export type ThemePreference = z.infer<typeof themePreferenceSchema>;
 
 export const tableViewPreferenceSchema = z.enum(["compact", "standard"]);
+export const languagePreferenceSchema = z.literal("pt-BR");
+export const dateFormatPreferenceSchema = z.enum(["DD/MM/AAAA", "AAAA-MM-DD"]);
+export const timeZonePreferenceSchema = z.enum(["America/Sao_Paulo", "America/Manaus", "America/Rio_Branco", "America/Noronha", "UTC"]);
 
 export const globalInterfacePreferencesSchema = z.object({
-  language: z.string().min(1),
-  dateFormat: z.string().min(1),
-  timeZone: z.string().min(1),
+  language: languagePreferenceSchema,
+  dateFormat: dateFormatPreferenceSchema,
+  timeZone: timeZonePreferenceSchema,
   automaticPagination: z.boolean(),
   keepFiltersAfterRefresh: z.boolean(),
   showRowSummary: z.boolean(),
@@ -16,8 +19,8 @@ export const globalInterfacePreferencesSchema = z.object({
 });
 
 export const userInterfacePreferencesSchema = z.object({
-  language: z.string().min(1),
-  dateFormat: z.string().min(1),
+  language: z.union([languagePreferenceSchema, z.literal("inherit")]),
+  dateFormat: z.union([dateFormatPreferenceSchema, z.literal("inherit")]),
   showVisualAlerts: z.boolean(),
   playNotificationSounds: z.boolean(),
   theme: themePreferenceSchema,
